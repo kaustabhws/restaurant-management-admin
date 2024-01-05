@@ -9,12 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { OrderColumn } from "./columns";
 import { Button } from "@/components/ui/button";
-import { Ban, Check, Copy, MoreHorizontal, Trash } from "lucide-react";
+import { Ban, Check, Copy, MoreHorizontal } from "lucide-react";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
-import { AlertModal } from "@/components/modals/alert-modal";
 
 interface CellActionProps {
   data: OrderColumn;
@@ -32,20 +31,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     toast.success("Menu ID copied to the clipboard");
   };
 
-  const onDelete = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(`/api/${params.restaurantId}/menu/${data.id}`);
-      router.refresh();
-      toast.success("Item deleted");
-    } catch (error) {
-      toast.error("Make sure you removed all categories using this item first");
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
-  };
-
   const submitPaid = async (isPaid: boolean) => {
     await axios.patch(`/api/${params.restaurantId}/order/${data.id}`, {
       isPaid,
@@ -56,12 +41,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   return (
     <>
-      <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -86,10 +65,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
               Mark as unpaid
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem onClick={() => setOpen(true)}>
-            <Trash className="mr-2 h-4 w-4" />
-            Delete
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
