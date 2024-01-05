@@ -137,7 +137,7 @@ export const TableForm: React.FC<TableFormProps> = ({
                       </PopoverTrigger>
                       <PopoverContent className="w-[200px] p-0">
                         <Command>
-                          <CommandInput placeholder="Search framework..." />
+                          <CommandInput placeholder="Search food..." />
                           <CommandEmpty>No menu item found.</CommandEmpty>
                           <CommandGroup>
                             {menu?.map((menu, index) => (
