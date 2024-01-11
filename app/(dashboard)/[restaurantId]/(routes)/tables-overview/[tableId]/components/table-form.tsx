@@ -130,7 +130,7 @@ export const TableForm: React.FC<TableFormProps> = ({
                           className="w-[200px] justify-between"
                         >
                           {value
-                            ? menu?.find((menu) => menu.id === value)?.name
+                            ? menu?.find((menu) => menu.name.toLowerCase() === value.toLowerCase())?.name
                             : "Select Food..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -143,12 +143,12 @@ export const TableForm: React.FC<TableFormProps> = ({
                             {menu?.map((menu, index) => (
                               <CommandItem
                                 key={index}
-                                value={menu.id}
+                                value={menu.name}
                                 onSelect={(currentValue) => {
                                   setValue(
                                     currentValue === value ? "" : currentValue
                                   );
-                                  form.setValue("menuItem", currentValue);
+                                  form.setValue("menuItem", menu.id);
                                   setOpen(false);
                                 }}
                               >
@@ -193,7 +193,12 @@ export const TableForm: React.FC<TableFormProps> = ({
           <Button disabled={loading} className="ml-auto mt-5" type="submit">
             {action}
           </Button>
-          <OrderClient data={order} temporder={temporder} loading={loading} setLoading={setLoading} />
+          <OrderClient
+            data={order}
+            temporder={temporder}
+            loading={loading}
+            setLoading={setLoading}
+          />
         </form>
       </Form>
     </>

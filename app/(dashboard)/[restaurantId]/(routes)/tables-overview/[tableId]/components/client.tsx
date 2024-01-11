@@ -27,8 +27,6 @@ export const OrderClient: React.FC<OrderClientProps> = ({
   const params = useParams();
   const router = useRouter();
 
-  console.log(temporder);
-
   const resultData = {
     resultData: {
       menuItems: temporder.flatMap((order: any) =>
