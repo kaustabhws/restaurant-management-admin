@@ -94,12 +94,7 @@ export const MenuForm: React.FC<MenuFormProps> = ({ initialData }) => {
 
   return (
     <>
-      <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      />
+      
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
         {initialData && (
@@ -161,6 +156,12 @@ export const MenuForm: React.FC<MenuFormProps> = ({ initialData }) => {
           </Button>
         </form>
       </Form>
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onDelete}
+        loading={loading}
+      />
     </>
   );
 };
