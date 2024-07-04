@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { OrderColumn } from "./order-status";
 import { Button } from "@/components/ui/button";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Copy, MoreHorizontal, Trash } from "lucide-react";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -39,7 +39,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         `/api/${params.restaurantId}/tableoverview/${data.id}`
       );
       router.refresh();
-      toast.success("Billboard deleted");
+      toast.success("Food deleted");
     } catch (error) {
       toast.error(
         "Make sure you removed all categories using this billboard first"

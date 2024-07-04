@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -19,7 +19,7 @@ model Restaurants {
   tables     Table[]      @relation("RestaurantToTable")
   orders     Orders[]     @relation("RestaurantToOrder")
   temporders TempOrders[] @relation("RestaurantToTempOrder")
-  bills       Bill[]      @relation("RestaurantToBill")
+  bills      Bill[]       @relation("RestaurantToBill")
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 }
@@ -39,15 +39,15 @@ model Menu {
 }
 
 model Table {
-  id         String      @id @default(uuid())
+  id         String       @id @default(uuid())
   name       String
   seats      Int
-  status     String      @default("Available")
+  status     String       @default("Available")
   resId      String
-  restaurant Restaurants @relation("RestaurantToTable", fields: [resId], references: [id])
-  temporders  TempOrders[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  restaurant Restaurants  @relation("RestaurantToTable", fields: [resId], references: [id])
+  temporders TempOrders[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   @@index([resId])
 }
@@ -56,8 +56,8 @@ model TempOrders {
   id         String           @id @default(uuid())
   resId      String
   restaurant Restaurants      @relation("RestaurantToTempOrder", fields: [resId], references: [id])
-  tableId     String
-  table       Table           @relation(fields: [tableId], references: [id])
+  tableId    String
+  table      Table            @relation(fields: [tableId], references: [id])
   orderItems TempOrderItems[]
   amount     Float
   isPaid     Boolean
@@ -74,7 +74,7 @@ model TempOrderItems {
   orders   TempOrders @relation(fields: [orderId], references: [id])
   itemId   String
   menuItem Menu       @relation(fields: [itemId], references: [id])
-  quantity  Int       @default(0)
+  quantity Int        @default(0)
 
   @@index([orderId])
   @@index([itemId])
@@ -82,8 +82,9 @@ model TempOrderItems {
 
 model Orders {
   id         String       @id @default(uuid())
-  slNo       Int          @default(autoincrement())
+  slNo       String
   resId      String
+  tableNo    String
   restaurant Restaurants  @relation("RestaurantToOrder", fields: [resId], references: [id])
   orderItems OrderItems[]
   bill       Bill[]
@@ -102,22 +103,22 @@ model OrderItems {
   orders   Orders @relation(fields: [orderId], references: [id])
   itemId   String
   menuItem Menu   @relation(fields: [itemId], references: [id])
-  quantity  Int   @default(0)
+  quantity Int    @default(0)
 
   @@index([orderId])
   @@index([itemId])
 }
 
 model Bill {
-  id    String    @id @default(uuid())
-  resId   String
-  restaurant  Restaurants   @relation("RestaurantToBill", fields: [resId], references: [id])
-  orderId  String
-  orders   Orders @relation(fields: [orderId], references: [id])
-  itemName  String
-  itemId    String
-  totalPrice  Float
-  quantity    Int
+  id         String      @id @default(uuid())
+  resId      String
+  restaurant Restaurants @relation("RestaurantToBill", fields: [resId], references: [id])
+  orderId    String
+  orders     Orders      @relation(fields: [orderId], references: [id])
+  itemName   String
+  itemId     String
+  totalPrice Float
+  quantity   Int
 
   @@index([orderId])
   @@index([resId])

@@ -24,7 +24,7 @@ const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
 
   const formattedOrders: OrderColumn[] = orders.map((item) => ({
     id: item.id,
-    slNo: item.slNo,
+    slNo: `#${item.slNo}`,
     menuItems: item.orderItems
       .map((orderItem) => orderItem.menuItem.name)
       .join(", "),
