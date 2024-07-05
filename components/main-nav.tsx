@@ -6,8 +6,13 @@ import { useParams, usePathname } from "next/navigation";
 
 export function MainNav({
   className,
+  isOpen,
+  setIsOpen,
   ...props
-}: React.HTMLAttributes<HTMLElement>) {
+}: React.HTMLAttributes<HTMLElement> & {
+  isOpen?: boolean;
+  setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const pathname = usePathname();
   const params = useParams();
 
@@ -45,17 +50,22 @@ export function MainNav({
   ];
 
   return (
-    <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)}>
+    <nav className={cn("flex items-center space-x-4 lg:space-x-6 text-sm", className)}>
       {routes.map((route) => (
         <Link
           key={route.href}
           href={route.href}
           className={cn(
-            "text-sm font-medium transition-colors hover:text-primary",
+            "font-medium transition-colors hover:text-primary",
             route.active
               ? "text-black font-semibold dark:text-white"
               : "text-muted-foreground"
           )}
+          onClick={() => {
+            if (setIsOpen) {
+              setIsOpen(!isOpen);
+            }
+          }}
         >
           {route.label}
         </Link>

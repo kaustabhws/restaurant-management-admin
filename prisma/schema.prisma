@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -82,8 +82,9 @@ model TempOrderItems {
 
 model Orders {
   id         String       @id @default(uuid())
-  slNo       Int          @default(autoincrement())
+  slNo       String          
   resId      String
+  tableNo    String
   restaurant Restaurants  @relation("RestaurantToOrder", fields: [resId], references: [id])
   orderItems OrderItems[]
   bill       Bill[]

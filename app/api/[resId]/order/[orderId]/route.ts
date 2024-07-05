@@ -26,7 +26,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { orderId: string, resId: string } }
+  { params }: { params: { orderId: string; resId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -58,13 +58,58 @@ export async function PATCH(
         id: params.orderId,
       },
       data: {
-        isPaid
+        isPaid,
       },
     });
 
     return NextResponse.json(order);
   } catch (error) {
     console.log("[MENU_PATCH]", error);
+    return new NextResponse("Internal server error", { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { resId: string; orderId: string } }
+) {
+  try {
+    const { userId } = auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    if (!params.resId) {
+      return new NextResponse("Restaurant id id is required", { status: 400 });
+    }
+
+    if (!params.orderId) {
+      return new NextResponse("Order id id is required", { status: 400 });
+    }
+
+    const restaurantByUserId = await prismadb.restaurants.findFirst({
+      where: {
+        id: params.resId,
+        userId,
+      },
+    });
+
+    
+    if (!restaurantByUserId) {
+      return new NextResponse("Unauthorized", { status: 403 });
+    }
+    
+    const order = await prismadb.orders.deleteMany({
+      where: {
+        id: params.orderId
+      }
+    })
+
+    return NextResponse.json(order);
+
+  } catch (error) {
+    console.log("[ORDER_DELETE]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

@@ -2,6 +2,15 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
+function generateRandomString(length: number) {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
 export async function POST(
   req: Request,
   { params }: { params: { resId: string } }
@@ -35,21 +44,48 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
+    const restaurantName = restaurantsByUserId.name;
+    const nameParts = restaurantName.split(" ");
+    let slNo = "";
+
+    if (nameParts.length > 1) {
+      slNo = nameParts
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase();
+    } else {
+      slNo = restaurantName.substring(0, 2).toUpperCase();
+    }
+
+    slNo += generateRandomString(5);
+
+    const tableName = await prismadb.table.findFirst({
+      where: {
+        id: resultData.tableId,
+      },
+    });
+
+    if (!tableName) {
+      return new NextResponse("TableId not received", { status: 403 });
+    }
+
     const totalAmount = resultData.totalAmount;
 
     const order = await prismadb.orders.create({
       data: {
         resId: params.resId,
         isPaid: false,
+        slNo: slNo,
+        tableNo: tableName.name,
         amount: totalAmount,
         bill: {
           create: resultData.menuItems.map((item: any) => ({
             resId: params.resId,
             itemName: item.name,
             itemId: item.id,
-            totalPrice: item.quantity*item.price,
+            totalPrice: item.quantity * item.price,
             quantity: item.quantity,
-          }))
+          })),
         },
         orderItems: {
           create: resultData.menuItems.map((item: any) => ({
@@ -64,19 +100,28 @@ export async function POST(
       },
       include: {
         orderItems: true,
-        bill: true
+        bill: true,
       },
     });
 
-    const tempOrderItems = await prismadb.tempOrderItems.deleteMany({
+    await prismadb.tempOrderItems.deleteMany({
       where: {
         orderId: resultData.menuItems.orderId,
-      }
-    })
+      },
+    });
 
-    const tempOrder = await prismadb.tempOrders.deleteMany({
+    await prismadb.tempOrders.deleteMany({
       where: {
         tableId: resultData.tableId,
+      },
+    });
+
+    await prismadb.table.update({
+      where: {
+        id: resultData.tableId,
+      },
+      data: {
+        status: "Available",
       },
     });
 

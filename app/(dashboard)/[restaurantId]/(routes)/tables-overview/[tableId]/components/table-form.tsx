@@ -78,10 +78,20 @@ export const TableForm: React.FC<TableFormProps> = ({
     },
   });
 
+  const tableStatus = {
+    name: table?.name,
+    seats: table?.seats,
+    status: "Occupied",
+  };
+
   const onSubmit = async (data: TableFormValues) => {
     try {
       setLoading(true);
       await axios.post(`/api/${params.restaurantId}/tableoverview`, data);
+      await axios.patch(
+        `/api/${params.restaurantId}/tables/${table?.id}`,
+        tableStatus
+      );
       router.refresh();
       toast.success(toastMessage);
     } catch (error) {
@@ -130,7 +140,11 @@ export const TableForm: React.FC<TableFormProps> = ({
                           className="w-[200px] justify-between"
                         >
                           {value
-                            ? menu?.find((menu) => menu.name.toLowerCase() === value.toLowerCase())?.name
+                            ? menu?.find(
+                                (menu) =>
+                                  menu.name.toLowerCase() ===
+                                  value.toLowerCase()
+                              )?.name
                             : "Select Food..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>

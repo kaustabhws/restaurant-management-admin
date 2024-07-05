@@ -26,36 +26,36 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
 
   return (
     <div className="flex-col">
-      <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex-1 space-y-4 p-8 pt-6 max-[430px]:px-2">
         <Heading title="Dashboard" description="Overview of your restaurant" />
         <Separator />
         <div className="grid gap-4 grid-cols-3">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 max-[430px]:p-3">
               <CardTitle className="text-sm font-medium">
                 Total Revenue
               </CardTitle>
               <IndianRupee className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="max-[430px]:px-2">
               <div className="text-2xl font-bold">{formatter.format(totalRevenue)}</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 max-[430px]:p-3">
               <CardTitle className="text-sm font-medium">Sales</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="max-[430px]:px-2">
               <div className="text-2xl font-bold">+{salesCount}</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 max-[430px]:p-3">
               <CardTitle className="text-sm font-medium">Total Menu items</CardTitle>
               <MenuSquare className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="max-[430px]:px-2">
               <div className="text-2xl font-bold">{stockCount}</div>
             </CardContent>
           </Card>

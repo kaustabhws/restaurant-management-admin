@@ -6,7 +6,7 @@ import BillAction from "./bill-action";
 
 export type OrderColumn = {
   id: string;
-  slNo: Number,
+  slNo: string,
   isPaid: boolean;
   amount: Number;
   menuItems: string;
