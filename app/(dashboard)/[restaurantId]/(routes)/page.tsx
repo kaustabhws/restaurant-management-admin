@@ -1,4 +1,4 @@
-import { CreditCard, IndianRupee, MenuSquare } from "lucide-react";
+import { CalendarCheck, CreditCard, IndianRupee, MenuSquare } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { Overview } from "@/components/overview";
@@ -9,53 +9,70 @@ import { getSalesCount } from "@/actions/get-sales-count";
 import { getGraphRevenue } from "@/actions/get-graph-revenue";
 import { getStockCount } from "@/actions/get-stock-count";
 import { formatter } from "@/lib/utils";
+import { getDailyRevenue } from "@/actions/get-daily-revenue";
 
 interface DashboardPageProps {
   params: {
     restaurantId: string;
   };
-};
+}
 
-const DashboardPage: React.FC<DashboardPageProps> = async ({ 
-  params
-}) => {
+const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
   const totalRevenue = await getTotalRevenue(params.restaurantId);
   const graphRevenue = await getGraphRevenue(params.restaurantId);
   const salesCount = await getSalesCount(params.restaurantId);
   const stockCount = await getStockCount(params.restaurantId);
+  const dailyRevenue = await getDailyRevenue(params.restaurantId);
 
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6 max-[430px]:px-2">
         <Heading title="Dashboard" description="Overview of your restaurant" />
         <Separator />
-        <div className="grid gap-4 grid-cols-3">
+        <div className="grid gap-4 grid-cols-3 max-[657px]:grid-cols-1">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 max-[430px]:p-3">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Revenue
+                Daily Revenue
               </CardTitle>
-              <IndianRupee className="h-4 w-4 text-muted-foreground" />
+              <CalendarCheck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent className="max-[430px]:px-2">
-              <div className="text-2xl font-bold">{formatter.format(totalRevenue)}</div>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatter.format(dailyRevenue)}
+              </div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 max-[430px]:p-3">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Lifetime Revenue
+              </CardTitle>
+              <IndianRupee className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatter.format(totalRevenue)}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Sales</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent className="max-[430px]:px-2">
+            <CardContent>
               <div className="text-2xl font-bold">+{salesCount}</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 max-[430px]:p-3">
-              <CardTitle className="text-sm font-medium">Total Menu items</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Menu items
+              </CardTitle>
               <MenuSquare className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent className="max-[430px]:px-2">
+            <CardContent>
               <div className="text-2xl font-bold">{stockCount}</div>
             </CardContent>
           </Card>

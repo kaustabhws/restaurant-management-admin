@@ -51,6 +51,10 @@ export const OrderClient: React.FC<OrderClientProps> = ({
   const submitOrder = async () => {
     try {
       setLoading(true);
+      if(!resultData.resultData.menuItems || resultData.resultData.menuItems.length === 0) {
+        toast.error("No food ordered");
+        return;
+      }
       const orderId = await axios.post(`/api/${params.restaurantId}/order`, resultData);
       router.push(`/${params.restaurantId}/bill/${orderId.data.id}`)
       toast.success("Food order submitted");

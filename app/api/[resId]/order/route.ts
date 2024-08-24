@@ -26,7 +26,11 @@ export async function POST(
     }
 
     if (!resultData) {
-      return new NextResponse("Table id are required", { status: 400 });
+      return new NextResponse("Table id is required", { status: 400 });
+    }
+
+    if(!resultData.menuItems || resultData.menuItems.length === 0) {
+      return new NextResponse("Menu items are required", { status: 400 });
     }
 
     if (!params.resId) {

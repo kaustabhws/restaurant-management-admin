@@ -136,7 +136,7 @@ const BillContent: React.FC<BillContentProps> = ({ restaurant, order }) => {
                         <TableCell>
                           <p>{item.itemName}</p>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-right">
                           <p>{item.totalPrice / item.quantity}</p>
                         </TableCell>
                         <TableCell className="text-right">
