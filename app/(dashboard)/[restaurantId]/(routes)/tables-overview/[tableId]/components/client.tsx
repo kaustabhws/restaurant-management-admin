@@ -51,13 +51,8 @@ export const OrderClient: React.FC<OrderClientProps> = ({
   const submitOrder = async () => {
     try {
       setLoading(true);
-<<<<<<< HEAD
       const orderId = await axios.post(`/api/${params.restaurantId}/order`, resultData);
       router.push(`/${params.restaurantId}/bill/${orderId.data.id}`)
-=======
-      const order = await axios.post(`/api/${params.restaurantId}/order`, resultData);
-      router.push(`/${params.restaurantId}/bill/${order.data.id}`);
->>>>>>> 0166eda0a40faab816c4eeebea29ed6c5f85d82f
       toast.success("Food order submitted");
       router.refresh()
     } catch (error) {

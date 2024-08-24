@@ -82,11 +82,7 @@ model TempOrderItems {
 
 model Orders {
   id         String       @id @default(uuid())
-<<<<<<< HEAD
   slNo       String          
-=======
-  slNo       String
->>>>>>> 0166eda0a40faab816c4eeebea29ed6c5f85d82f
   resId      String
   tableNo    String
   restaurant Restaurants  @relation("RestaurantToOrder", fields: [resId], references: [id])

@@ -124,10 +124,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           </Button>
         </form>
       </Form>
-<<<<<<< HEAD
-=======
-      <Separator />
->>>>>>> 0166eda0a40faab816c4eeebea29ed6c5f85d82f
     </>
   );
 };
