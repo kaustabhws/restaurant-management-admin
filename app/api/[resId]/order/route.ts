@@ -77,8 +77,6 @@ export async function POST(
         slNo: slNo,
         tableNo: tableName.name,
         isPaid: false,
-        slNo: slNo,
-        tableNo: tableName.name,
         amount: totalAmount,
         bill: {
           create: resultData.menuItems.map((item: any) => ({
