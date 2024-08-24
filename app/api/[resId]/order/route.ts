@@ -61,9 +61,15 @@ export async function POST(
 
     const tableName = await prismadb.table.findFirst({
       where: {
+<<<<<<< HEAD
         id: resultData.tableId,
       },
     });
+=======
+        id: resultData.tableId
+      }
+    })
+>>>>>>> 0166eda0a40faab816c4eeebea29ed6c5f85d82f
 
     if (!tableName) {
       return new NextResponse("TableId not received", { status: 403 });
@@ -74,6 +80,8 @@ export async function POST(
     const order = await prismadb.orders.create({
       data: {
         resId: params.resId,
+        slNo: slNo,
+        tableNo: tableName.name,
         isPaid: false,
         slNo: slNo,
         tableNo: tableName.name,
