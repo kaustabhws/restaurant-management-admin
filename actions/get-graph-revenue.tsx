@@ -5,7 +5,9 @@ interface GraphData {
   total: number;
 }
 
-export const getGraphRevenue = async (restaurantId: string): Promise<GraphData[]> => {
+export const getGraphRevenue = async (
+  restaurantId: string
+): Promise<GraphData[]> => {
   const paidOrders = await prismadb.orders.findMany({
     where: {
       resId: restaurantId,

@@ -59,7 +59,7 @@ export default function StoreSwitcher({
           role="combobox"
           aria-expanded={open}
           aria-label="Select a restaurant"
-          className={cn("w-[200px] justify-between", className)}
+          className={cn("w-[200px] justify-between max-[371px]:w-auto", className)}
         >
           <StoreIcon className="mr-2 h-4 w-4" />
           {currentRestaurant?.label}

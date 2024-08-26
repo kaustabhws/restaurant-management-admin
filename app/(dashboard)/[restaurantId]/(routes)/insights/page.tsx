@@ -1,3 +1,4 @@
+import { getWeeklyRevenue } from "@/actions/get-weekly-graph-revenue";
 import {
   getAverageOrderValue,
   getHighestBillAmount,
@@ -8,11 +9,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import {
-  IndianRupee,
-  Table,
-  TrendingUp,
-} from "lucide-react";
+import WeeklyOverview from "@/components/weekly-overview";
+import { IndianRupee, Table, TrendingUp } from "lucide-react";
 
 interface InsightsPageProps {
   params: {
@@ -24,8 +22,23 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
   const mostOrderedFood = await getMostOrderedFood(params.restaurantId);
   const highestRevenueFood = await getHighestRevenueFood(params.restaurantId);
   const highestBillAmount = await getHighestBillAmount(params.restaurantId);
-  const avgOrderValue = await getAverageOrderValue(params.restaurantId);
+  const avgOrderValue = (
+    await getAverageOrderValue(params.restaurantId)
+  ).toFixed(2);
   const mostPopularTable = await getMostPopularTable(params.restaurantId);
+
+  const graphRevenue = await getWeeklyRevenue(
+    params.restaurantId,
+    new Date().getMonth()
+  );
+
+  const getMonthName = (monthIndex: number): string => {
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    return months[monthIndex];
+  };
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 max-[430px]:px-2">
@@ -115,6 +128,17 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
                 {mostPopularTable?.count} bookings
               </p>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+      <div>
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Weekly Sales Overview</CardTitle>
+            <CardTitle className='text-lg font-normal text-muted-foreground'>{getMonthName(new Date().getMonth())} Report</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <WeeklyOverview data={graphRevenue} />
           </CardContent>
         </Card>
       </div>

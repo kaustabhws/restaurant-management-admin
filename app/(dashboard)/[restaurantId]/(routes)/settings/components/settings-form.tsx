@@ -100,7 +100,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="spave-y-8 w-full"
         >
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-3 gap-8 max-[600px]:grid-cols-1 max-[870px]:grid-cols-2">
             <FormField
               control={form.control}
               name="name"

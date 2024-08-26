@@ -52,6 +52,11 @@ export function MainNav({
       label: "Insights",
       active: pathname === `/${params.restaurantId}/insights`,
     },
+    {
+      href: `/${params.restaurantId}/statistics`,
+      label: "Statistics",
+      active: pathname === `/${params.restaurantId}/statistics`,
+    },
   ];
 
   return (

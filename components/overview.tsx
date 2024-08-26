@@ -1,33 +1,64 @@
-"use client"
+"use client";
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface OverviewProps {
-  data: any[]
-};
+  data: any[];
+}
 
-export const Overview: React.FC<OverviewProps> = ({
-  data
-}) => {
+const chartConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig;
+
+export const Overview: React.FC<OverviewProps> = ({ data }) => {
   return (
-    <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data}>
+    <ChartContainer config={chartConfig} style={{ height: '350px', width: '100%'}}>
+      <BarChart
+        accessibilityLayer
+        data={data}
+        margin={{
+          top: 20,
+        }}
+      >
+        <CartesianGrid vertical={false} />
         <XAxis
           dataKey="name"
           stroke="#888888"
           fontSize={12}
           tickLine={false}
           axisLine={false}
+          tickMargin={10}
+          tickFormatter={(value) => value.slice(0, 3)}
         />
-        <YAxis
-          stroke="#888888"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => `₹${value}`}
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent hideLabel />}
         />
-        <Bar dataKey="total" fill="#3498db" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="total" fill="#3498db" radius={8}>
+          <LabelList
+            position="top"
+            offset={12}
+            className="fill-foreground"
+            fontSize={12}
+          />
+        </Bar>
       </BarChart>
-    </ResponsiveContainer>
-  )
+    </ChartContainer>
+  );
 };

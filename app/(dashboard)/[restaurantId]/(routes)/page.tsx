@@ -1,4 +1,9 @@
-import { CalendarCheck, CreditCard, IndianRupee, MenuSquare } from "lucide-react";
+import {
+  CalendarCheck,
+  CreditCard,
+  IndianRupee,
+  MenuSquare,
+} from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { Overview } from "@/components/overview";
@@ -10,6 +15,7 @@ import { getGraphRevenue } from "@/actions/get-graph-revenue";
 import { getStockCount } from "@/actions/get-stock-count";
 import { formatter } from "@/lib/utils";
 import { getDailyRevenue } from "@/actions/get-daily-revenue";
+import { getDailySales } from "@/actions/get-daily-sales";
 
 interface DashboardPageProps {
   params: {
@@ -23,6 +29,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
   const salesCount = await getSalesCount(params.restaurantId);
   const stockCount = await getStockCount(params.restaurantId);
   const dailyRevenue = await getDailyRevenue(params.restaurantId);
+  const dailySales = await getDailySales(params.restaurantId);
 
   return (
     <div className="flex-col">
@@ -45,6 +52,26 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Daily Sales</CardTitle>
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">+{dailySales}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Menu items
+              </CardTitle>
+              <MenuSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stockCount}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Lifetime Revenue
               </CardTitle>
@@ -58,22 +85,11 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Sales</CardTitle>
+              <CardTitle className="text-sm font-medium">Lifetime Sales</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+{salesCount}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Menu items
-              </CardTitle>
-              <MenuSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stockCount}</div>
             </CardContent>
           </Card>
         </div>
