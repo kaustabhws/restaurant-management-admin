@@ -81,11 +81,11 @@ export async function DELETE(
     }
 
     if (!params.resId) {
-      return new NextResponse("Restaurant id id is required", { status: 400 });
+      return new NextResponse("Restaurant id is required", { status: 400 });
     }
 
     if (!params.orderId) {
-      return new NextResponse("Order id id is required", { status: 400 });
+      return new NextResponse("Order id is required", { status: 400 });
     }
 
     const restaurantByUserId = await prismadb.restaurants.findFirst({
@@ -95,16 +95,30 @@ export async function DELETE(
       },
     });
 
-    
     if (!restaurantByUserId) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
-    
-    const order = await prismadb.orders.deleteMany({
+
+    // Delete associated order items first
+    await prismadb.orderItems.deleteMany({
       where: {
-        id: params.orderId
-      }
-    })
+        orderId: params.orderId,
+      },
+    });
+
+    // Delete associated bill
+    await prismadb.bill.deleteMany({
+      where: {
+        orderId: params.orderId,
+      },
+    });
+
+    // Then delete the order
+    const order = await prismadb.orders.delete({
+      where: {
+        id: params.orderId,
+      },
+    });
 
     return NextResponse.json(order);
 

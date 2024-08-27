@@ -30,6 +30,7 @@ const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
       .join(", "),
     amount: item.amount,
     isPaid: item.isPaid,
+    tableNo: item.tableNo,
     createdAt: format(item.createdAt, "MMMM do, yyyy"),
   }));
 

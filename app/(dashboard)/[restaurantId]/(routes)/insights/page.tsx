@@ -1,4 +1,4 @@
-import { getWeeklyRevenue } from "@/actions/get-weekly-graph-revenue";
+import React, { lazy, Suspense } from "react";
 import {
   getAverageOrderValue,
   getHighestBillAmount,
@@ -9,7 +9,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import WeeklyOverview from "@/components/weekly-overview";
+const WeeklyOverview = lazy(() => import("./_components/weekly-overview"));
 import { IndianRupee, Table, TrendingUp } from "lucide-react";
 
 interface InsightsPageProps {
@@ -26,19 +26,6 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
     await getAverageOrderValue(params.restaurantId)
   ).toFixed(2);
   const mostPopularTable = await getMostPopularTable(params.restaurantId);
-
-  const graphRevenue = await getWeeklyRevenue(
-    params.restaurantId,
-    new Date().getMonth()
-  );
-
-  const getMonthName = (monthIndex: number): string => {
-    const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-    return months[monthIndex];
-  };
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 max-[430px]:px-2">
@@ -132,15 +119,9 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
         </Card>
       </div>
       <div>
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Weekly Sales Overview</CardTitle>
-            <CardTitle className='text-lg font-normal text-muted-foreground'>{getMonthName(new Date().getMonth())} Report</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <WeeklyOverview data={graphRevenue} />
-          </CardContent>
-        </Card>
+        <Suspense>
+          <WeeklyOverview resId={params.restaurantId} />
+        </Suspense>
       </div>
     </div>
   );

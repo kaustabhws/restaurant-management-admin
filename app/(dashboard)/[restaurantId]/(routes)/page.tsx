@@ -1,3 +1,4 @@
+import React, { lazy, Suspense } from "react";
 import {
   CalendarCheck,
   CreditCard,
@@ -6,7 +7,6 @@ import {
 } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
-import { Overview } from "@/components/overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { getTotalRevenue } from "@/actions/get-total-revenue";
@@ -16,6 +16,7 @@ import { getStockCount } from "@/actions/get-stock-count";
 import { formatter } from "@/lib/utils";
 import { getDailyRevenue } from "@/actions/get-daily-revenue";
 import { getDailySales } from "@/actions/get-daily-sales";
+const Overview = lazy(() => import("@/components/overview"));
 
 interface DashboardPageProps {
   params: {
@@ -85,7 +86,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Lifetime Sales</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Lifetime Sales
+              </CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -98,7 +101,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
             <CardTitle>Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <Overview data={graphRevenue} />
+            <Suspense>
+              <Overview data={graphRevenue} />
+            </Suspense>
           </CardContent>
         </Card>
       </div>

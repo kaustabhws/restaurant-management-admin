@@ -6,7 +6,6 @@ import {
   CartesianGrid,
   LabelList,
   XAxis,
-  YAxis,
 } from "recharts";
 import {
   ChartConfig,
@@ -26,7 +25,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const Overview: React.FC<OverviewProps> = ({ data }) => {
+const Overview: React.FC<OverviewProps> = ({ data }) => {
   return (
     <ChartContainer config={chartConfig} style={{ height: '350px', width: '100%'}}>
       <BarChart
@@ -50,7 +49,7 @@ export const Overview: React.FC<OverviewProps> = ({ data }) => {
           cursor={false}
           content={<ChartTooltipContent hideLabel />}
         />
-        <Bar dataKey="total" fill="#3498db" radius={8}>
+        <Bar dataKey="total" fill="var(--color-desktop)" radius={8}>
           <LabelList
             position="top"
             offset={12}
@@ -62,3 +61,5 @@ export const Overview: React.FC<OverviewProps> = ({ data }) => {
     </ChartContainer>
   );
 };
+
+export default Overview;
