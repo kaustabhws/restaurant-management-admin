@@ -23,17 +23,13 @@ type GraphData = {
 };
 
 const chartConfig = {
-  views: {
-    label: "Page Views",
+  total: {
+    label: "Sales",
   },
-  desktop: {
-    label: "Desktop",
+  date: {
+    label: "Date",
     color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
+  }
 } satisfies ChartConfig;
 
 const DailySalesOverview: React.FC<DailySalesOverviewProps> = ({ resId }) => {
@@ -128,7 +124,7 @@ const DailySalesOverview: React.FC<DailySalesOverviewProps> = ({ resId }) => {
                 content={
                   <ChartTooltipContent
                     className="w-[150px]"
-                    nameKey="views"
+                    nameKey="total"
                     labelFormatter={(value) => {
                       return new Date(value).toLocaleDateString("en-US", {
                         month: "short",
@@ -142,7 +138,7 @@ const DailySalesOverview: React.FC<DailySalesOverviewProps> = ({ resId }) => {
               <Bar
                 dataKey="total"
                 layout="vertical"
-                fill="var(--color-desktop)"
+                fill="var(--color-date)"
               ></Bar>
             </BarChart>
           </ChartContainer>

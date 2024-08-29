@@ -28,9 +28,10 @@ const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
     menuItems: item.orderItems
       .map((orderItem) => orderItem.menuItem.name)
       .join(", "),
+    orderType: item.orderType,
     amount: item.amount,
     isPaid: item.isPaid,
-    tableNo: item.tableNo,
+    tableNo: item.tableNo ?? '',
     createdAt: format(item.createdAt, "MMMM do, yyyy"),
   }));
 

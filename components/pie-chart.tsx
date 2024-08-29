@@ -31,7 +31,11 @@ const generateColor = (index: number) => {
   return `hsl(${hue}, 70%, 50%)`;
 };
 
-const PieChartComponent: React.FC<BestsellingItemsProps> = ({ data, description, title }) => {
+const PieChartComponent: React.FC<BestsellingItemsProps> = ({
+  data,
+  description,
+  title,
+}) => {
   const chartData = useMemo(() => {
     return data.map((item, index) => ({
       ...item,
@@ -59,31 +63,37 @@ const PieChartComponent: React.FC<BestsellingItemsProps> = ({ data, description,
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              content={
-                <ChartTooltipContent nameKey="totalQuantitySold" hideLabel />
-              }
-            />
-            <Pie
-              data={chartData}
-              dataKey="totalQuantitySold"
-              nameKey="itemName"
-              labelLine={false}
-            />
-            <ChartLegend
-              content={<ChartLegendContent nameKey="itemName" />}
-              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-            />
-          </PieChart>
-        </ChartContainer>
+        {chartData.length > 0 ? (
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[300px]"
+          >
+            <PieChart>
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent nameKey="totalQuantitySold" hideLabel />
+                }
+              />
+              <Pie
+                data={chartData}
+                dataKey="totalQuantitySold"
+                nameKey="itemName"
+                labelLine={false}
+              />
+              <ChartLegend
+                content={<ChartLegendContent nameKey="itemName" />}
+                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+              />
+            </PieChart>
+          </ChartContainer>
+        ) : (
+          <div className="h-[300px] flex items-center justify-center">
+            <p className='text-red-600 text-lg'>No Data Available</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
-}
+};
 
 export default PieChartComponent;

@@ -20,6 +20,7 @@ interface InsightsPageProps {
 
 const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
   const mostOrderedFood = await getMostOrderedFood(params.restaurantId);
+  console.log(mostOrderedFood);
   const highestRevenueFood = await getHighestRevenueFood(params.restaurantId);
   const highestBillAmount = await getHighestBillAmount(params.restaurantId);
   const avgOrderValue = (
@@ -46,10 +47,16 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
           </CardHeader>
           <CardContent>
             <div className="text-lg font-medium flex flex-col mt-2">
-              <p>{mostOrderedFood?.menuItem?.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {mostOrderedFood?._sum?.quantity} orders
-              </p>
+              {mostOrderedFood ? (
+                <React.Fragment>
+                  <p>{mostOrderedFood?.menuItem?.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {mostOrderedFood?._sum?.quantity} orders
+                  </p>
+                </React.Fragment>
+              ) : (
+                <p className="text-red-600">No Data Available</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -62,10 +69,16 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
           </CardHeader>
           <CardContent>
             <div className="text-lg font-medium flex flex-col mt-2">
-              <p>{highestRevenueFood?.menuItem?.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {highestRevenueFood?._sum?.quantity} orders
-              </p>
+              {highestRevenueFood ? (
+                <React.Fragment>
+                  <p>{highestRevenueFood?.menuItem?.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {highestRevenueFood?._sum?.quantity} orders
+                  </p>
+                </React.Fragment>
+              ) : (
+                <p className="text-red-600">No Data Available</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -79,8 +92,14 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
           <CardContent>
             <div className="text-lg font-medium flex flex-col mt-2">
               <p className="flex items-center">
-                <IndianRupee size={20} />
-                {highestBillAmount?.amount}
+                {highestBillAmount ? (
+                  <React.Fragment>
+                    <IndianRupee size={20} />
+                    {highestBillAmount?.amount}
+                  </React.Fragment>
+                ) : (
+                  <p className="text-red-600">No Data Available</p>
+                )}
               </p>
             </div>
           </CardContent>
@@ -95,8 +114,14 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
           <CardContent>
             <div className="text-lg font-medium flex flex-col mt-2">
               <p className="flex items-center">
-                <IndianRupee size={20} />
-                {avgOrderValue}
+                {parseInt(avgOrderValue) === 0 ? (
+                  <p className="text-red-600">No Data Available</p>
+                ) : (
+                  <React.Fragment>
+                    <IndianRupee size={20} />
+                    {parseInt(avgOrderValue)}
+                  </React.Fragment>
+                )}
               </p>
             </div>
           </CardContent>
@@ -110,10 +135,16 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
           </CardHeader>
           <CardContent>
             <div className="text-lg font-medium flex flex-col mt-2">
-              <p>{mostPopularTable?.table?.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {mostPopularTable?.count} bookings
-              </p>
+              {mostPopularTable ? (
+                <React.Fragment>
+                  <p>{mostPopularTable?.table?.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {mostPopularTable?.count} bookings
+                  </p>
+                </React.Fragment>
+              ) : (
+                <p className="text-red-600">No Data Available</p>
+              )}
             </div>
           </CardContent>
         </Card>

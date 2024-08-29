@@ -56,8 +56,8 @@ model TempOrders {
   id         String           @id @default(uuid())
   resId      String
   restaurant Restaurants      @relation("RestaurantToTempOrder", fields: [resId], references: [id])
-  tableId    String
-  table      Table            @relation(fields: [tableId], references: [id])
+  tableId    String?
+  table      Table?            @relation(fields: [tableId], references: [id])
   orderItems TempOrderItems[]
   amount     Float
   isPaid     Boolean
@@ -84,7 +84,8 @@ model Orders {
   id         String       @id @default(uuid())
   slNo       String          
   resId      String
-  tableNo    String
+  tableNo    String?
+  orderType  OrderType
   restaurant Restaurants  @relation("RestaurantToOrder", fields: [resId], references: [id])
   orderItems OrderItems[]
   bill       Bill[]
@@ -122,4 +123,9 @@ model Bill {
 
   @@index([orderId])
   @@index([resId])
+}
+
+enum OrderType {
+  DINE_IN
+  TAKE_AWAY
 }

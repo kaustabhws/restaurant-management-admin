@@ -138,7 +138,7 @@ const WeeklyOverview: React.FC<WeeklyOverviewProps> = ({ resId }) => {
                 radius={4}
               >
                 <LabelList
-                  dataKey="week"
+                  dataKey="name"
                   position="insideLeft"
                   offset={8}
                   className="fill-[--color-label]"

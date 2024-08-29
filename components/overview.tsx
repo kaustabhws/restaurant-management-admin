@@ -6,6 +6,7 @@ import {
   CartesianGrid,
   LabelList,
   XAxis,
+  YAxis,
 } from "recharts";
 import {
   ChartConfig,
@@ -44,6 +45,14 @@ const Overview: React.FC<OverviewProps> = ({ data }) => {
           axisLine={false}
           tickMargin={10}
           tickFormatter={(value) => value.slice(0, 3)}
+        />
+        <YAxis
+          dataKey="total"
+          stroke="#888888"
+          fontSize={12}
+          tickLine={false}
+          axisLine={false}
+          tickMargin={10}
         />
         <ChartTooltip
           cursor={false}

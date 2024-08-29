@@ -42,7 +42,8 @@ interface Order {
   id: string;
   slNo: string;
   resId: string;
-  tableNo: string;
+  tableNo: string | null;
+  orderType: string;
   amount: number;
   isPaid: boolean;
   bill: BillItem[];
@@ -93,12 +94,13 @@ const BillContent: React.FC<BillContentProps> = ({ restaurant, order }) => {
           </CardTitle>
         </CardHeader>
         <CardHeader>
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <div className="flex flex-col text-muted-foreground">
               <CardTitle className="text-base">Order: #{order?.slNo}</CardTitle>
               <CardTitle className="text-base">
                 Table No: {order?.tableNo}
               </CardTitle>
+              <p className='text-muted-foreground text-sm'>{order?.orderType === "DINE_IN" ? "Dine In Order" : "Take Away Order"}</p>
             </div>
             <CardTitle className="text-lg">
               {order?.isPaid ? (

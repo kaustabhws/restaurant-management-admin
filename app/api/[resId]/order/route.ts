@@ -29,7 +29,7 @@ export async function POST(
       return new NextResponse("Table id is required", { status: 400 });
     }
 
-    if(!resultData.menuItems || resultData.menuItems.length === 0) {
+    if (!resultData.menuItems || resultData.menuItems.length === 0) {
       return new NextResponse("Menu items are required", { status: 400 });
     }
 
@@ -69,9 +69,7 @@ export async function POST(
       },
     });
 
-    if (!tableName) {
-      return new NextResponse("TableId not received", { status: 403 });
-    }
+    const orderType = tableName ? "DINE_IN" : "TAKE_AWAY";
 
     const totalAmount = resultData.totalAmount;
 
@@ -79,7 +77,8 @@ export async function POST(
       data: {
         resId: params.resId,
         slNo: slNo,
-        tableNo: tableName.name,
+        tableNo: tableName ? tableName.name : null,
+        orderType: orderType,
         isPaid: false,
         amount: totalAmount,
         bill: {
@@ -108,30 +107,32 @@ export async function POST(
       },
     });
 
-    await prismadb.tempOrderItems.deleteMany({
-      where: {
-        orderId: resultData.menuItems.orderId,
-      },
-    });
+    if (tableName) {
+      await prismadb.tempOrderItems.deleteMany({
+        where: {
+          orderId: resultData.menuItems.orderId,
+        },
+      });
 
-    await prismadb.tempOrders.deleteMany({
-      where: {
-        tableId: resultData.tableId,
-      },
-    });
+      await prismadb.tempOrders.deleteMany({
+        where: {
+          tableId: resultData.tableId,
+        },
+      });
 
-    await prismadb.table.update({
-      where: {
-        id: resultData.tableId,
-      },
-      data: {
-        status: "Available",
-      },
-    });
+      await prismadb.table.update({
+        where: {
+          id: resultData.tableId,
+        },
+        data: {
+          status: "Available",
+        },
+      });
+    }
 
     return NextResponse.json(order);
   } catch (error) {
-    console.log("[TABLES_POST]", error);
-    return new NextResponse("Internal Server error", { status: 500 });
+    console.log("[ORDER_POST]", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

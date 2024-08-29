@@ -10,6 +10,7 @@ export type OrderColumn = {
   isPaid: boolean;
   tableNo: string;
   amount: Number;
+  orderType: string;
   menuItems: string;
   createdAt: string;
 };
@@ -24,8 +25,17 @@ export const columns: ColumnDef<OrderColumn>[] = [
     header: "Ordered Items",
   },
   {
-    accessorKey: 'tableNo',
-    header: 'Table No'
+    accessorKey: "orderType",
+    header: "Order Type",
+    cell: ({ row }) => (
+      <span>
+        {row.original.orderType === "DINE_IN" ? "Dine In" : "Take Away"}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "tableNo",
+    header: "Table No",
   },
   {
     accessorKey: "amount",
