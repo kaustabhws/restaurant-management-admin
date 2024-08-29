@@ -141,7 +141,7 @@ export const getMostPopularTable = async (restaurantId: string) => {
 
   const popularTable = await prismadb.table.findFirst({
     where: {
-      name: popularTableName,
+      name: popularTableName?.toString(),
       resId: restaurantId, 
     },
   });
