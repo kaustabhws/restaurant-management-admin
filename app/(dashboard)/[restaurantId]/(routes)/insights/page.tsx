@@ -20,7 +20,6 @@ interface InsightsPageProps {
 
 const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
   const mostOrderedFood = await getMostOrderedFood(params.restaurantId);
-  console.log(mostOrderedFood);
   const highestRevenueFood = await getHighestRevenueFood(params.restaurantId);
   const highestBillAmount = await getHighestBillAmount(params.restaurantId);
   const avgOrderValue = (

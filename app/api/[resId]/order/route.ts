@@ -1,5 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
+import { OrderType } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 function generateRandomString(length: number) {
@@ -26,7 +27,7 @@ export async function POST(
     }
 
     if (!resultData) {
-      return new NextResponse("Table id is required", { status: 400 });
+      return new NextResponse("Order data is required", { status: 400 });
     }
 
     if (!resultData.menuItems || resultData.menuItems.length === 0) {
@@ -63,11 +64,16 @@ export async function POST(
 
     slNo += generateRandomString(5);
 
-    const tableName = await prismadb.table.findFirst({
-      where: {
-        id: resultData.tableId,
-      },
-    });
+    let tableName = null;
+
+    // Check if it's a dine-in order
+    if (resultData.tableId) {
+      tableName = await prismadb.table.findFirst({
+        where: {
+          id: resultData.tableId,
+        },
+      });
+    }
 
     const orderType = tableName ? "DINE_IN" : "TAKE_AWAY";
 
@@ -78,7 +84,7 @@ export async function POST(
         resId: params.resId,
         slNo: slNo,
         tableNo: tableName ? tableName.name : null,
-        orderType: orderType,
+        orderType: orderType as OrderType,
         isPaid: false,
         amount: totalAmount,
         bill: {
@@ -107,6 +113,7 @@ export async function POST(
       },
     });
 
+    // If it's a dine-in order, clear the temp order and set the table to "Available"
     if (tableName) {
       await prismadb.tempOrderItems.deleteMany({
         where: {
@@ -126,6 +133,22 @@ export async function POST(
         },
         data: {
           status: "Available",
+        },
+      });
+    }
+
+    console.log(resultData.takeawayId)
+
+    if (resultData.takeawayId) {
+      await prismadb.tempOrderItems.deleteMany({
+        where: {
+          orderId: resultData.menuItems.orderId,
+        },
+      });
+
+      await prismadb.tempOrders.deleteMany({
+        where: {
+          takeawayId: resultData.takeawayId,
         },
       });
     }

@@ -36,6 +36,9 @@ export const columns: ColumnDef<OrderColumn>[] = [
   {
     accessorKey: "tableNo",
     header: "Table No",
+    cell: ({ row }) => (
+      <span>{!row.original.tableNo ? "N/A" : row.original.tableNo}</span>
+    ),
   },
   {
     accessorKey: "amount",

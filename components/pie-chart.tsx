@@ -45,7 +45,7 @@ const PieChartComponent: React.FC<BestsellingItemsProps> = ({
 
   const chartConfig: ChartConfig = useMemo(() => {
     const config: ChartConfig = {
-      totalQuantitySold: { label: "Sold" },
+      value: { label: "Sold" },
     };
     chartData.forEach((item) => {
       config[item.itemName] = {
@@ -71,12 +71,12 @@ const PieChartComponent: React.FC<BestsellingItemsProps> = ({
             <PieChart>
               <ChartTooltip
                 content={
-                  <ChartTooltipContent nameKey="totalQuantitySold" hideLabel />
+                  <ChartTooltipContent nameKey="value" hideLabel />
                 }
               />
               <Pie
                 data={chartData}
-                dataKey="totalQuantitySold"
+                dataKey="value"
                 nameKey="itemName"
                 labelLine={false}
               />

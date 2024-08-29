@@ -27,7 +27,7 @@ export const getTopSellingItems = async (restaurantId: string) => {
       });
       return {
         itemName: menuItem?.name || 'Unknown Item',
-        totalQuantitySold: item._sum?.quantity || 0,
+        value: item._sum?.quantity || 0,
       };
     })
   );

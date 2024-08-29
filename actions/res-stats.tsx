@@ -10,6 +10,7 @@ export const getMostOrderedFood = async (restaurantId: string) => {
     where: {
       orders: {
         resId: restaurantId,
+        isPaid: true
       },
     },
     orderBy: {
@@ -49,6 +50,7 @@ export const getHighestRevenueFood = async (restaurantId: string) => {
     where: {
       orders: {
         resId: restaurantId,
+        isPaid: true
       },
     },
   });
@@ -90,6 +92,7 @@ export const getHighestBillAmount = async (restaurantId: string) => {
   const highestBill = await prismadb.orders.findFirst({
     where: {
       resId: restaurantId,
+      isPaid: true,
     },
     orderBy: {
       amount: "desc",
@@ -104,6 +107,7 @@ export const getAverageOrderValue = async (restaurantId: string) => {
   const result = await prismadb.orders.aggregate({
     where: {
       resId: restaurantId,
+      isPaid: true,
     },
     _avg: {
       amount: true,
@@ -123,6 +127,7 @@ export const getMostPopularTable = async (restaurantId: string) => {
     },
     where: {
       resId: restaurantId,
+      isPaid: true,
     },
     orderBy: {
       _count: {

@@ -10,7 +10,7 @@ export async function POST(
     const { userId } = auth();
     const body = await req.json();
 
-    const { menuItem, quantity, tableId } = body;
+    const { menuItem, quantity, tableId, takeAwayId } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
@@ -20,8 +20,8 @@ export async function POST(
       return new NextResponse("Menu items are required", { status: 400 });
     }
 
-    if (!tableId) {
-      return new NextResponse("Table id are required", { status: 400 });
+    if (!tableId && !takeAwayId) {
+      return new NextResponse("Table/takeaway id are required", { status: 400 });
     }
 
     if (!quantity) {
@@ -56,7 +56,8 @@ export async function POST(
       data: {
         resId: params.resId,
         amount: amount*quantity,
-        tableId: tableId,
+        tableId: tableId ? tableId : null,
+        takeawayId: takeAwayId ? takeAwayId : null,
         isPaid: false,
         orderItems: {
           create: [

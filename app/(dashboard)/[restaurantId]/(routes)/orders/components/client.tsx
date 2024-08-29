@@ -17,6 +17,17 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
   const router = useRouter();
   const params = useParams();
 
+  function generateTakeawayId(length: number = 7) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "TA-";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  }
+  
+  const takeAwayId = generateTakeawayId();
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -25,7 +36,7 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
           description="Manage orders for your store"
         />
         <Button
-          onClick={() => router.push(`/${params.restaurantId}/take-away`)}
+          onClick={() => router.push(`/${params.restaurantId}/take-away/${takeAwayId}`)}
         >
           <Plus className="mr-2 h-4 w-4" />
           New Take Away

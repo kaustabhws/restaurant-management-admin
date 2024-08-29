@@ -24,7 +24,7 @@ export const getPopularDays = async (restaurantId: string) => {
     .slice(0, 4) // Get the top 4 days
     .map(([day, count]) => ({
       itemName: getDayName(parseInt(day)), // Convert day index to day name
-      totalQuantitySold: count,
+      value: count,
     }));
 
   return sortedDays;
