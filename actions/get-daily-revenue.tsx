@@ -4,7 +4,10 @@ export const getDailyRevenue = async (restaurantId: string) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const paidOrders = await prismadb.orders.findMany({
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  const paidOrdersToday = await prismadb.orders.findMany({
     where: {
       resId: restaurantId,
       isPaid: true,
@@ -14,9 +17,27 @@ export const getDailyRevenue = async (restaurantId: string) => {
     },
   });
 
-  const dailyRevenue = paidOrders.reduce((total, order) => {
+  const paidOrdersYesterday = await prismadb.orders.findMany({
+    where: {
+      resId: restaurantId,
+      isPaid: true,
+      createdAt: {
+        gte: yesterday,
+        lt: today,
+      },
+    },
+  });
+
+  const todayRevenue = paidOrdersToday.reduce((total, order) => {
     return total + order.amount;
   }, 0);
 
-  return dailyRevenue;
+  const yesterdayRevenue = paidOrdersYesterday.reduce((total, order) => {
+    return total + order.amount;
+  }, 0);
+
+  return {
+    todayRevenue,
+    yesterdayRevenue,
+  };
 };

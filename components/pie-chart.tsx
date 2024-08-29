@@ -19,13 +19,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-interface BestsellingItem {
-  itemName: string;
-  totalQuantitySold: number;
-}
-
 interface BestsellingItemsProps {
-  data: BestsellingItem[];
+  data: any[];
+  title: string;
+  description: string;
 }
 
 // Function to generate a color based on index
@@ -34,7 +31,7 @@ const generateColor = (index: number) => {
   return `hsl(${hue}, 70%, 50%)`;
 };
 
-export function BestsellingItems({ data }: BestsellingItemsProps) {
+const PieChartComponent: React.FC<BestsellingItemsProps> = ({ data, description, title }) => {
   const chartData = useMemo(() => {
     return data.map((item, index) => ({
       ...item,
@@ -58,8 +55,8 @@ export function BestsellingItems({ data }: BestsellingItemsProps) {
   return (
     <Card className="flex-1 max-[780px]:w-full">
       <CardHeader>
-        <CardTitle>Bestselling Items</CardTitle>
-        <CardDescription>Total Quantity Sold</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -89,4 +86,4 @@ export function BestsellingItems({ data }: BestsellingItemsProps) {
   );
 }
 
-export default BestsellingItems;
+export default PieChartComponent;

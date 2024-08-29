@@ -2,7 +2,8 @@ import React, { lazy, Suspense } from "react";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { getTopSellingItems } from "@/actions/get-bestselling-item";
-const BestsellingItems = lazy(() => import("./_components/bestselling-items"));
+import { getPopularDays } from "@/actions/get-popular-day";
+const PieChartComponent = lazy(() => import("@/components/pie-chart"));
 const DailySalesOverview = lazy(
   () => import("./_components/daily-sales-overview")
 );
@@ -15,6 +16,7 @@ interface StatisticsPageProps {
 
 const StatisticsPage: React.FC<StatisticsPageProps> = async ({ params }) => {
   const bestSellingItems = await getTopSellingItems(params.restaurantId);
+  const mostPopularDay = await getPopularDays(params.restaurantId);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 max-[430px]:px-2">
@@ -25,11 +27,24 @@ const StatisticsPage: React.FC<StatisticsPageProps> = async ({ params }) => {
         />
       </div>
       <Separator />
-      <div>
+      <div className='flex-1 flex flex-col gap-3'>
         <div className="flex items-center gap-2 max-[780px]:flex-col">
           <Suspense>
             <DailySalesOverview resId={params.restaurantId} />
-            <BestsellingItems data={bestSellingItems} />
+            <PieChartComponent
+              title="Bestselling Items"
+              description="Total Orders Sold"
+              data={bestSellingItems}
+            />
+          </Suspense>
+        </div>
+        <div>
+          <Suspense>
+            <PieChartComponent
+              title="Most Selling Days"
+              description="Total Orders Sold"
+              data={mostPopularDay}
+            />
           </Suspense>
         </div>
       </div>
