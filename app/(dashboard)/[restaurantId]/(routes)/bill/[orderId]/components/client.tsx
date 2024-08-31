@@ -1,10 +1,12 @@
 "use client";
 
+import MarkAsPaid from "@/components/mark-as-paid";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import axios from "axios";
-import { Ban, Check } from "lucide-react";
+import { Ban } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface BillClientProps {
@@ -18,25 +20,39 @@ export const BillClient: React.FC<BillClientProps> = ({
   orderId,
   paid,
 }) => {
+  const [paymentMode, setPaymentMode] = useState("Cash");
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
-  const submitPaid = async (isPaid: boolean) => {
-    await axios.patch(`/api/${resId}/order/${orderId}`, {
-      isPaid,
-    });
-    router.refresh();
-    toast.success(`Marked as ${isPaid ? "paid" : "unpaid"}`);
+  const submitPaid = async (isPaid: boolean, payMode: string) => {
+    try {
+      setLoading(true);
+      await axios.patch(`/api/${resId}/order/${orderId}`, {
+        isPaid,
+        payMode,
+      });
+      router.refresh();
+      toast.success(`Marked as ${isPaid ? "paid" : "unpaid"}`);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <CardFooter className="flex justify-center">
       {!paid ? (
-        <Button onClick={() => submitPaid(true)}>
-          <Check className="mr-2 h-4 w-4" />
-          Mark as paid
-        </Button>
+        <MarkAsPaid
+          loading={loading}
+          paymentMode={paymentMode}
+          setPaymentMode={setPaymentMode}
+          submitPaid={submitPaid}
+          ghost={false}
+        />
       ) : (
-        <Button onClick={() => submitPaid(false)}>
+        <Button onClick={() => submitPaid(false, "")}>
           <Ban className="mr-2 h-4 w-4" />
           Mark as unpaid
         </Button>

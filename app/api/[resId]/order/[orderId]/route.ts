@@ -32,7 +32,7 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { isPaid } = body;
+    const { isPaid, payMode } = body;
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -53,12 +53,17 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
+    if (isPaid && !payMode) {
+      return new NextResponse("Payment mode is required", { status: 400 });
+    }
+
     const order = await prismadb.orders.updateMany({
       where: {
         id: params.orderId,
       },
       data: {
         isPaid,
+        payMode,
       },
     });
 
@@ -121,7 +126,6 @@ export async function DELETE(
     });
 
     return NextResponse.json(order);
-
   } catch (error) {
     console.log("[ORDER_DELETE]", error);
     return new NextResponse("Internal server error", { status: 500 });

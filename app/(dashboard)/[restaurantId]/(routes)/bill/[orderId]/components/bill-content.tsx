@@ -43,6 +43,7 @@ interface Order {
   slNo: string;
   resId: string;
   tableNo: string | null;
+  payMode: string;
   orderType: string;
   amount: number;
   isPaid: boolean;
@@ -98,7 +99,7 @@ const BillContent: React.FC<BillContentProps> = ({ restaurant, order }) => {
             <div className="flex flex-col text-muted-foreground">
               <CardTitle className="text-base">Order: #{order?.slNo}</CardTitle>
               <CardTitle className="text-base">
-                Table No: {order?.tableNo}
+                {order?.tableNo && `Table No: ${order?.tableNo}` }
               </CardTitle>
               <p className='text-muted-foreground text-sm'>{order?.orderType === "DINE_IN" ? "Dine In Order" : "Take Away Order"}</p>
             </div>
@@ -112,6 +113,7 @@ const BillContent: React.FC<BillContentProps> = ({ restaurant, order }) => {
                   Not paid <X color="red" />
                 </div>
               )}
+              {order?.payMode && <p className='text-xs text-muted-foreground capitalize'>Via {order?.payMode}</p>}
             </CardTitle>
           </div>
           <CardDescription>

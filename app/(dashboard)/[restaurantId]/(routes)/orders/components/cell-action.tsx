@@ -15,6 +15,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
+import MarkAsPaid from "@/components/mark-as-paid";
 
 interface CellActionProps {
   data: OrderColumn;
@@ -24,6 +25,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   const params = useParams();
 
+  const [paymentMode, setPaymentMode] = useState("Cash");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -32,12 +34,20 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     toast.success("Menu ID copied to the clipboard");
   };
 
-  const submitPaid = async (isPaid: boolean) => {
-    await axios.patch(`/api/${params.restaurantId}/order/${data.id}`, {
-      isPaid,
-    });
-    router.refresh();
-    toast.success(`Marked as ${isPaid ? "paid" : "unpaid"}`);
+  const submitPaid = async (isPaid: boolean, payMode: string) => {
+    try {
+      setLoading(true);
+      await axios.patch(`/api/${params.restaurantId}/order/${data.id}`, {
+        isPaid,
+        payMode,
+      });
+      router.refresh();
+      toast.success(`Marked as ${isPaid ? "paid" : "unpaid"}`);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onDelete = async () => {
@@ -76,12 +86,15 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             Copy ID
           </DropdownMenuItem>
           {!data.isPaid ? (
-            <DropdownMenuItem onClick={() => submitPaid(true)}>
-              <Check className="mr-2 h-4 w-4" />
-              Mark as paid
-            </DropdownMenuItem>
+            <MarkAsPaid
+              loading={loading}
+              paymentMode={paymentMode}
+              setPaymentMode={setPaymentMode}
+              submitPaid={submitPaid}
+              ghost={true}
+            />
           ) : (
-            <DropdownMenuItem onClick={() => submitPaid(false)}>
+            <DropdownMenuItem onClick={() => submitPaid(false, "")}>
               <Ban className="mr-2 h-4 w-4" />
               Mark as unpaid
             </DropdownMenuItem>

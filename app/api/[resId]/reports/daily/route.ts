@@ -46,7 +46,8 @@ export async function GET(
 
     // Grouping the orders by day and summing the revenue
     for (const order of paidOrders) {
-      const day = order.createdAt.getDate(); // Get the day of the month
+      const localDate = new Date(order.createdAt);
+      const day = localDate.getDate(); // Get the day of the month
 
       // Adding the revenue for this order to the respective day
       dailyRevenue[day] = (dailyRevenue[day] || 0) + order.amount;
@@ -64,9 +65,9 @@ export async function GET(
     const year = new Date().getFullYear();
 
     for (let day = 1; day <= daysInMonth; day++) {
+      // Create a date string formatted as "YYYY-MM-DD" in the local timezone
       const formattedDate = new Date(year, month, day)
-        .toISOString()
-        .split("T")[0]; // Format as "YYYY-MM-DD"
+        .toLocaleDateString("en-CA"); // This ensures the date is formatted correctly for the graph
 
       graphData.push({
         date: formattedDate, // "YYYY-MM-DD"

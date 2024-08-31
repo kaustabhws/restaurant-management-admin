@@ -54,7 +54,7 @@ model Table {
 
 model TempOrders {
   id         String           @id @default(uuid())
-  takeawayId String?          
+  takeawayId String?
   resId      String
   restaurant Restaurants      @relation("RestaurantToTempOrder", fields: [resId], references: [id])
   tableId    String?
@@ -87,6 +87,7 @@ model Orders {
   resId      String
   tableNo    String?
   orderType  OrderType
+  payMode    String       @default("")
   restaurant Restaurants  @relation("RestaurantToOrder", fields: [resId], references: [id])
   orderItems OrderItems[]
   bill       Bill[]
