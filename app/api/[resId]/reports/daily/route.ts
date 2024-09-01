@@ -65,9 +65,8 @@ export async function GET(
     const year = new Date().getFullYear();
 
     for (let day = 1; day <= daysInMonth; day++) {
-      // Create a date string formatted as "YYYY-MM-DD" in the local timezone
       const formattedDate = new Date(year, month, day)
-        .toLocaleDateString("en-CA"); // This ensures the date is formatted correctly for the graph
+        .toLocaleDateString("en-CA");
 
       graphData.push({
         date: formattedDate, // "YYYY-MM-DD"

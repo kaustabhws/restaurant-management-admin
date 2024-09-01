@@ -114,7 +114,7 @@ export const TableForm: React.FC<TableFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <div className="grid grid-cols-3 gap-8">
+          <div className="flex items-center gap-10 flex-wrap">
             <FormField
               control={form.control}
               name="menuItem"

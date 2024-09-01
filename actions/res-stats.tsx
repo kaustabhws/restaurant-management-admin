@@ -118,16 +118,18 @@ export const getAverageOrderValue = async (restaurantId: string) => {
 };
 
 // Most popular table
-
 export const getMostPopularTable = async (restaurantId: string) => {
   const tablePopularity = await prismadb.orders.groupBy({
-    by: ['tableNo'], // Group by table name
+    by: ['tableNo'], // Group by table number (name)
     _count: {
       id: true, // Count the number of orders for each table
     },
     where: {
       resId: restaurantId,
       isPaid: true,
+      tableNo: {
+        not: null, // Ensure we're only considering orders with a table number
+      },
     },
     orderBy: {
       _count: {
@@ -150,6 +152,10 @@ export const getMostPopularTable = async (restaurantId: string) => {
       resId: restaurantId, 
     },
   });
+
+  if (!popularTable) {
+    return null; // Table not found
+  }
 
   return {
     table: popularTable,

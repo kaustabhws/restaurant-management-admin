@@ -34,7 +34,7 @@ const TakeAwayPage: React.FC<TakeAwayPageProps> = async ({ params }) => {
 
   return (
     <div className="flex-col">
-      <div className="flex-1 space-y-4 p-8 pt-4">
+      <div className="flex-1 space-y-4 p-8 pt-4 max-[425px]:px-3">
         <TableForm takeAwayId={params.takeawayId} menu={menu} temporder={tempOrder} />
       </div>
     </div>

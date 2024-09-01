@@ -28,7 +28,7 @@ const TablePage = async ({
 
     return (
         <div className="flex-col">
-            <div className="flex-1 space-y-4 p-8 pt-6">
+            <div className="flex-1 space-y-4 p-8 pt-6 max-[425px]:px-3">
                 <TableClient data={formattedMenu} />
             </div>
         </div>

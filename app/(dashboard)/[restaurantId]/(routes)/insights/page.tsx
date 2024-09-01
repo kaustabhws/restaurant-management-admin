@@ -28,7 +28,7 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
   const mostPopularTable = await getMostPopularTable(params.restaurantId);
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6 max-[430px]:px-2">
+    <div className="flex-1 space-y-4 p-8 pt-6 max-[425px]:px-3 max-[430px]:px-2">
       <div className="flex flex-col">
         <Heading
           title="Restaurant Insights"

@@ -37,6 +37,7 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
         />
         <Button
           onClick={() => router.push(`/${params.restaurantId}/take-away/${takeAwayId}`)}
+          className='max-[425px]:px-2'
         >
           <Plus className="mr-2 h-4 w-4" />
           New Take Away

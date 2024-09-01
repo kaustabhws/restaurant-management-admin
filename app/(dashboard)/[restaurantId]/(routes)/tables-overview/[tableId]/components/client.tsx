@@ -68,7 +68,7 @@ export const OrderClient: React.FC<OrderClientProps> = ({
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between max-[400px]:flex-col max-[400px]:gap-3 max-[400px]:items-start">
         <Heading
           title={`Foods ordered (${data.length})`}
           description="List of ordered foods"
