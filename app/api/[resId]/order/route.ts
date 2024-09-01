@@ -14,7 +14,8 @@ function generateRandomString(length: number) {
 
 async function findOrCreateCustomer(
   contactMethod: "phone" | "email" | null | undefined,
-  contact: string | null | undefined
+  contact: string | null | undefined,
+  resId: string
 ) {
   // If contactMethod or contact is missing, return null
   if (!contactMethod || !contact) {
@@ -31,6 +32,7 @@ async function findOrCreateCustomer(
   if (!customerData) {
     customerData = await prismadb.customer.create({
       data: {
+        resId: resId,
         [contactMethod]: contact,
         loyaltyPoints: 0, // will be updated after bill is paid [/order/[orderId]/route.ts]
         totalSpent: 0, // will be updated after bill is paid [/order/[orderId]/route.ts]
@@ -112,6 +114,7 @@ export async function POST(
     const customerData = await findOrCreateCustomer(
       customer.contactMethod,
       customer.contact,
+      params.resId
     );
 
     const order = await prismadb.orders.create({
