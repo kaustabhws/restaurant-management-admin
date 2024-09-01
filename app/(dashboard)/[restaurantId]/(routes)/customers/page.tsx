@@ -6,12 +6,12 @@ import { CustomerColumn } from "./components/columns";
 const MenusPage = async ({
     params
 }: {
-    params: { customerId: string }
+    params: { restaurantId: string }
 }) => {
 
     const customers = await prismadb.customer.findMany({
         where : {
-            id: params.customerId
+            resId: params.restaurantId
         },
         orderBy: {
             createdAt: 'desc'

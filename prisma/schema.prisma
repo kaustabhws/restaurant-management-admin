@@ -17,6 +17,7 @@ model Restaurants {
   orders     Orders[]     @relation("RestaurantToOrder")
   temporders TempOrders[] @relation("RestaurantToTempOrder")
   bills      Bill[]       @relation("RestaurantToBill")
+  customers  Customer[]   @relation("RestaurantToCustimer")
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 }
@@ -136,13 +137,17 @@ enum OrderType {
 }
 
 model Customer {
-  id            String   @id @default(uuid())
-  email         String?  @unique
-  phone         String?  @unique
+  id            String      @id @default(uuid())
+  email         String?     @unique
+  phone         String?     @unique
   loyaltyPoints Int
   totalSpent    Float
   orders        Orders[]
   bills         Bill[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  resId         String
+  restaurant    Restaurants @relation("RestaurantToCustimer", fields: [resId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([resId])
 }
