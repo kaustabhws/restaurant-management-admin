@@ -61,12 +61,12 @@ const LoyaltyPayment: React.FC<LoyaltyPaymentProps> = ({ customer, order }) => {
         </span>
       </div>
       <Button
-        disabled={customer.loyaltyPoints !== order.amount || loading}
+        disabled={customer.loyaltyPoints < order.amount || loading}
         onClick={() => submitOrder(true, "Loyalty Points")}
       >
         {loading ? (
           <div className="flex items-center gap-2">
-            <LoaderCircle className='animate-spin' /> Paying...
+            <LoaderCircle className="animate-spin" /> Paying...
           </div>
         ) : (
           "Pay using Loyalty"
