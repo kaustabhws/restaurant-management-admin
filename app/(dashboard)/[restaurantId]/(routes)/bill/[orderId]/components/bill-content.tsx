@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -23,6 +24,7 @@ import { Button } from "@/components/ui/button";
 
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
+import LoyaltyPayment from "@/components/loyalty-payment";
 
 interface Restaurant {
   id: string;
@@ -50,12 +52,26 @@ interface Order {
   bill: BillItem[];
 }
 
+interface Customer {
+  id: string;
+  email: string | null;
+  phone: string | null;
+  loyaltyPoints: number;
+  totalSpent: number;
+}
+
 interface BillContentProps {
   restaurant?: Restaurant | null;
   order?: Order | null;
+  customer?: Customer | null;
+  loyaltyPoints?: number | undefined;
 }
 
-const BillContent: React.FC<BillContentProps> = ({ restaurant, order }) => {
+const BillContent: React.FC<BillContentProps> = ({
+  restaurant,
+  order,
+  customer,
+}) => {
   const totalQuantity = order?.bill
     .map((item) => item.quantity)
     .reduce((acc, quantity) => acc + quantity, 0);
@@ -99,21 +115,35 @@ const BillContent: React.FC<BillContentProps> = ({ restaurant, order }) => {
             <div className="flex flex-col text-muted-foreground">
               <CardTitle className="text-base">Order: #{order?.slNo}</CardTitle>
               <CardTitle className="text-base">
-                {order?.tableNo && `Table No: ${order?.tableNo}` }
+                {order?.tableNo && `Table No: ${order?.tableNo}`}
               </CardTitle>
-              <p className='text-muted-foreground text-sm'>{order?.orderType === "DINE_IN" ? "Dine In Order" : "Take Away Order"}</p>
+              <p className="text-muted-foreground text-sm">
+                {order?.orderType === "DINE_IN"
+                  ? "Dine In Order"
+                  : "Take Away Order"}
+              </p>
             </div>
             <CardTitle className="text-lg">
               {order?.isPaid ? (
-                <div className="flex items-center gap-2">
+                <div
+                  className="flex items-center gap-2"
+                  style={{ color: "green" }}
+                >
                   Paid <CheckCheck color="green" />
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
+                <div
+                  className="flex items-center gap-2"
+                  style={{ color: "red" }}
+                >
                   Not paid <X color="red" />
                 </div>
               )}
-              {order?.payMode && <p className='text-xs text-muted-foreground capitalize'>Via {order?.payMode}</p>}
+              {order?.payMode && (
+                <p className="text-xs text-muted-foreground capitalize">
+                  Via {order?.payMode}
+                </p>
+              )}
             </CardTitle>
           </div>
           <CardDescription>
@@ -169,6 +199,7 @@ const BillContent: React.FC<BillContentProps> = ({ restaurant, order }) => {
           </form>
         </CardContent>
       </Card>
+      <div className='mt-4'>{customer && order && <LoyaltyPayment customer={customer} order={order} />}</div>
     </div>
   );
 };

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import CustomerDetailsSubmit from "@/components/customer-details";
+import { useState } from "react";
 
 interface OrderClientProps {
   data: OrderColumn[];
@@ -26,6 +28,9 @@ export const OrderClient: React.FC<OrderClientProps> = ({
 }) => {
   const params = useParams();
   const router = useRouter();
+
+  const [contact, setContact] = useState("");
+  const [contactMethod, setContactMethod] = useState("phone");
 
   const resultData = {
     resultData: {
@@ -49,6 +54,10 @@ export const OrderClient: React.FC<OrderClientProps> = ({
         0
       ),
     },
+    customer : {
+      contact,
+      contactMethod
+    }
   };
 
   const submitOrder = async () => {
@@ -82,10 +91,14 @@ export const OrderClient: React.FC<OrderClientProps> = ({
           title={`Foods ordered (${data.length})`}
           description="List of ordered foods"
         />
-        <Button disabled={loading} type="button" onClick={submitOrder}>
-          Submit order
-          <Send className="ml-2 h-4 w-4" />
-        </Button>
+        <CustomerDetailsSubmit
+          loading={loading}
+          submitOrder={submitOrder}
+          contact={contact}
+          setContact={setContact}
+          contactMethod={contactMethod}
+          setContactMethod={setContactMethod}
+        />
       </div>
       <Separator />
       <DataTable searchKey="orderItems" columns={columns} data={data} />

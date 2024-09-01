@@ -1,6 +1,4 @@
 import prismadb from "@/lib/prismadb";
-import { BillClient } from "./components/client";
-import { CheckCheck, X } from "lucide-react";
 import BillContent from "./components/bill-content";
 
 const CardWithForm = async ({ params }: { params: { orderId: string } }) => {
@@ -20,9 +18,15 @@ const CardWithForm = async ({ params }: { params: { orderId: string } }) => {
     },
   });
 
+  const customer = await prismadb.customer.findUnique({
+    where: {
+      id: order?.customerId || "",
+    },
+  })
+
   return (
     <div className="min-h-screen flex items-center justify-center flex-col">
-      <BillContent restaurant={restaurant} order={order} />
+      <BillContent restaurant={restaurant} order={order} customer={customer} />
     </div>
   );
 };

@@ -2,6 +2,10 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
+function countPoints(totalAmount: number) {
+  return Math.floor((totalAmount * 5) / 100);
+}
+
 export async function GET(
   req: Request,
   { params }: { params: { orderId: string } }
@@ -53,11 +57,21 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
+    const orderById = await prismadb.orders.findFirst({
+      where: {
+        id: params.orderId,
+      },
+    });
+
+    if(orderById?.payMode == 'Loyalty Points') {
+      return new NextResponse("Order paid with loyalty points cannot be updated", { status: 400 });
+    }
+
     if (isPaid && !payMode) {
       return new NextResponse("Payment mode is required", { status: 400 });
     }
 
-    const order = await prismadb.orders.updateMany({
+    const order = await prismadb.orders.update({
       where: {
         id: params.orderId,
       },
@@ -67,9 +81,35 @@ export async function PATCH(
       },
     });
 
+    if (!order.customerId) {
+      return NextResponse.json(order);
+    }
+
+    if (isPaid) {
+      await prismadb.customer.update({
+        where: {
+          id: order.customerId,
+        },
+        data: {
+          loyaltyPoints: { increment: countPoints(order.amount) },
+          totalSpent: { increment: order.amount },
+        },
+      });
+    } else if (!isPaid) {
+      await prismadb.customer.update({
+        where: {
+          id: order.customerId!,
+        },
+        data: {
+          loyaltyPoints: { decrement: countPoints(order.amount) },
+          totalSpent: { decrement: order.amount },
+        },
+      });
+    }
+
     return NextResponse.json(order);
   } catch (error) {
-    console.log("[MENU_PATCH]", error);
+    console.log("[ORDER_PATCH]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

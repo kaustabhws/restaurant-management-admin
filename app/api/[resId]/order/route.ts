@@ -12,6 +12,35 @@ function generateRandomString(length: number) {
   return result;
 }
 
+async function findOrCreateCustomer(
+  contactMethod: "phone" | "email" | null | undefined,
+  contact: string | null | undefined
+) {
+  // If contactMethod or contact is missing, return null
+  if (!contactMethod || !contact) {
+    return null;
+  }
+
+  const whereCondition =
+    contactMethod === "phone" ? { phone: contact } : { email: contact };
+
+  let customerData = await prismadb.customer.findFirst({
+    where: whereCondition,
+  });
+
+  if (!customerData) {
+    customerData = await prismadb.customer.create({
+      data: {
+        [contactMethod]: contact,
+        loyaltyPoints: 0, // will be updated after bill is paid [/order/[orderId]/route.ts]
+        totalSpent: 0, // will be updated after bill is paid [/order/[orderId]/route.ts]
+      },
+    });
+  }
+  return customerData;
+}
+
+
 export async function POST(
   req: Request,
   { params }: { params: { resId: string } }
@@ -20,7 +49,7 @@ export async function POST(
     const { userId } = auth();
     const body = await req.json();
 
-    const { resultData } = body;
+    const { resultData, customer } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
@@ -77,7 +106,13 @@ export async function POST(
 
     const orderType = tableName ? "DINE_IN" : "TAKE_AWAY";
 
-    const totalAmount = resultData.totalAmount;
+    const totalAmount: number = resultData.totalAmount;
+
+    // Find or create the customer
+    const customerData = await findOrCreateCustomer(
+      customer.contactMethod,
+      customer.contact,
+    );
 
     const order = await prismadb.orders.create({
       data: {
@@ -87,9 +122,11 @@ export async function POST(
         orderType: orderType as OrderType,
         isPaid: false,
         amount: totalAmount,
+        customerId: customerData && customerData.id ? customerData.id : null,
         bill: {
           create: resultData.menuItems.map((item: any) => ({
             resId: params.resId,
+            customerId: customerData && customerData.id ? customerData.id : null,
             itemName: item.name,
             itemId: item.id,
             totalPrice: item.quantity * item.price,
@@ -137,7 +174,7 @@ export async function POST(
       });
     }
 
-    console.log(resultData.takeawayId)
+    console.log(resultData.takeawayId);
 
     if (resultData.takeawayId) {
       await prismadb.tempOrderItems.deleteMany({

@@ -35,7 +35,14 @@ export const BillClient: React.FC<BillClientProps> = ({
       router.refresh();
       toast.success(`Marked as ${isPaid ? "paid" : "unpaid"}`);
     } catch (error) {
-      toast.error("Something went wrong");
+      if (
+        (error as any).response.data ==
+        "Order paid with loyalty points cannot be updated"
+      ) {
+        toast.error("Order paid with loyalty points cannot be updated");
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -93,11 +90,14 @@ model Orders {
   bill       Bill[]
   amount     Float
   isPaid     Boolean
+  customerId String?
+  customer   Customer?    @relation(fields: [customerId], references: [id])
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 
   @@index([resId])
   @@index([slNo])
+  @@index([customerId])
 }
 
 model OrderItems {
@@ -122,12 +122,27 @@ model Bill {
   itemId     String
   totalPrice Float
   quantity   Int
+  customerId String?
+  customer   Customer?   @relation(fields: [customerId], references: [id])
 
   @@index([orderId])
   @@index([resId])
+  @@index([customerId])
 }
 
 enum OrderType {
   DINE_IN
   TAKE_AWAY
+}
+
+model Customer {
+  id            String   @id @default(uuid())
+  email         String?  @unique
+  phone         String?  @unique
+  loyaltyPoints Int
+  totalSpent    Float
+  orders        Orders[]
+  bills         Bill[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

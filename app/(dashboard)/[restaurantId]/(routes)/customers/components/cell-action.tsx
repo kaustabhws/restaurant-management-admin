@@ -29,7 +29,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Customer ID copied to the clipboard");
+    toast.success("Menu ID copied to the clipboard");
   };
 
   const onDelete = async () => {
@@ -42,7 +42,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       toast.success("Item deleted");
     } catch (error) {
       toast.error(
-        "Something went wrong, please try again later"
+        "Make sure you removed all categories using this item first"
       );
     } finally {
       setLoading(false);
