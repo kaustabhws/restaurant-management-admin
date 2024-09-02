@@ -35,7 +35,23 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const order = await prismadb.orders.update({
+    const order = await prismadb.orders.findUnique({
+      where: {
+        id: params.orderId,
+      },
+    });
+
+    if (!order) {
+      return new NextResponse("Order not found", { status: 404 });
+    }
+
+    // Check if the order is already paid
+    if (order.isPaid) {
+      return new NextResponse("Order is already paid", { status: 400 });
+    }
+
+    // Proceed with updating the payment status and loyalty points
+    const updatedOrder = await prismadb.orders.update({
       where: {
         id: params.orderId,
       },
@@ -45,34 +61,28 @@ export async function PATCH(
       },
     });
 
-    if (!order.customerId) {
-      return NextResponse.json(order);
+    if (updatedOrder.customerId) {
+      await prismadb.customer.update({
+        where: {
+          id: updatedOrder.customerId,
+        },
+        data: {
+          loyaltyPoints: { decrement: updatedOrder.amount },
+        },
+      });
+
+      await prismadb.customer.update({
+        where: {
+          id: updatedOrder.customerId,
+        },
+        data: {
+          loyaltyPoints: { increment: countPoints(updatedOrder.amount) },
+          totalSpent: { increment: updatedOrder.amount },
+        },
+      });
     }
 
-    await prismadb.customer.update({
-      where: {
-        id: order.customerId,
-      },
-      data: {
-        loyaltyPoints: { decrement: order.amount },
-      },
-    });
-
-    await prismadb.customer.update({
-      where: {
-        id: order.customerId,
-      },
-      data: {
-        loyaltyPoints: { increment: countPoints(order.amount) },
-        totalSpent: { increment: order.amount },
-      },
-    });
-
-    if (!order.customerId) {
-      return NextResponse.json(order);
-    }
-
-    return NextResponse.json(order);
+    return NextResponse.json(updatedOrder);
   } catch (error) {
     console.log("[LOYALTY_PATCH]", error);
     return new NextResponse("Internal server error", { status: 500 });

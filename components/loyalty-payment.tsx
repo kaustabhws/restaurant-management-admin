@@ -46,7 +46,11 @@ const LoyaltyPayment: React.FC<LoyaltyPaymentProps> = ({ customer, order }) => {
       router.refresh();
       toast.success(`Marked as ${isPaid ? "paid" : "unpaid"}`);
     } catch (error) {
-      toast.error("Something went wrong");
+      if ((error as any).response.data == "Order is already paid") {
+        toast.error("Order paid with loyalty points cannot be changed");
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
@@ -61,7 +65,9 @@ const LoyaltyPayment: React.FC<LoyaltyPaymentProps> = ({ customer, order }) => {
         </span>
       </div>
       <Button
-        disabled={customer.loyaltyPoints < order.amount || loading}
+        disabled={
+          customer.loyaltyPoints < order.amount || loading || order.isPaid
+        }
         onClick={() => submitOrder(true, "Loyalty Points")}
       >
         {loading ? (
