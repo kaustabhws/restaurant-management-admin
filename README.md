@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Restaurant Management System
 
-## Getting Started
+This is a comprehensive restaurant management system built using [Next.js](https://nextjs.org/). The system is designed to streamline various aspects of restaurant operations, including menu management, table management, order processing, billing, and customer loyalty.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Core Features
+- [x] **Menu Management**: Admins can add, edit, and remove menu items.
+- [x] **Table Management**: Admins can manage tables and assign orders to them.
+- [x] **Order Management**: Admins can manage orders, including temporary orders and final orders.
+- [x] **Billing System**: Generates bills for orders and tracks total sales and revenue.
+- [x] **Payment Methods**: Allows for different payment methods, including loyalty points redemption.
+- [x] **Loyalty Program**: Calculates and manages loyalty points based on customer spending.
+- [x] **Customer Management**: Manages customer details, including mobile number, email, loyalty points, and total amount spent.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Additional Features (Upcoming)
+- [ ] **Inventory Management**: Tracks ingredients and manages stock levels.
+- [ ] **Statistics Dashboard**: Provides an overview of sales, revenue, and other key metrics.
+- [ ] **Reporting**: Generates monthly reports for analysis.
+- [ ] **Real-Time Updates**: Order updates and table management in real-time.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/yourusername/restaurant-management-system.git
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd restaurant-management-system
+    ```
+3. Install the dependencies:
+    ```bash
+    npm install
+    ```
+4. Set up the environment variables by creating a `.env` file in the root directory:
+    ```env
+    DATABASE_URL=database_url
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=clerk_public_key
+    CLERK_SECRET_KEY=clerk_secret_key
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+    NEXT_PUBLIC_CLERK_SIGN_OUT_URL=/sign-out
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+    ```
+5. Run the development server:
+    ```bash
+    npm run dev
+    ```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application in action.
 
-To learn more about Next.js, take a look at the following resources:
+## Usage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+After logging in, users can create a restaurant and manage it through the following sections:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- **Menu Management**: Add and update items in the menu.
+- **Table Management**: Manage tables by adding them with their respective number of seats. Each table's orders can be managed separately.
+- **Order Processing**: Add food items to tables as customers order. Submit orders when customers are ready to pay.
+- **Billing**: Generate bills when the order is finalized. Payments can be made via cash, card, UPI, split payments, or loyalty points (customer phone number or email required).
+- **Customer Management**: Access customer details, manage loyalty points, and view the total amount spent by customers.
 
-## Deploy on Vercel
+## Technologies Used
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Frontend**: Next.js, React, Tailwind CSS
+- **Backend**: Node.js, Express, Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: Clerk
+- **Deployment**: Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Contributing
+
+Contributions are welcome! Please fork this repository and submit a pull request for any features, bug fixes, or enhancements.
+
+## License
+
+This project is licensed under the MIT License.
