@@ -63,7 +63,7 @@ After logging in, users can create a restaurant and manage it through the follow
 ## Technologies Used
 
 - **Frontend**: Next.js, React, Tailwind CSS
-- **Backend**: Node.js, Express, Prisma ORM
+- **Backend**: Next.js
 - **Database**: PostgreSQL
 - **Authentication**: Clerk
 - **Deployment**: Vercel
