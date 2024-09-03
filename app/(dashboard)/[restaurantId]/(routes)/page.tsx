@@ -34,6 +34,8 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
   const dailyRevenue = await getDailyRevenue(params.restaurantId);
   const dailySales = await getDailySales(params.restaurantId);
 
+  console.log(dailyRevenue);
+
   // Calculate revenue increase
   const calculateRevenueIncrease = () => {
     if (dailyRevenue.yesterdayRevenue === 0) {
@@ -41,11 +43,12 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
     }
 
     return (
-      ((dailySales.paidOrdersToday - dailySales.paidOrdersYesterday) /
-        dailySales.paidOrdersYesterday) *
+      ((dailyRevenue.todayRevenue - dailyRevenue.yesterdayRevenue) /
+        dailyRevenue.yesterdayRevenue) *
       100
     );
   };
+
   const increasedRevenue = calculateRevenueIncrease() > 0;
 
   // Calculate sales increase
@@ -54,11 +57,12 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
       return dailySales.paidOrdersToday > 0 ? 100 : 0;
     }
 
-    return (
+    const percentageChange =
       ((dailySales.paidOrdersToday - dailySales.paidOrdersYesterday) /
         dailySales.paidOrdersYesterday) *
-      100
-    );
+      100;
+
+    return percentageChange;
   };
   const increasedSales = calculateSalesIncrease() > 0;
 
@@ -87,7 +91,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
                       style={{ color: "green" }}
                     >
                       <TrendingUp size={15} color="green" />
-                      {calculateRevenueIncrease().toFixed(2)}%
+                      {parseFloat(calculateRevenueIncrease().toFixed(2))}%
                     </div>
                     <span className="text-xs">vs yesterday</span>
                   </div>
@@ -98,7 +102,10 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
                       style={{ color: "red" }}
                     >
                       <TrendingDown size={15} color="red" />
-                      {calculateRevenueIncrease().toFixed(2)}%
+                      {Math.abs(
+                        parseFloat(calculateRevenueIncrease().toFixed(2))
+                      )}
+                      %
                     </div>
                     <span className="text-xs">vs yesterday</span>
                   </div>
