@@ -2,6 +2,7 @@ import prismadb from "@/lib/prismadb";
 import Image from "next/image";
 import tablesvg from "../../../../../assets/table.svg";
 import { CellAction } from "./components/cell-action";
+import Link from "next/link";
 
 const TablesOverviewPage = async ({
   params,
@@ -34,6 +35,12 @@ const TablesOverviewPage = async ({
         </div>
       </div>
       <div className="flex gap-16 mt-6 flex-wrap">
+        {tables.length === 0 && (
+          <div className="flex-1 flex flex-col items-center justify-center mt-10">
+            <p className='text-lg'>No tables found</p>
+            <Link href={`/${params.restaurantId}/tables/new`} className='text-sm text-blue-600'>Click here to add</Link>
+          </div>
+        )}
         {tables.map((table: any) => (
           <div key={table.id} className="relative flex flex-col items-center">
             <Image src={tablesvg} alt={table.name} height={120} />

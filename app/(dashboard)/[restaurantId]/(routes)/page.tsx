@@ -34,8 +34,6 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
   const dailyRevenue = await getDailyRevenue(params.restaurantId);
   const dailySales = await getDailySales(params.restaurantId);
 
-  console.log(dailyRevenue);
-
   // Calculate revenue increase
   const calculateRevenueIncrease = () => {
     if (dailyRevenue.yesterdayRevenue === 0) {
