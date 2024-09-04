@@ -48,7 +48,7 @@ const MenuPage = async ({
 
   return (
     <div className="flex-col">
-      <div className="flex-1 space-y-4 p-8 pt-4">
+      <div className="flex-1 space-y-4 p-8 pt-4 max-[425px]:px-3">
         <TransactionClient
           data={formattedTransactions}
           contact={customer.phone || customer.email || "No contact"}
