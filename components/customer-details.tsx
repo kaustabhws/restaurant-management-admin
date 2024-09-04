@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
 import { useState } from "react";
-import { LoaderCircle, Send } from "lucide-react";
+import { Send } from "lucide-react";
 
 interface CustomerDetailsSubmitProps {
   loading: boolean;
@@ -90,14 +90,7 @@ const CustomerDetailsSubmit: React.FC<CustomerDetailsSubmitProps> = ({
             onClick={() => submitOrder()}
             className="w-max"
           >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <LoaderCircle className="animate-spin" />
-                Submitting order
-              </div>
-            ) : (
-              <p>Confirm Order</p>
-            )}
+            Confirm Order
           </Button>
           <Button variant="destructive" onClick={() => submitOrder()}>
             Submit without contact

@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import prismadb from "@/lib/prismadb";
-import { MenuClient } from "./components/client";
+import { CustiomerClient } from "./components/client";
 import { CustomerColumn } from "./components/columns";
 
 const MenusPage = async ({
@@ -29,7 +29,7 @@ const MenusPage = async ({
     return (
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6 max-[425px]:px-3">
-                <MenuClient data={formattedMenu} />
+                <CustiomerClient data={formattedMenu} />
             </div>
         </div>
     )

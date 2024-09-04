@@ -1,7 +1,13 @@
 import prismadb from "@/lib/prismadb";
 import BillContent from "./components/bill-content";
+import { redirect } from "next/navigation";
+import toast from "react-hot-toast";
 
-const CardWithForm = async ({ params }: { params: { orderId: string } }) => {
+const CardWithForm = async ({
+  params,
+}: {
+  params: { orderId: string; restaurantId: string };
+}) => {
   const order = await prismadb.orders.findUnique({
     where: {
       id: params.orderId,
@@ -12,17 +18,29 @@ const CardWithForm = async ({ params }: { params: { orderId: string } }) => {
     },
   });
 
+  if (!order) {
+    redirect(`/${params.restaurantId}/orders`);
+  }
+
   const restaurant = await prismadb.restaurants.findUnique({
     where: {
-      id: order?.resId,
+      id: order.resId,
     },
   });
 
+  if (!restaurant) {
+    redirect(`/${params.restaurantId}/orders`);
+  }
+
   const customer = await prismadb.customer.findUnique({
     where: {
-      id: order?.customerId || "",
+      id: order.customerId || "",
     },
-  })
+  });
+
+  if (!customer) {
+    redirect(`/${params.restaurantId}/orders`);
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center flex-col">

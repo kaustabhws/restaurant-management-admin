@@ -62,12 +62,22 @@ export async function PATCH(
     });
 
     if (updatedOrder.customerId) {
-      await prismadb.customer.update({
+      const customer = await prismadb.customer.update({
         where: {
           id: updatedOrder.customerId,
         },
         data: {
           loyaltyPoints: { decrement: updatedOrder.amount },
+        },
+      });
+
+      await prismadb.loyaltyTransaction.create({
+        data: {
+          customerId: updatedOrder.customerId,
+          resId: params.resId,
+          amount: updatedOrder.amount,
+          description: `Redeemed for #${updatedOrder.slNo}`,
+          type: "Redeemed",
         },
       });
 

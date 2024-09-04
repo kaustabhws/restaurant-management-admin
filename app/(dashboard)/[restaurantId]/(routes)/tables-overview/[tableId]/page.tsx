@@ -1,5 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { TableForm } from "./components/table-form";
+import { redirect } from "next/navigation";
 
 const MenuPage = async ({
   params,
@@ -11,6 +12,10 @@ const MenuPage = async ({
       id: params.tableId,
     },
   });
+
+  if(!table) {
+    redirect(`/${params.restaurantId}/tables-overview`);
+  }
 
   const menu = await prismadb.menu.findMany({
     where: {

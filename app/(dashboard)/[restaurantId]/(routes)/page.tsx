@@ -55,12 +55,11 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
       return dailySales.paidOrdersToday > 0 ? 100 : 0;
     }
 
-    const percentageChange =
+    return (
       ((dailySales.paidOrdersToday - dailySales.paidOrdersYesterday) /
         dailySales.paidOrdersYesterday) *
-      100;
-
-    return percentageChange;
+      100
+    );
   };
   const increasedSales = calculateSalesIncrease() > 0;
 
@@ -128,7 +127,7 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
                       style={{ color: "green" }}
                     >
                       <TrendingUp size={15} color="green" />
-                      {calculateSalesIncrease().toFixed(2)}%
+                      {parseFloat(calculateSalesIncrease().toFixed(2))}%
                     </div>
                     <span className="text-xs">vs yesterday</span>
                   </div>
@@ -139,7 +138,10 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
                       style={{ color: "red" }}
                     >
                       <TrendingDown size={15} color="red" />
-                      {calculateSalesIncrease().toFixed(2)}%
+                      {Math.abs(
+                        parseFloat(calculateSalesIncrease().toFixed(2))
+                      )}
+                      %
                     </div>
                     <span className="text-xs">vs yesterday</span>
                   </div>

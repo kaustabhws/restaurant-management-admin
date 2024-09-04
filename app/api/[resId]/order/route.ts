@@ -42,7 +42,6 @@ async function findOrCreateCustomer(
   return customerData;
 }
 
-
 export async function POST(
   req: Request,
   { params }: { params: { resId: string } }
@@ -129,7 +128,8 @@ export async function POST(
         bill: {
           create: resultData.menuItems.map((item: any) => ({
             resId: params.resId,
-            customerId: customerData && customerData.id ? customerData.id : null,
+            customerId:
+              customerData && customerData.id ? customerData.id : null,
             itemName: item.name,
             itemId: item.id,
             totalPrice: item.quantity * item.price,
@@ -176,8 +176,6 @@ export async function POST(
         },
       });
     }
-
-    console.log(resultData.takeawayId);
 
     if (resultData.takeawayId) {
       await prismadb.tempOrderItems.deleteMany({

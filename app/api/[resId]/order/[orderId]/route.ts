@@ -63,8 +63,11 @@ export async function PATCH(
       },
     });
 
-    if(orderById?.payMode == 'Loyalty Points') {
-      return new NextResponse("Order paid with loyalty points cannot be updated", { status: 400 });
+    if (orderById?.payMode == "Loyalty Points") {
+      return new NextResponse(
+        "Order paid with loyalty points cannot be updated",
+        { status: 400 }
+      );
     }
 
     if (isPaid && !payMode) {
@@ -86,7 +89,7 @@ export async function PATCH(
     }
 
     if (isPaid) {
-      await prismadb.customer.update({
+      const customer = await prismadb.customer.update({
         where: {
           id: order.customerId,
         },
@@ -95,14 +98,16 @@ export async function PATCH(
           totalSpent: { increment: order.amount },
         },
       });
-    } else if (!isPaid) {
-      await prismadb.customer.update({
-        where: {
-          id: order.customerId!,
-        },
+
+      await prismadb.loyaltyTransaction.create({
         data: {
-          loyaltyPoints: { decrement: countPoints(order.amount) },
-          totalSpent: { decrement: order.amount },
+          customerId: order.customerId,
+          resId: params.resId,
+          amount: countPoints(order.amount),
+          type: "Earned",
+          description: `#${order.slNo} - Earned ${countPoints(
+            order.amount
+          )} points`,
         },
       });
     }
@@ -157,6 +162,41 @@ export async function DELETE(
         orderId: params.orderId,
       },
     });
+
+    const orderById = await prismadb.orders.findFirst({
+      where: {
+        id: params.orderId,
+      },
+      include: {
+        customer: true,
+      },
+    });
+
+    await prismadb.customer.update({
+      where: {
+        id: orderById?.customer?.id,
+      },
+      data: {
+        loyaltyPoints: {
+          decrement: orderById?.amount ? countPoints(orderById.amount) : 0,
+        },
+        totalSpent: { decrement: orderById?.amount },
+      },
+    });
+
+    if (orderById?.customer?.id) {
+      await prismadb.loyaltyTransaction.create({
+        data: {
+          customerId: orderById?.customer?.id,
+          resId: params.resId,
+          amount: countPoints(orderById?.amount!),
+          type: "Deleted",
+          description: `Deleted order #${
+            orderById?.slNo
+          } - Deducted ${countPoints(orderById?.amount!)}`,
+        },
+      });
+    }
 
     // Then delete the order
     const order = await prismadb.orders.delete({

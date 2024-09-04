@@ -9,17 +9,18 @@ datasource db {
 }
 
 model Restaurants {
-  id         String       @id @default(uuid())
+  id         String               @id @default(uuid())
   name       String
   userId     String
-  menus      Menu[]       @relation("RestaurantToMenu")
-  tables     Table[]      @relation("RestaurantToTable")
-  orders     Orders[]     @relation("RestaurantToOrder")
-  temporders TempOrders[] @relation("RestaurantToTempOrder")
-  bills      Bill[]       @relation("RestaurantToBill")
-  customers  Customer[]   @relation("RestaurantToCustimer")
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  menus      Menu[]               @relation("RestaurantToMenu")
+  tables     Table[]              @relation("RestaurantToTable")
+  orders     Orders[]             @relation("RestaurantToOrder")
+  temporders TempOrders[]         @relation("RestaurantToTempOrder")
+  bills      Bill[]               @relation("RestaurantToBill")
+  customers  Customer[]           @relation("RestaurantToCustimer")
+  loyalty    LoyaltyTransaction[] @relation("RestaurantToLoyaltyTransaction")
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
 }
 
 model Menu {
@@ -137,17 +138,41 @@ enum OrderType {
 }
 
 model Customer {
-  id            String      @id @default(uuid())
-  email         String?     @unique
-  phone         String?     @unique
-  loyaltyPoints Int
-  totalSpent    Float
-  orders        Orders[]
-  bills         Bill[]
-  resId         String
-  restaurant    Restaurants @relation("RestaurantToCustimer", fields: [resId], references: [id])
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id                 String               @id @default(uuid())
+  email              String?              @unique
+  phone              String?              @unique
+  loyaltyPoints      Int
+  totalSpent         Float
+  orders             Orders[]
+  bills              Bill[]
+  LoyaltyTransaction LoyaltyTransaction[]
+  resId              String
+  restaurant         Restaurants          @relation("RestaurantToCustimer", fields: [resId], references: [id])
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 
   @@index([resId])
+}
+
+model LoyaltyTransaction {
+  id          String          @id @default(uuid())
+  resId       String
+  restaurant  Restaurants     @relation("RestaurantToLoyaltyTransaction", fields: [resId], references: [id])
+  amount      Float
+  type        TransactionType
+  description String
+  customerId  String          
+  customer    Customer        @relation(fields: [customerId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([customerId])
+  @@index([resId])
+}
+
+enum TransactionType {
+  Earned
+  Redeemed
+  Pending
+  Deleted
 }

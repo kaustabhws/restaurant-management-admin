@@ -1,6 +1,6 @@
 "use client";
 
-import { CoinsIcon, LoaderCircle } from "lucide-react";
+import { CoinsIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import axios from "axios";
@@ -70,13 +70,7 @@ const LoyaltyPayment: React.FC<LoyaltyPaymentProps> = ({ customer, order }) => {
         }
         onClick={() => submitOrder(true, "Loyalty Points")}
       >
-        {loading ? (
-          <div className="flex items-center gap-2">
-            <LoaderCircle className="animate-spin" /> Paying...
-          </div>
-        ) : (
-          "Pay using Loyalty"
-        )}
+        Pay using Loyalty
       </Button>
     </div>
   );

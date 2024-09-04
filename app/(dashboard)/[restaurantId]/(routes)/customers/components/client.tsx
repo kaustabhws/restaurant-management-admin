@@ -5,11 +5,11 @@ import { Separator } from "@/components/ui/separator";
 import { CustomerColumn, columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 
-interface MenuClientProps {
+interface CustiomerClientProps {
   data: CustomerColumn[];
 }
 
-export const MenuClient: React.FC<MenuClientProps> = ({ data }) => {
+export const CustiomerClient: React.FC<CustiomerClientProps> = ({ data }) => {
   return (
     <>
       <div className="flex items-center justify-between">
