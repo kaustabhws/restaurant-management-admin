@@ -20,7 +20,7 @@ export const TransactionClient: React.FC<TransactionClientProps> = ({
   return (
     <>
       <div className="flex items-center justify-between">
-        <Card className="shadow-lg">
+        <Card className="shadow-lg max-[650px]:flex-1">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-primary">
               Customer Information
