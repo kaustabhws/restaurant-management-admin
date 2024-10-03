@@ -21,14 +21,14 @@ const Navbar = async () => {
 
   return (
     <div className="border-b">
-      <div className="flex h-16 items-center px-4 max-[400px]:px-1">
-        <div className="min-[960px]:hidden">
+      <div className="flex h-16 items-center px-3 max-[400px]:px-1">
+        <div className="min-[1060px]:hidden">
           <HamburgerMenu />
         </div>
-        <div className="flex max-[960px]:flex-1 justify-center max-[900px]:justify-center">
+        <div className="flex max-[1060px]:flex-1 justify-center max-[900px]:justify-center">
           <StoreSwitcher items={restaurant} />
         </div>
-        <MainNav className="mx-6 max-[960px]:hidden" />
+        <MainNav className="min-[1100px]:mx-6 max-[1060px]:hidden max-[1100px]:mx-4" />
         <div className="ml-auto flex items-center space-x-4 max-[400px]:space-x-2">
           <ThemeToggle />
           <UserButton afterSignOutUrl="/" />
