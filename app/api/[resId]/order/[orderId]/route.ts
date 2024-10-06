@@ -110,6 +110,28 @@ export async function PATCH(
           )} points`,
         },
       });
+    } else if (!isPaid && orderById?.isPaid && orderById.payMode !== "Loyalty Points") {
+      // Deduct loyalty points if the order is now unpaid and was previously paid
+      const loyaltyPointsDeducted = countPoints(order.amount); // Calculate the points to deduct
+      
+      await prismadb.customer.update({
+        where: {
+          id: order.customerId,
+        },
+        data: {
+          loyaltyPoints: { decrement: loyaltyPointsDeducted },
+        },
+      });
+
+      await prismadb.loyaltyTransaction.create({
+        data: {
+          customerId: order.customerId,
+          resId: params.resId,
+          amount: loyaltyPointsDeducted,
+          type: "Deleted",
+          description: `Unpaid order #${order.slNo} - Deducted ${loyaltyPointsDeducted} points`,
+        },
+      });
     }
 
     return NextResponse.json(order);
