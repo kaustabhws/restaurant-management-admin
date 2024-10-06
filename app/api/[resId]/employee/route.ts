@@ -33,12 +33,8 @@ export async function POST(
         jobTitle,
         shiftType,
         salary,
-        bankName,
-        accountNumber,
-        ifscCode,
-        startTime,
-        endTime,
-        isDayOff,
+        bankDetails,
+        schedules,
       } = body;
   
       if (!userId) {
@@ -65,12 +61,8 @@ export async function POST(
         !jobTitle ||
         !shiftType ||
         !salary ||
-        !bankName ||
-        !accountNumber ||
-        !ifscCode ||
-        !startTime ||
-        !endTime ||
-        typeof isDayOff !== 'boolean'
+        !bankDetails ||
+        !schedules
       ) {
         return new NextResponse("Invalid data", { status: 400 });
       }
@@ -105,18 +97,18 @@ export async function POST(
         await prismadb.bankDetails.create({
           data: {
             employeeId: employee.id,
-            bankName,
-            bankAccNo: accountNumber,
-            bankIFSC: ifscCode,
+            bankName: bankDetails.bankName,
+            bankAccNo: bankDetails.accountNumber,
+            bankIFSC: bankDetails.ifscCode,
           },
         });
   
         await prismadb.schedules.create({
           data: {
             employeeId: employee.id,
-            startTime,
-            endTime,
-            isDayoff: isDayOff,
+            startTime: schedules.startTime,
+            endTime: schedules.endTime,
+            isDayoff: schedules.isDayOff,
           },
         });
       }

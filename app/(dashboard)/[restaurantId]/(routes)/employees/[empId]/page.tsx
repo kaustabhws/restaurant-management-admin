@@ -1,7 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import { EmployeeForm } from "./components/employee-form";
 
-const MenuPage = async ({ params }: { params: { empId: string } }) => {
+const EmployeePage = async ({ params }: { params: { empId: string } }) => {
   const employee = await prismadb.employee.findUnique({
     where: {
       id: params.empId,
@@ -21,4 +21,4 @@ const MenuPage = async ({ params }: { params: { empId: string } }) => {
   );
 };
 
-export default MenuPage;
+export default EmployeePage;

@@ -36,7 +36,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -77,14 +76,9 @@ const formSchema = z.object({
 type EmployeeFormValues = z.infer<typeof formSchema>;
 
 interface EmployeeFormProps {
-  initialData: {
-    schedules: any;
-    startDate: string | number | Date;
-    employee: Employee | null;
-    bankDetails: BankDetails | null;
-    schedule: Schedules | null;
-  };
+  initialData: any
 }
+
 
 export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
   const params = useParams();
