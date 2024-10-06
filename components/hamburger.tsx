@@ -24,7 +24,7 @@ const HamburgerMenu = () => {
           </div>
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="px-4 max-[330px]:px-1">
+      <SheetContent side="left" className="px-4 max-[330px]:px-1 overflow-y-auto">
         <MobileMainNav
           isOpen={isOpen}
           setIsOpen={setIsOpen}

@@ -7,7 +7,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { LucideIcon, Menu, LayoutDashboard, Utensils, Table, ClipboardList, PieChart, BarChart, Users, Settings } from "lucide-react"
+import { LucideIcon, Menu, LayoutDashboard, Utensils, Table, ClipboardList, PieChart, BarChart, Users, Settings, BadgeCheck } from "lucide-react"
 
 type NavItem = {
   href: string
@@ -71,6 +71,13 @@ export function MobileMainNav({
       icon: Users,
       items: [
         { href: `/${params.restaurantId}/customers`, label: "Customers", icon: Users },
+      ],
+    },
+    {
+      label: "Staff",
+      icon: Users,
+      items: [
+        { href: `/${params.restaurantId}/employees`, label: "Employees", icon: BadgeCheck },
       ],
     },
     {

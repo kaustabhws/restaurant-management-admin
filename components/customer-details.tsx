@@ -92,7 +92,7 @@ const CustomerDetailsSubmit: React.FC<CustomerDetailsSubmitProps> = ({
           >
             Confirm Order
           </Button>
-          <Button variant="destructive" onClick={() => submitOrder()}>
+          <Button disabled={loading} variant="destructive" onClick={() => submitOrder()}>
             Submit without contact
           </Button>
         </div>

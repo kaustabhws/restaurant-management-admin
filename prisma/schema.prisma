@@ -19,6 +19,7 @@ model Restaurants {
   bills      Bill[]               @relation("RestaurantToBill")
   customers  Customer[]           @relation("RestaurantToCustimer")
   loyalty    LoyaltyTransaction[] @relation("RestaurantToLoyaltyTransaction")
+  employees  Employee[]           @relation("RestaurantToEmployee")
   createdAt  DateTime             @default(now())
   updatedAt  DateTime             @updatedAt
 }
@@ -161,7 +162,7 @@ model LoyaltyTransaction {
   amount      Float
   type        TransactionType
   description String
-  customerId  String          
+  customerId  String
   customer    Customer        @relation(fields: [customerId], references: [id])
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
@@ -175,4 +176,82 @@ enum TransactionType {
   Redeemed
   Pending
   Deleted
+}
+
+model Employee {
+  id          String       @id @default(uuid())
+  resId       String
+  restaurant  Restaurants  @relation("RestaurantToEmployee", fields: [resId], references: [id])
+  empId       String       @unique
+  name        String
+  email       String
+  phone       String
+  address     String
+  startDate   String
+  endDate     String?
+  jobTitle    String
+  shiftType   ShiftType
+  salary      Float
+  payroll     Payroll[]
+  schedules   Schedules?
+  bankDetails BankDetails?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([resId])
+}
+
+model BankDetails {
+  id         String   @id @default(uuid())
+  employeeId String   @unique
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  bankName   String
+  bankAccNo  String
+  bankIFSC   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([employeeId])
+}
+
+model Schedules {
+  id         String   @id @default(uuid())
+  employeeId String   @unique
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  startTime  String
+  endTime    String
+  isDayoff   Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([employeeId])
+}
+
+model Payroll {
+  id            String        @id @default(uuid())
+  employeeId    String
+  employee      Employee      @relation(fields: [employeeId], references: [id])
+  hoursWorked   Float
+  overTimeHours Float
+  salary        Float
+  bonus         Float
+  deductions    Float
+  netSalary     Float
+  status        PayrollStatus @default(Pending)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([employeeId])
+}
+
+enum ShiftType {
+  FullTime
+  PartTime
+  Contract
+}
+
+enum PayrollStatus {
+  Pending
+  Processed
+  Paid
 }

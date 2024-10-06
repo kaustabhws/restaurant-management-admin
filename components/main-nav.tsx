@@ -10,7 +10,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { LucideIcon, LayoutDashboard, Utensils, Table, ClipboardList, PieChart, BarChart, Users, Settings } from "lucide-react"
+import { LucideIcon, LayoutDashboard, Utensils, Table, ClipboardList, PieChart, BarChart, Users, Settings, BadgeCheck } from "lucide-react"
 import Link from "next/link"
 
 type NavItem = {
@@ -63,6 +63,12 @@ export function MainNav({
       label: "Customers",
       items: [
         { href: `/${params.restaurantId}/customers`, label: "Customers", icon: Users },
+      ],
+    },
+    {
+      label: "Staff",
+      items: [
+        { href: `/${params.restaurantId}/employees`, label: "Employees", icon: BadgeCheck },
       ],
     },
     {
@@ -131,6 +137,8 @@ function getItemDescription(label: string): string {
       return "Sales, revenue, and other key metrics."
     case "Customers":
       return "Manage customer information and loyalty programs."
+    case "Employees":
+      return "Manage employee information and schedules."
     case "Settings":
       return "Configure system settings."
     default:

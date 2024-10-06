@@ -3,7 +3,7 @@ import prismadb from "@/lib/prismadb";
 import { CustiomerClient } from "./components/client";
 import { CustomerColumn } from "./components/columns";
 
-const MenusPage = async ({
+const CustomersPage = async ({
     params
 }: {
     params: { restaurantId: string }
@@ -35,4 +35,4 @@ const MenusPage = async ({
     )
 }
 
-export default MenusPage;
+export default CustomersPage;
