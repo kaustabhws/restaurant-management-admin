@@ -1,5 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
+import { format } from "date-fns";
 import { NextResponse } from "next/server";
 
 export async function PATCH(
@@ -94,6 +95,32 @@ export async function PATCH(
           isDayoff: isDayOff ?? undefined,
         },
       });
+
+      if (isDayOff) {
+        await prismadb.employeeAttendance.update({
+          where: {
+            employeeId_date: {
+              employeeId: params.empId,
+              date: format(new Date(), "dd-MM-yyyy"),
+            },
+          },
+          data: {
+            status: "Leave",
+          },
+        });
+      } else {
+        await prismadb.employeeAttendance.update({
+          where: {
+            employeeId_date: {
+              employeeId: params.empId,
+              date: format(new Date(), "dd-MM-yyyy"),
+            },
+          },
+          data: {
+            status: "Absent",
+          },
+        });
+      }
     }
 
     return NextResponse.json({ message: "Employee updated successfully" });
@@ -136,6 +163,12 @@ export async function DELETE(
     });
 
     await prismadb.schedules.deleteMany({
+      where: {
+        employeeId: params.empId,
+      },
+    });
+
+    await prismadb.employeeAttendance.deleteMany({
       where: {
         employeeId: params.empId,
       },

@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "./button";
-import { Input } from "./input";
-
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   ColumnDef,
   flexRender,
@@ -13,14 +13,12 @@ import {
   getFilteredRowModel,
   VisibilityState,
 } from "@tanstack/react-table";
-
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import {
   Table,
   TableBody,
@@ -29,23 +27,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import React, { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey: string;
+  filterOptions?: {
+    key: string;
+    options: { label: any; value: any }[];
+  };
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
+  filterOptions,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [filterValue, setFilterValue] = useState<string>("all");
 
   const table = useReactTable({
     data,
@@ -61,6 +69,17 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const handleFilterChange = (value: string) => {
+    setFilterValue(value);
+    if (filterOptions) {
+      if (value === "all") {
+        table.getColumn(filterOptions.key)?.setFilterValue(undefined);
+      } else {
+        table.getColumn(filterOptions.key)?.setFilterValue(value);
+      }
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center py-4 gap-2">
@@ -72,6 +91,21 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+        {filterOptions && (
+          <Select value={filterValue} onValueChange={handleFilterChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {filterOptions.options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

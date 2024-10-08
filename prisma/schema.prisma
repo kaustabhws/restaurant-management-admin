@@ -179,10 +179,10 @@ enum TransactionType {
 }
 
 model Employee {
-  id          String       @id @default(uuid())
+  id          String               @id @default(uuid())
   resId       String
-  restaurant  Restaurants  @relation("RestaurantToEmployee", fields: [resId], references: [id])
-  empId       String       @unique
+  restaurant  Restaurants          @relation("RestaurantToEmployee", fields: [resId], references: [id])
+  empId       String               @unique
   name        String
   email       String
   phone       String
@@ -193,10 +193,11 @@ model Employee {
   shiftType   ShiftType
   salary      Float
   payroll     Payroll[]
+  attendance  EmployeeAttendance[]
   schedules   Schedules?
   bankDetails BankDetails?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
 
   @@index([resId])
 }
@@ -243,6 +244,27 @@ model Payroll {
 
   @@index([employeeId])
 }
+
+model EmployeeAttendance {
+  id         String           @id @default(uuid())
+  employeeId String
+  employee   Employee         @relation(fields: [employeeId], references: [id])
+  date       String
+  hoursToday Float
+  status     AttendanceStatus @default(Absent)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([employeeId, date]) // composite unique constraint
+  @@index([employeeId])
+}
+
+enum AttendanceStatus {
+  Present
+  Absent
+  Leave
+}
+
 
 enum ShiftType {
   FullTime

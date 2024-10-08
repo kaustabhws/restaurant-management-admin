@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { useParams, usePathname } from "next/navigation"
+import { cn } from "@/lib/utils";
+import { useParams, usePathname } from "next/navigation";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -9,78 +9,133 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
-import { LucideIcon, LayoutDashboard, Utensils, Table, ClipboardList, PieChart, BarChart, Users, Settings, BadgeCheck } from "lucide-react"
-import Link from "next/link"
+} from "@/components/ui/navigation-menu";
+import {
+  LucideIcon,
+  LayoutDashboard,
+  Utensils,
+  Table,
+  ClipboardList,
+  PieChart,
+  BarChart,
+  Users,
+  Settings,
+  BadgeCheck,
+  UserRoundCheck,
+} from "lucide-react";
+import Link from "next/link";
 
 type NavItem = {
-  href: string
-  label: string
-  icon: LucideIcon
-}
+  href: string;
+  label: string;
+  icon: LucideIcon;
+};
 
 type NavGroup = {
-  label: string
-  items: NavItem[]
-}
+  label: string;
+  items: NavItem[];
+};
 
 export function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const pathname = usePathname()
-  const params = useParams()
+  const pathname = usePathname();
+  const params = useParams();
 
   const navGroups: NavGroup[] = [
     {
       label: "Dashboard",
       items: [
-        { href: `/${params.restaurantId}`, label: "Overview", icon: LayoutDashboard },
+        {
+          href: `/${params.restaurantId}`,
+          label: "Overview",
+          icon: LayoutDashboard,
+        },
       ],
     },
     {
       label: "Management",
       items: [
         { href: `/${params.restaurantId}/menu`, label: "Menu", icon: Utensils },
-        { href: `/${params.restaurantId}/tables`, label: "Tables", icon: Table },
-        { href: `/${params.restaurantId}/tables-overview`, label: "Tables Overview", icon: Table },
+        {
+          href: `/${params.restaurantId}/tables`,
+          label: "Tables",
+          icon: Table,
+        },
+        {
+          href: `/${params.restaurantId}/tables-overview`,
+          label: "Tables Overview",
+          icon: Table,
+        },
       ],
     },
     {
       label: "Orders",
       items: [
-        { href: `/${params.restaurantId}/orders`, label: "Order", icon: ClipboardList },
+        {
+          href: `/${params.restaurantId}/orders`,
+          label: "Order",
+          icon: ClipboardList,
+        },
       ],
     },
     {
       label: "Analytics",
       items: [
-        { href: `/${params.restaurantId}/insights`, label: "Insights", icon: PieChart },
-        { href: `/${params.restaurantId}/statistics`, label: "Statistics", icon: BarChart },
+        {
+          href: `/${params.restaurantId}/insights`,
+          label: "Insights",
+          icon: PieChart,
+        },
+        {
+          href: `/${params.restaurantId}/statistics`,
+          label: "Statistics",
+          icon: BarChart,
+        },
       ],
     },
     {
       label: "Customers",
       items: [
-        { href: `/${params.restaurantId}/customers`, label: "Customers", icon: Users },
+        {
+          href: `/${params.restaurantId}/customers`,
+          label: "Customers",
+          icon: Users,
+        },
       ],
     },
     {
       label: "Staff",
       items: [
-        { href: `/${params.restaurantId}/employees`, label: "Employees", icon: BadgeCheck },
+        {
+          href: `/${params.restaurantId}/employees`,
+          label: "Employees",
+          icon: BadgeCheck,
+        },
+        {
+          href: `/${params.restaurantId}/attendance`,
+          label: "Attendance",
+          icon: UserRoundCheck,
+        },
       ],
     },
     {
       label: "Settings",
       items: [
-        { href: `/${params.restaurantId}/settings`, label: "Settings", icon: Settings },
+        {
+          href: `/${params.restaurantId}/settings`,
+          label: "Settings",
+          icon: Settings,
+        },
       ],
     },
-  ]
+  ];
 
   return (
-    <NavigationMenu className={cn("flex items-center space-x-4 lg:space-x-6", className)}>
+    <NavigationMenu
+      className={cn("flex items-center space-x-4 lg:space-x-6", className)}
+    >
       <NavigationMenuList>
         {navGroups.map((group) => (
           <NavigationMenuItem key={group.label}>
@@ -101,7 +156,9 @@ export function MainNav({
                       >
                         <div className="flex items-center gap-2">
                           <item.icon className="h-4 w-4" />
-                          <div className="text-sm font-medium leading-none">{item.label}</div>
+                          <div className="text-sm font-medium leading-none">
+                            {item.label}
+                          </div>
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                           {getItemDescription(item.label)}
@@ -116,32 +173,34 @@ export function MainNav({
         ))}
       </NavigationMenuList>
     </NavigationMenu>
-  )
+  );
 }
 
 function getItemDescription(label: string): string {
   switch (label) {
     case "Overview":
-      return "General overview of the restaurant's operations."
+      return "General overview of the restaurant's operations.";
     case "Menu":
-      return "Manage menu items."
+      return "Manage menu items.";
     case "Tables":
-      return "Manage tables."
+      return "Manage tables.";
     case "Tables Overview":
-      return "View table statuses and availability."
+      return "View table statuses and availability.";
     case "Order":
-      return "Manage and track orders."
+      return "Manage and track orders.";
     case "Insights":
-      return "View detailed insights on performance."
+      return "View detailed insights on performance.";
     case "Statistics":
-      return "Sales, revenue, and other key metrics."
+      return "Sales, revenue, and other key metrics.";
     case "Customers":
-      return "Manage customer information and loyalty programs."
+      return "Manage customer information and loyalty programs.";
     case "Employees":
-      return "Manage employee information and schedules."
+      return "Manage employee information and schedules.";
+    case "Attendance":
+      return "Track employee attendance and performance.";
     case "Settings":
-      return "Configure system settings."
+      return "Configure system settings.";
     default:
-      return ""
+      return "";
   }
 }

@@ -28,6 +28,14 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
   
   const takeAwayId = generateTakeawayId();
 
+  const filterOptions = {
+    key: "isPaid",
+    options: [
+      { label: "Paid", value: true },
+      { label: "Unpaid", value: false },
+    ],
+  };
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -44,7 +52,7 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
         </Button>
       </div>
       <Separator />
-      <DataTable searchKey="slNo" columns={columns} data={data} />
+      <DataTable searchKey="slNo" columns={columns} data={data} filterOptions={filterOptions} />
     </>
   );
 };

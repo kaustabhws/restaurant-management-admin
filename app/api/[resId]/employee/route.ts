@@ -1,5 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
+import { format } from "date-fns";
 import { NextResponse } from "next/server";
 
 function generateEmployeeId(name: string, startDate: Date): string {
@@ -40,8 +41,6 @@ export async function POST(
       if (!userId) {
         return new NextResponse("Unauthorized", { status: 403 });
       }
-  
-      console.log(body);
   
       // Convert startDate to Date object
       const parsedStartDate = new Date(startDate);
@@ -111,6 +110,15 @@ export async function POST(
             isDayoff: schedules.isDayOff,
           },
         });
+
+        await prismadb.employeeAttendance.create({
+          data: {
+            employeeId: employee.id,
+            hoursToday: 0,
+            status: "Absent",
+            date: format(new Date(), "dd-MM-yyyy"),
+          },
+        })
       }
   
       return NextResponse.json(employee);

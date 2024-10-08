@@ -1,25 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { cn } from "@/lib/utils"
-import { useParams, usePathname } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { LucideIcon, Menu, LayoutDashboard, Utensils, Table, ClipboardList, PieChart, BarChart, Users, Settings, BadgeCheck } from "lucide-react"
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { useParams, usePathname } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  LucideIcon,
+  Menu,
+  LayoutDashboard,
+  Utensils,
+  Table,
+  ClipboardList,
+  PieChart,
+  BarChart,
+  Users,
+  Settings,
+  BadgeCheck,
+  UserRoundCheck,
+} from "lucide-react";
 
 type NavItem = {
-  href: string
-  label: string
-  icon: LucideIcon
-}
+  href: string;
+  label: string;
+  icon: LucideIcon;
+};
 
 type NavGroup = {
-  label: string
-  icon: LucideIcon
-  items: NavItem[]
-}
+  label: string;
+  icon: LucideIcon;
+  items: NavItem[];
+};
 
 export function MobileMainNav({
   className,
@@ -30,16 +43,20 @@ export function MobileMainNav({
   isOpen?: boolean;
   setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const pathname = usePathname()
-  const params = useParams()
-  const [open, setOpen] = useState(false)
+  const pathname = usePathname();
+  const params = useParams();
+  const [open, setOpen] = useState(false);
 
   const navGroups: NavGroup[] = [
     {
       label: "Dashboard",
       icon: LayoutDashboard,
       items: [
-        { href: `/${params.restaurantId}`, label: "Overview", icon: LayoutDashboard },
+        {
+          href: `/${params.restaurantId}`,
+          label: "Overview",
+          icon: LayoutDashboard,
+        },
       ],
     },
     {
@@ -47,47 +64,84 @@ export function MobileMainNav({
       icon: Utensils,
       items: [
         { href: `/${params.restaurantId}/menu`, label: "Menu", icon: Utensils },
-        { href: `/${params.restaurantId}/tables`, label: "Tables", icon: Table },
-        { href: `/${params.restaurantId}/tables-overview`, label: "Tables Overview", icon: Table },
+        {
+          href: `/${params.restaurantId}/tables`,
+          label: "Tables",
+          icon: Table,
+        },
+        {
+          href: `/${params.restaurantId}/tables-overview`,
+          label: "Tables Overview",
+          icon: Table,
+        },
       ],
     },
     {
       label: "Orders",
       icon: ClipboardList,
       items: [
-        { href: `/${params.restaurantId}/orders`, label: "Order", icon: ClipboardList },
+        {
+          href: `/${params.restaurantId}/orders`,
+          label: "Order",
+          icon: ClipboardList,
+        },
       ],
     },
     {
       label: "Analytics",
       icon: PieChart,
       items: [
-        { href: `/${params.restaurantId}/insights`, label: "Insights", icon: PieChart },
-        { href: `/${params.restaurantId}/statistics`, label: "Statistics", icon: BarChart },
+        {
+          href: `/${params.restaurantId}/insights`,
+          label: "Insights",
+          icon: PieChart,
+        },
+        {
+          href: `/${params.restaurantId}/statistics`,
+          label: "Statistics",
+          icon: BarChart,
+        },
       ],
     },
     {
       label: "Customers",
       icon: Users,
       items: [
-        { href: `/${params.restaurantId}/customers`, label: "Customers", icon: Users },
+        {
+          href: `/${params.restaurantId}/customers`,
+          label: "Customers",
+          icon: Users,
+        },
       ],
     },
     {
       label: "Staff",
       icon: Users,
       items: [
-        { href: `/${params.restaurantId}/employees`, label: "Employees", icon: BadgeCheck },
+        {
+          href: `/${params.restaurantId}/employees`,
+          label: "Employees",
+          icon: BadgeCheck,
+        },
+        {
+          href: `/${params.restaurantId}/attendance`,
+          label: "Attendance",
+          icon: UserRoundCheck,
+        },
       ],
     },
     {
       label: "Settings",
       icon: Settings,
       items: [
-        { href: `/${params.restaurantId}/settings`, label: "Settings", icon: Settings },
+        {
+          href: `/${params.restaurantId}/settings`,
+          label: "Settings",
+          icon: Settings,
+        },
       ],
     },
-  ]
+  ];
 
   return (
     <div className="flex flex-col space-y-2">
@@ -119,5 +173,5 @@ export function MobileMainNav({
         </div>
       ))}
     </div>
-  )
+  );
 }
