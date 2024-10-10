@@ -115,22 +115,6 @@ export function MobileMainNav({
       ],
     },
     {
-      label: "Staff",
-      icon: Users,
-      items: [
-        {
-          href: `/${params.restaurantId}/employees`,
-          label: "Employees",
-          icon: BadgeCheck,
-        },
-        {
-          href: `/${params.restaurantId}/attendance`,
-          label: "Attendance",
-          icon: UserRoundCheck,
-        },
-      ],
-    },
-    {
       label: "Settings",
       icon: Settings,
       items: [

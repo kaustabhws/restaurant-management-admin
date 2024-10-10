@@ -106,21 +106,6 @@ export function MainNav({
       ],
     },
     {
-      label: "Staff",
-      items: [
-        {
-          href: `/${params.restaurantId}/employees`,
-          label: "Employees",
-          icon: BadgeCheck,
-        },
-        {
-          href: `/${params.restaurantId}/attendance`,
-          label: "Attendance",
-          icon: UserRoundCheck,
-        },
-      ],
-    },
-    {
       label: "Settings",
       items: [
         {
@@ -194,10 +179,6 @@ function getItemDescription(label: string): string {
       return "Sales, revenue, and other key metrics.";
     case "Customers":
       return "Manage customer information and loyalty programs.";
-    case "Employees":
-      return "Manage employee information and schedules.";
-    case "Attendance":
-      return "Track employee attendance and performance.";
     case "Settings":
       return "Configure system settings.";
     default:
