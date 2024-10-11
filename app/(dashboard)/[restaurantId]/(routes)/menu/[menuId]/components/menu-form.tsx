@@ -119,7 +119,7 @@ export const MenuForm: React.FC<MenuFormProps> = ({ initialData }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="spave-y-8 w-full"
         >
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-3 gap-8 max-[740px]:grid-cols-2 max-[380px]:grid-cols-1">
             <FormField
               control={form.control}
               name="name"

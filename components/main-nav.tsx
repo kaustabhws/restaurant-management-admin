@@ -22,6 +22,7 @@ import {
   Settings,
   BadgeCheck,
   UserRoundCheck,
+  CalendarCheck,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -67,6 +68,11 @@ export function MainNav({
           href: `/${params.restaurantId}/tables-overview`,
           label: "Tables Overview",
           icon: Table,
+        },
+        {
+          href: `/${params.restaurantId}/reservation`,
+          label: "Reservation",
+          icon: CalendarCheck,
         },
       ],
     },
@@ -171,6 +177,8 @@ function getItemDescription(label: string): string {
       return "Manage tables.";
     case "Tables Overview":
       return "View table statuses and availability.";
+    case "Reservation":
+      return "Manage reservations.";
     case "Order":
       return "Manage and track orders.";
     case "Insights":

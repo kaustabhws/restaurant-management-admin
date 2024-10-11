@@ -120,7 +120,7 @@ export const TableForm: React.FC<TableFormProps> = ({ initialData }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-3 gap-8 max-[740px]:grid-cols-2 max-[420px]:grid-cols-1">
             <FormField
               control={form.control}
               name="name"

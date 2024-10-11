@@ -20,6 +20,7 @@ import {
   Settings,
   BadgeCheck,
   UserRoundCheck,
+  CalendarCheck,
 } from "lucide-react";
 
 type NavItem = {
@@ -73,6 +74,11 @@ export function MobileMainNav({
           href: `/${params.restaurantId}/tables-overview`,
           label: "Tables Overview",
           icon: Table,
+        },
+        {
+          href: `/${params.restaurantId}/reservation`,
+          label: "Reservation",
+          icon: CalendarCheck,
         },
       ],
     },
