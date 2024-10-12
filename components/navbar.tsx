@@ -5,8 +5,13 @@ import { redirect } from "next/navigation";
 import prismadb from "@/lib/prismadb";
 import { ThemeToggle } from "./theme-toggle";
 import HamburgerMenu from "./hamburger";
+import Notification from "./notifications";
 
-const Navbar = async () => {
+interface NavbarProps {
+  resId: string;
+}
+
+const Navbar: React.FC<NavbarProps> = async ({ resId }) => {
   const { userId } = auth();
 
   if (!userId) {
@@ -21,15 +26,16 @@ const Navbar = async () => {
 
   return (
     <div className="border-b">
-      <div className="flex h-16 items-center px-3 max-[400px]:px-1">
+      <div className="flex h-16 items-center px-3 max-[426px]:px-1">
         <div className="min-[1168px]:hidden">
-          <HamburgerMenu />
+          <HamburgerMenu restaurant={restaurant} />
         </div>
-        <div className="flex max-[1168px]:flex-1 justify-center max-[900px]:justify-center">
+        <div className="flex max-[1168px]:flex-1 justify-center max-[900px]:justify-center max-[420px]:hidden">
           <StoreSwitcher items={restaurant} />
         </div>
         <MainNav className="min-[1100px]:mx-6 max-[1168px]:hidden max-[1100px]:mx-4" />
-        <div className="ml-auto flex items-center space-x-4 max-[400px]:space-x-2">
+        <div className="ml-auto flex items-center space-x-4 max-[446px]:space-x-2">
+          <Notification resId={resId} />
           <ThemeToggle />
           <UserButton afterSignOutUrl="/" />
         </div>

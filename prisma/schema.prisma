@@ -9,19 +9,20 @@ datasource db {
 }
 
 model Restaurants {
-  id           String               @id @default(uuid())
-  name         String
-  userId       String
-  menus        Menu[]               @relation("RestaurantToMenu")
-  tables       Table[]              @relation("RestaurantToTable")
-  orders       Orders[]             @relation("RestaurantToOrder")
-  temporders   TempOrders[]         @relation("RestaurantToTempOrder")
-  bills        Bill[]               @relation("RestaurantToBill")
-  customers    Customer[]           @relation("RestaurantToCustimer")
-  loyalty      LoyaltyTransaction[] @relation("RestaurantToLoyaltyTransaction")
-  reservations Reservation[]
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
+  id            String               @id @default(uuid())
+  name          String
+  userId        String
+  menus         Menu[]               @relation("RestaurantToMenu")
+  tables        Table[]              @relation("RestaurantToTable")
+  orders        Orders[]             @relation("RestaurantToOrder")
+  temporders    TempOrders[]         @relation("RestaurantToTempOrder")
+  bills         Bill[]               @relation("RestaurantToBill")
+  customers     Customer[]           @relation("RestaurantToCustimer")
+  loyalty       LoyaltyTransaction[] @relation("RestaurantToLoyaltyTransaction")
+  reservations  Reservation[]        @relation("RestaurantToReservation")
+  notifications Notification[]       @relation("RestaurantToNotification")
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 }
 
 model Menu {
@@ -182,7 +183,7 @@ enum TransactionType {
 model Reservation {
   id         String      @id @default(uuid())
   resId      String
-  restaurant Restaurants @relation(fields: [resId], references: [id])
+  restaurant Restaurants @relation("RestaurantToReservation", fields: [resId], references: [id])
   tableId    String
   table      Table       @relation(fields: [tableId], references: [id])
   name       String
@@ -201,4 +202,29 @@ enum ReservationStatus {
   Upcoming
   Completed
   Cancelled
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  resId       String
+  restaurant  Restaurants      @relation("RestaurantToNotification", fields: [resId], references: [id])
+  message     String
+  type        NotificationType
+  status      NotificationStatus
+  referenceId String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([resId])
+}
+
+enum NotificationType {
+  Order
+  Reservation
+  General
+}
+
+enum NotificationStatus {
+  Unread
+  Read
 }

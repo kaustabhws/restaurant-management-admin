@@ -38,6 +38,7 @@ export async function PATCH(
 
     const { isPaid, payMode } = body;
 
+    // null checks
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -57,6 +58,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
+    // Check if the order is paid with loyalty points
     const orderById = await prismadb.orders.findFirst({
       where: {
         id: params.orderId,
@@ -74,6 +76,7 @@ export async function PATCH(
       return new NextResponse("Payment mode is required", { status: 400 });
     }
 
+    // Update the order
     const order = await prismadb.orders.update({
       where: {
         id: params.orderId,
@@ -84,10 +87,24 @@ export async function PATCH(
       },
     });
 
+    // Create a notification if the order is paid
+    if (isPaid) {
+      await prismadb.notification.create({
+        data: {
+          resId: params.resId,
+          type: "Order",
+          referenceId: order.id,
+          message: `Order #${order.slNo} paid successfully`,
+          status: "Unread",
+        },
+      });
+    }
+
     if (!order.customerId) {
       return NextResponse.json(order);
     }
 
+    // if order is paid and not paid before, increment loyalty points
     if (isPaid) {
       const customer = await prismadb.customer.update({
         where: {
@@ -110,16 +127,21 @@ export async function PATCH(
           )} points`,
         },
       });
-    } else if (!isPaid && orderById?.isPaid && orderById.payMode !== "Loyalty Points") {
+    } else if (
+      !isPaid &&
+      orderById?.isPaid &&
+      orderById.payMode !== "Loyalty Points"
+    ) {
       // Deduct loyalty points if the order is now unpaid and was previously paid
       const loyaltyPointsDeducted = countPoints(order.amount); // Calculate the points to deduct
-      
+
       await prismadb.customer.update({
         where: {
           id: order.customerId,
         },
         data: {
           loyaltyPoints: { decrement: loyaltyPointsDeducted },
+          totalSpent: { decrement: order.amount }
         },
       });
 

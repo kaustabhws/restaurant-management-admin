@@ -47,16 +47,26 @@ export async function POST(
       },
     });
 
-    if(status === 'Upcoming') {
+    if (status === "Upcoming") {
       await prismadb.table.update({
         where: {
-          id: tableId
+          id: tableId,
         },
         data: {
-          status: 'Reserved'
-        }
-      })
+          status: "Reserved",
+        },
+      });
     }
+
+    await prismadb.notification.create({
+      data: {
+        message: `New reservation from ${name}`,
+        resId: params.resId,
+        type: "Reservation",
+        referenceId: reservation.id,
+        status: "Unread",
+      },
+    });
 
     return NextResponse.json(reservation);
   } catch (error) {

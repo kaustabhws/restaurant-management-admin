@@ -1,14 +1,16 @@
 "use client";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import { MobileMainNav } from "./mobile-main-nav";
+import StoreSwitcher from "./store-switcher";
+import { Restaurants } from "@prisma/client";
 
-const HamburgerMenu = () => {
+interface HamburgerMenuProps {
+  restaurant: Restaurants[];
+}
+
+const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ restaurant }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -24,11 +26,14 @@ const HamburgerMenu = () => {
           </div>
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="px-4 max-[330px]:px-1 overflow-y-auto">
-        <MobileMainNav
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-        />
+      <SheetContent
+        side="left"
+        className="px-4 max-[330px]:px-1 overflow-y-auto"
+      >
+        <div className='flex-1 mb-3'>
+          <StoreSwitcher items={restaurant} />
+        </div>
+        <MobileMainNav isOpen={isOpen} setIsOpen={setIsOpen} />
       </SheetContent>
     </Sheet>
   );

@@ -56,7 +56,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <Navbar />
+      <Navbar resId={restaurant.id} />
       {children}
     </>
   );

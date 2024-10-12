@@ -150,7 +150,7 @@ const BillContent: React.FC<BillContentProps> = ({
             Detailed bill for order #{order?.slNo}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className='max-[440px]:px-2'>
           <form>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">

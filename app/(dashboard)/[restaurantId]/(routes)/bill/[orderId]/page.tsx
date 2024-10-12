@@ -38,10 +38,6 @@ const CardWithForm = async ({
     },
   });
 
-  if (!customer) {
-    redirect(`/${params.restaurantId}/orders`);
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center flex-col">
       <BillContent restaurant={restaurant} order={order} customer={customer} />
