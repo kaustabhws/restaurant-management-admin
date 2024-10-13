@@ -121,43 +121,10 @@ export const ReservationForm: React.FC<ReservationFormProps> = ({
     }
   };
 
-  const onDelete = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(
-        `/api/${params.restaurantId}/menu/${params.reservationId}`
-      );
-      router.push(`/${params.restaurantId}/menu`);
-      router.refresh();
-      toast.success("Menu deleted");
-    } catch (error) {
-      toast.error("Make sure you removed all categories using this Menu first");
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
-  };
-
   return (
     <>
-      <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      />
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {initialData && (
-          <Button
-            disabled={loading}
-            variant="destructive"
-            size="icon"
-            onClick={() => setOpen(true)}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        )}
       </div>
       <Separator />
       <Form {...form}>

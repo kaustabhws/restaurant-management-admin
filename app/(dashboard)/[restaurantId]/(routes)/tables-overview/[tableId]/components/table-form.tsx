@@ -17,7 +17,7 @@ import { Menu, Table } from "@prisma/client";
 import axios from "axios";
 import { Check, ChevronsUpDown, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { OrderClient } from "./client";
@@ -78,6 +78,17 @@ export const TableForm: React.FC<TableFormProps> = ({
     },
   });
 
+  const order: OrderColumn[] = temporder?.map((item: any) => ({
+    id: item.id,
+    orderItems: item.orderItems
+      .map((orderItem: any) => orderItem.menuItem.name)
+      .join(", "),
+    quantity: item.orderItems.map((orderItem: any) => orderItem.quantity),
+    isPaid: item.isPaid,
+    amount: item.amount,
+    createdAt: format(item.createdAt, "MMMM do, yyyy"),
+  }));
+
   const tableStatus = {
     name: table?.name,
     seats: table?.seats,
@@ -101,16 +112,23 @@ export const TableForm: React.FC<TableFormProps> = ({
     }
   };
 
-  const order: OrderColumn[] = temporder?.map((item: any) => ({
-    id: item.id,
-    orderItems: item.orderItems
-      .map((orderItem: any) => orderItem.menuItem.name)
-      .join(", "),
-    quantity: item.orderItems.map((orderItem: any) => orderItem.quantity),
-    isPaid: item.isPaid,
-    amount: item.amount,
-    createdAt: format(item.createdAt, "MMMM do, yyyy"),
-  }));
+  const updateTable = async () => {
+    try {
+      await axios.patch(`/api/${params.restaurantId}/tables/${table?.id}`, {
+        name: table?.name,
+        seats: table?.seats,
+        status: "Available",
+      });
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
+
+  useEffect(() => {
+    if (order.length === 0) {
+      updateTable();
+    }
+  }, [order.length]);
 
   return (
     <>

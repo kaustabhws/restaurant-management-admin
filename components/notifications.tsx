@@ -1,23 +1,12 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Bell,
-  Calendar,
-  MessageSquareWarning,
-  ShoppingCart,
-} from "lucide-react";
+import { Bell } from "lucide-react";
 import { Button } from "./ui/button";
 import prismadb from "@/lib/prismadb";
-import Link from "next/link";
 import NotificationContent from "./notification-content";
-import axios from "axios";
-import toast from "react-hot-toast";
 
 interface NotificationProps {
   resId: string;
