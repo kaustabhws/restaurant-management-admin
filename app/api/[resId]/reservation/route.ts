@@ -47,17 +47,6 @@ export async function POST(
       },
     });
 
-    if (status === "Upcoming") {
-      await prismadb.table.update({
-        where: {
-          id: tableId,
-        },
-        data: {
-          status: "Reserved",
-        },
-      });
-    }
-
     await prismadb.notification.create({
       data: {
         message: `New reservation from ${name}`,

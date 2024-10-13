@@ -43,15 +43,21 @@ model Table {
   id          String        @id @default(uuid())
   name        String
   seats       Int
-  status      String        @default("Available")
+  status      TableStatus        @default(Available)
   resId       String
   restaurant  Restaurants   @relation("RestaurantToTable", fields: [resId], references: [id])
   temporders  TempOrders[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  Reservation Reservation[]
+  reservation Reservation[]
 
   @@index([resId])
+}
+
+enum TableStatus {
+  Available
+  Reserved
+  Occupied
 }
 
 model TempOrders {

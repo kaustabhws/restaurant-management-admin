@@ -18,10 +18,16 @@ const ReservationIdPage = async ({
     },
   });
 
+  const reservations = await prismadb.reservation.findMany({
+    where: {
+      resId: params.restaurantId,
+    }
+  })
+
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-4 max-[425px]:px-3">
-        <ReservationForm initialData={reservation} tables={tables} />
+        <ReservationForm initialData={reservation} tables={tables} reservations={reservations} />
       </div>
     </div>
   );

@@ -59,37 +59,6 @@ export async function PATCH(
       },
     });
 
-    if (status === "Completed" || status === "Cancelled") {
-      await prismadb.table.update({
-        where: {
-          id: tableId,
-        },
-        data: {
-          status: "Available",
-        },
-      });
-    }
-
-    if (res.tableId !== tableId) {
-      await prismadb.table.update({
-        where: {
-          id: res.tableId,
-        },
-        data: {
-          status: "Available",
-        },
-      });
-
-      await prismadb.table.update({
-        where: {
-          id: tableId,
-        },
-        data: {
-          status: "Reserved",
-        },
-      });
-    }
-
     return NextResponse.json(reservation);
   } catch (error) {
     console.log("[RESERVATION_PATCH]", error);

@@ -1,9 +1,10 @@
 "use client";
 
-import { AlertModal } from "@/components/modals/alert-modal";
 import { TimePicker } from "@/components/time-picker";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -31,8 +32,8 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Reservation, Table } from "@prisma/client";
 import axios from "axios";
-import { format } from "date-fns";
-import { CalendarIcon, Trash } from "lucide-react";
+import { format, isSameDay } from "date-fns";
+import { CalendarIcon, Clock, Trash, Users } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,11 +54,13 @@ type ReservationFormValues = z.infer<typeof formSchema>;
 interface ReservationFormProps {
   initialData: Reservation | null;
   tables: Table[];
+  reservations: Reservation[];
 }
 
 export const ReservationForm: React.FC<ReservationFormProps> = ({
   initialData,
   tables,
+  reservations,
 }) => {
   const params = useParams();
   const router = useRouter();
@@ -99,6 +102,35 @@ export const ReservationForm: React.FC<ReservationFormProps> = ({
 
     updateTime();
   }, []);
+
+  const [selectedDateReservations, setSelectedDateReservations] = useState<
+    Reservation[]
+  >([]);
+
+  useEffect(() => {
+    // Update the time in the field only on the client side after hydration
+    const updateTime = () => {
+      const currentDate = form.getValues("date");
+      if (currentDate) {
+        form.setValue("date", new Date(currentDate));
+      }
+    };
+
+    updateTime();
+  }, []);
+
+  useEffect(() => {
+    // Update the list of reservations for the selected date
+    const selectedDate = form.getValues("date");
+    if (selectedDate) {
+      const filteredReservations = reservations.filter(
+        (reservation) =>
+          isSameDay(new Date(reservation.date), selectedDate) &&
+          reservation.status === "Upcoming"
+      );
+      setSelectedDateReservations(filteredReservations);
+    }
+  }, [form.watch("date"), reservations]);
 
   const onSubmit = async (data: ReservationFormValues) => {
     try {
@@ -301,6 +333,47 @@ export const ReservationForm: React.FC<ReservationFormProps> = ({
           </Button>
         </form>
       </Form>
+      <Separator />
+      {selectedDateReservations.length > 0 && (
+        <div className="mt-8">
+          <Heading
+            title="Upcoming Reservations"
+            description="Reservations for the selected date"
+          />
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {selectedDateReservations.map((reservation) => (
+              <Card key={reservation.id} className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="bg-primary p-4">
+                    <h3 className="text-lg font-semibold text-primary-foreground">
+                      {reservation.name}
+                    </h3>
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-center">
+                      <Clock className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <span>
+                        {format(new Date(reservation.date), "h:mm a")}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <Users className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <span>
+                        {reservation.visitors}{" "}
+                        {reservation.visitors === 1 ? "guest" : "guests"}
+                      </span>
+                    </div>
+                    <Badge variant="secondary" className="mt-2">
+                      {tables.find((t) => t.id === reservation.tableId)?.name ||
+                        "N/A"}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 };
