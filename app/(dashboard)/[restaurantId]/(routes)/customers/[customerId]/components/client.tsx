@@ -4,18 +4,20 @@ import { Separator } from "@/components/ui/separator";
 import { TransactionColumn, columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StarIcon, UserIcon } from "lucide-react";
+import { IndianRupee, StarIcon, UserIcon } from "lucide-react";
 
 interface TransactionClientProps {
   data: TransactionColumn[];
   contact: string;
   loyaltyPoints: number;
+  totalSpent: number;
 }
 
 export const TransactionClient: React.FC<TransactionClientProps> = ({
   data,
   contact,
   loyaltyPoints,
+  totalSpent,
 }) => {
   return (
     <>
@@ -48,6 +50,17 @@ export const TransactionClient: React.FC<TransactionClientProps> = ({
                     Total Loyalty Points
                   </p>
                   <p className="text-lg font-semibold">{loyaltyPoints}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <IndianRupee className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Spend
+                  </p>
+                  <p className="text-lg font-semibold">{totalSpent}</p>
                 </div>
               </div>
             </div>

@@ -52,6 +52,7 @@ const MenuPage = async ({
         <TransactionClient
           data={formattedTransactions}
           contact={customer.phone || customer.email || "No contact"}
+          totalSpent={customer.totalSpent}
           loyaltyPoints={customer.loyaltyPoints}
         />
       </div>

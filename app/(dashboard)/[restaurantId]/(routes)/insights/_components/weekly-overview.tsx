@@ -146,7 +146,7 @@ const WeeklyOverview: React.FC<WeeklyOverviewProps> = ({ resId }) => {
                 />
                 <LabelList
                   dataKey="total"
-                  position="right"
+                  position="insideRight"
                   offset={8}
                   className="fill-foreground"
                   fontSize={12}

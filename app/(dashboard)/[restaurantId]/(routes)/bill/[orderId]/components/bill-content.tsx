@@ -85,7 +85,7 @@ const BillContent: React.FC<BillContentProps> = ({
         }
         @media print {
             header, footer {
-                display: none;
+                display: none !important;
             }
         }
     `,

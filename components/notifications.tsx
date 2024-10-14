@@ -4,7 +4,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Bell } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import prismadb from "@/lib/prismadb";
 import NotificationContent from "./notification-content";
 
@@ -42,14 +43,19 @@ const Notification: React.FC<NotificationProps> = async ({ resId }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
-          <Bell className="h-[1.2rem]" />
-          <p className="absolute text-red-500 font-bold -top-1 right-1 text-base">
-            {unreadNotifications > 0 ? unreadNotifications : ""}
-          </p>
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell className="h-[1.2rem] w-[1.2rem]" />
+          {unreadNotifications > 0 && (
+            <Badge
+              variant="destructive"
+              className="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs min-w-[1.2rem] h-[1.2rem] flex items-center justify-center"
+            >
+              {unreadNotifications > 99 ? "99+" : unreadNotifications}
+            </Badge>
+          )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         <NotificationContent
           notifications={notifications}
           markAsRead={markAsRead}

@@ -1,8 +1,5 @@
-import { format } from "date-fns";
 import prismadb from "@/lib/prismadb";
 import { ReservationClient } from "./components/client";
-// import { MenuClient } from "./components/client";
-// import { MenuColumn } from "./components/columns";
 
 const ReservationPage = async ({
   params,
@@ -14,7 +11,7 @@ const ReservationPage = async ({
       resId: params.restaurantId,
     },
     orderBy: {
-      createdAt: "desc",
+      date: "asc",
     },
     include: {
       table: true,

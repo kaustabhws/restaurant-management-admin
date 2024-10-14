@@ -79,6 +79,7 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
+    // Generate SL No
     const restaurantName = restaurantsByUserId.name;
     const nameParts = restaurantName.split(" ");
     let slNo = "";
@@ -105,8 +106,9 @@ export async function POST(
       });
     }
 
+    // Check if it's a takeaway order
     const orderType = tableName ? "DINE_IN" : "TAKE_AWAY";
-
+    // Calculate total amount
     const totalAmount: number = resultData.totalAmount;
 
     // Find or create the customer
@@ -115,7 +117,7 @@ export async function POST(
       customer.contact,
       params.resId
     );
-
+    // Create the order
     const order = await prismadb.orders.create({
       data: {
         resId: params.resId,
