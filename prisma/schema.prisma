@@ -43,7 +43,7 @@ model Table {
   id          String        @id @default(uuid())
   name        String
   seats       Int
-  status      TableStatus        @default(Available)
+  status      TableStatus   @default(Available)
   resId       String
   restaurant  Restaurants   @relation("RestaurantToTable", fields: [resId], references: [id])
   temporders  TempOrders[]
@@ -99,6 +99,7 @@ model Orders {
   restaurant Restaurants  @relation("RestaurantToOrder", fields: [resId], references: [id])
   orderItems OrderItems[]
   bill       Bill[]
+  discount   Float        @default(0)
   amount     Float
   isPaid     Boolean
   customerId String?
@@ -211,15 +212,15 @@ enum ReservationStatus {
 }
 
 model Notification {
-  id          String           @id @default(uuid())
+  id          String             @id @default(uuid())
   resId       String
-  restaurant  Restaurants      @relation("RestaurantToNotification", fields: [resId], references: [id])
+  restaurant  Restaurants        @relation("RestaurantToNotification", fields: [resId], references: [id])
   message     String
   type        NotificationType
   status      NotificationStatus
   referenceId String
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   @@index([resId])
 }

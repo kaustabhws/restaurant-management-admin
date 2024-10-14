@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -23,8 +22,12 @@ import { BillClient } from "./client";
 import { Button } from "@/components/ui/button";
 
 import { useReactToPrint } from "react-to-print";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import LoyaltyPayment from "@/components/loyalty-payment";
+import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface Restaurant {
   id: string;
@@ -47,6 +50,7 @@ interface Order {
   tableNo: string | null;
   payMode: string;
   orderType: string;
+  discount: number;
   amount: number;
   isPaid: boolean;
   bill: BillItem[];
@@ -76,6 +80,11 @@ const BillContent: React.FC<BillContentProps> = ({
     .map((item) => item.quantity)
     .reduce((acc, quantity) => acc + quantity, 0);
 
+  const [discountPercentage, setDiscountPercentage] = useState<number>();
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
   const componentRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -91,18 +100,54 @@ const BillContent: React.FC<BillContentProps> = ({
     `,
   });
 
+  const applyDiscount = async () => {
+    if (!discountPercentage) {
+      return;
+    }
+    const discount = (order?.amount! * discountPercentage) / 100;
+
+    try {
+      setLoading(true);
+      await axios.patch(`/api/${restaurant?.id}/order/${order?.id}`, {
+        discount: discount,
+      });
+      toast.success("Discount applied successfully");
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to apply discount");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
-      <div className="flex gap-3 justify-center">
-        <BillClient
-          resId={restaurant?.id}
-          orderId={order?.id}
-          paid={order?.isPaid}
-        />
-        <Button onClick={handlePrint}>
-          <PrinterIcon className="mr-2 h-4 w-4" />
-          Print
-        </Button>
+      <div className="my-3">
+        <div className="flex gap-3 justify-center">
+          <BillClient
+            resId={restaurant?.id}
+            orderId={order?.id}
+            paid={order?.isPaid}
+          />
+          <Button onClick={handlePrint}>
+            <PrinterIcon className="mr-2 h-4 w-4" />
+            Print
+          </Button>
+        </div>
+        <div className="flex items-center justify-center space-x-2">
+          <Input
+            type="number"
+            placeholder="5%"
+            className="w-24"
+            value={discountPercentage}
+            onChange={(e) => setDiscountPercentage(Number(e.target.value))}
+            min="0"
+            max="100"
+          />
+          <Button disabled={loading} variant="outline" onClick={applyDiscount}>
+            Apply Discount
+          </Button>
+        </div>
       </div>
       <Card ref={componentRef}>
         <CardHeader>
@@ -150,7 +195,7 @@ const BillContent: React.FC<BillContentProps> = ({
             Detailed bill for order #{order?.slNo}
           </CardDescription>
         </CardHeader>
-        <CardContent className='max-[440px]:px-2'>
+        <CardContent className="max-[440px]:px-2">
           <form>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
@@ -183,6 +228,14 @@ const BillContent: React.FC<BillContentProps> = ({
                     ))}
                   </TableBody>
                   <TableFooter>
+                    {(order?.discount ?? 0) > 0 && (
+                      <TableRow>
+                        <TableCell colSpan={3}>Discount</TableCell>
+                        <TableCell className="text-right">
+                          {order?.discount}
+                        </TableCell>
+                      </TableRow>
+                    )}
                     <TableRow>
                       <TableCell colSpan={2}>Total</TableCell>
                       <TableCell className="text-right">
@@ -199,7 +252,11 @@ const BillContent: React.FC<BillContentProps> = ({
           </form>
         </CardContent>
       </Card>
-      <div className='mt-4'>{customer && order && <LoyaltyPayment customer={customer} order={order} />}</div>
+      <div className="my-4">
+        {customer && order && (
+          <LoyaltyPayment customer={customer} order={order} />
+        )}
+      </div>
     </div>
   );
 };

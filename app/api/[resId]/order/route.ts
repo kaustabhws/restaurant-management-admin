@@ -108,8 +108,6 @@ export async function POST(
 
     // Check if it's a takeaway order
     const orderType = tableName ? "DINE_IN" : "TAKE_AWAY";
-    // Calculate total amount
-    const totalAmount: number = resultData.totalAmount;
 
     // Find or create the customer
     const customerData = await findOrCreateCustomer(
@@ -117,6 +115,10 @@ export async function POST(
       customer.contact,
       params.resId
     );
+
+    const discount = resultData.discount || 0;
+    const totalAmount: number = resultData.totalAmount - discount;
+
     // Create the order
     const order = await prismadb.orders.create({
       data: {
@@ -125,8 +127,9 @@ export async function POST(
         tableNo: tableName ? tableName.name : null,
         orderType: orderType as OrderType,
         isPaid: false,
-        amount: totalAmount,
         customerId: customerData && customerData.id ? customerData.id : null,
+        discount,
+        amount: totalAmount,
         bill: {
           create: resultData.menuItems.map((item: any) => ({
             resId: params.resId,

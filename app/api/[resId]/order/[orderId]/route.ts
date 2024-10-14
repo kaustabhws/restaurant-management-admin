@@ -36,7 +36,7 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { isPaid, payMode } = body;
+    const { isPaid, payMode, discount } = body;
 
     // null checks
     if (!userId) {
@@ -70,6 +70,26 @@ export async function PATCH(
         "Order paid with loyalty points cannot be updated",
         { status: 400 }
       );
+    }
+
+    // Apply discount
+    if (discount) {
+      // Check if discount is already applied
+      if (orderById?.discount) {
+        return new NextResponse("Discount already applied", { status: 400 });
+      }
+      // Update the order with discount
+      await prismadb.orders.update({
+        where: {
+          id: params.orderId,
+        },
+        data: {
+          discount: discount,
+          amount: { decrement: discount },
+        },
+      });
+
+      return NextResponse.json({ message: "Discount applied" });
     }
 
     if (isPaid && !payMode) {
@@ -106,7 +126,7 @@ export async function PATCH(
 
     // if order is paid and not paid before, increment loyalty points
     if (isPaid) {
-      const customer = await prismadb.customer.update({
+      await prismadb.customer.update({
         where: {
           id: order.customerId,
         },
@@ -141,7 +161,7 @@ export async function PATCH(
         },
         data: {
           loyaltyPoints: { decrement: loyaltyPointsDeducted },
-          totalSpent: { decrement: order.amount }
+          totalSpent: { decrement: order.amount },
         },
       });
 

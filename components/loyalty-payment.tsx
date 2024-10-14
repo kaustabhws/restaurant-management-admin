@@ -1,6 +1,6 @@
 "use client";
 
-import { CoinsIcon } from "lucide-react";
+import { CoinsIcon, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import axios from "axios";
@@ -57,22 +57,33 @@ const LoyaltyPayment: React.FC<LoyaltyPaymentProps> = ({ customer, order }) => {
   };
 
   return (
-    <div className="flex items-center justify-around flex-1 max-[384px]:flex-col gap-3">
-      <div className="flex items-center space-x-2 bg-secondary rounded-md px-3 py-2 text-center">
-        <CoinsIcon className="h-4 w-4 text-secondary-foreground" />
-        <span className="text-sm font-medium text-secondary-foreground">
-          {customer.loyaltyPoints} Points Available
+    <>
+      <div className='flex items-center gap-2 mb-2 justify-center'>
+        <span className="flex items-center gap-1 text-sm font-medium text-secondary-foreground">
+          <User className="h-4 w-4 text-secondary-foreground" /> Customer
+          Details:
+        </span>
+        <span className="font-semibold text-primary">
+          {customer.phone || customer.email}
         </span>
       </div>
-      <Button
-        disabled={
-          customer.loyaltyPoints < order.amount || loading || order.isPaid
-        }
-        onClick={() => submitOrder(true, "Loyalty Points")}
-      >
-        Pay using Loyalty
-      </Button>
-    </div>
+      <div className="flex items-center justify-around flex-1 max-[384px]:flex-col gap-3">
+        <div className="flex items-center space-x-2 bg-secondary rounded-md px-3 py-2 text-center">
+          <CoinsIcon className="h-4 w-4 text-secondary-foreground" />
+          <span className="text-sm font-medium text-secondary-foreground">
+            {customer.loyaltyPoints} Points Available
+          </span>
+        </div>
+        <Button
+          disabled={
+            customer.loyaltyPoints < order.amount || loading || order.isPaid
+          }
+          onClick={() => submitOrder(true, "Loyalty Points")}
+        >
+          Pay using Loyalty
+        </Button>
+      </div>
+    </>
   );
 };
 
