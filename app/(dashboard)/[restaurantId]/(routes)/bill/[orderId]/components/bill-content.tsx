@@ -114,7 +114,28 @@ const BillContent: React.FC<BillContentProps> = ({
       toast.success("Discount applied successfully");
       router.refresh();
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data === "Discount already applied") {
+          toast.error("Discount already applied");
+          return;
+        }
+      }
       toast.error("Failed to apply discount");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeDiscount = async () => {
+    try {
+      setLoading(true);
+      await axios.patch(`/api/${restaurant?.id}/order/${order?.id}`, {
+        removeDiscount: true,
+      });
+      toast.success("Discount removed successfully");
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to remove discount");
     } finally {
       setLoading(false);
     }
@@ -135,18 +156,30 @@ const BillContent: React.FC<BillContentProps> = ({
           </Button>
         </div>
         <div className="flex items-center justify-center space-x-2">
-          <Input
-            type="number"
-            placeholder="5%"
-            className="w-24"
-            value={discountPercentage}
-            onChange={(e) => setDiscountPercentage(Number(e.target.value))}
-            min="0"
-            max="100"
-          />
-          <Button disabled={loading} variant="outline" onClick={applyDiscount}>
-            Apply Discount
-          </Button>
+          {order?.discount! > 0 ? (
+            <Button variant="outline" onClick={removeDiscount}>
+              Remove Discount
+            </Button>
+          ) : (
+            <>
+              <Input
+                type="number"
+                placeholder="5%"
+                className="w-24"
+                value={discountPercentage}
+                onChange={(e) => setDiscountPercentage(Number(e.target.value))}
+                min="0"
+                max="100"
+              />
+              <Button
+                disabled={loading}
+                variant="outline"
+                onClick={applyDiscount}
+              >
+                Apply Discount
+              </Button>
+            </>
+          )}
         </div>
       </div>
       <Card ref={componentRef}>

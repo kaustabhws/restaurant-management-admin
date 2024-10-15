@@ -36,7 +36,7 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { isPaid, payMode, discount } = body;
+    const { isPaid, payMode, discount, removeDiscount } = body;
 
     // null checks
     if (!userId) {
@@ -73,23 +73,26 @@ export async function PATCH(
     }
 
     // Apply discount
-    if (discount) {
-      // Check if discount is already applied
-      if (orderById?.discount) {
+    // Handle discount application
+    if (discount || removeDiscount) {
+      if (discount && orderById?.discount) {
         return new NextResponse("Discount already applied", { status: 400 });
       }
-      // Update the order with discount
+      const updatedAmount = removeDiscount
+        ? orderById?.amount! + orderById?.discount!
+        : orderById?.amount! - discount!;
+
       await prismadb.orders.update({
-        where: {
-          id: params.orderId,
-        },
+        where: { id: params.orderId },
         data: {
-          discount: discount,
-          amount: { decrement: discount },
+          discount: removeDiscount ? 0 : discount,
+          amount: updatedAmount,
         },
       });
 
-      return NextResponse.json({ message: "Discount applied" });
+      return NextResponse.json({
+        message: removeDiscount ? "Discount removed" : "Discount applied",
+      });
     }
 
     if (isPaid && !payMode) {
