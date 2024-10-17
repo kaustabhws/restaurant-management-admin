@@ -35,15 +35,11 @@ export default function NotificationContent({
   }
 
   const formatTimeAgo = (createdAt: Date) => {
-    const currentTime = new Date(); // local time
+    const currentTime = new Date(); // current local time
     const notificationTime = new Date(createdAt); // UTC time from DB
 
-    // Convert notification time to local time
-    const localNotificationTime = new Date(
-      notificationTime.getTime() + currentTime.getTimezoneOffset() * 60000
-    );
-
-    const diffInMs = currentTime.getTime() - localNotificationTime.getTime();
+    // Get the time difference in milliseconds
+    const diffInMs = currentTime.getTime() - notificationTime.getTime();
 
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMinutes / 60);
