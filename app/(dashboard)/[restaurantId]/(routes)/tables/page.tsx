@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import prismadb from "@/lib/prismadb";
 import { TableClient } from "./components/client";
 import { TableColumn } from "./components/columns";
+import { getISTTime } from "@/lib/getISTTime";
 
 const TablePage = async ({ params }: { params: { restaurantId: string } }) => {
   // Get current date for comparison
@@ -36,7 +37,7 @@ const TablePage = async ({ params }: { params: { restaurantId: string } }) => {
       name: table.name,
       seats: table.seats,
       status: tableStatus,
-      createdAt: format(table.createdAt, "MMMM do, yyyy"),
+      createdAt: format(getISTTime(table.createdAt), "MMMM do, yyyy"),
     };
   });
 

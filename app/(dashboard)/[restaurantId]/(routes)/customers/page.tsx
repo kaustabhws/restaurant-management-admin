@@ -2,6 +2,7 @@ import { format } from 'date-fns'
 import prismadb from "@/lib/prismadb";
 import { CustiomerClient } from "./components/client";
 import { CustomerColumn } from "./components/columns";
+import { getISTTime } from '@/lib/getISTTime';
 
 const CustomersPage = async ({
     params
@@ -23,7 +24,7 @@ const CustomersPage = async ({
         contact: item.phone ?? item.email ?? 'No contact',
         loyaltyPoints: item.loyaltyPoints,
         totalSpent: item.totalSpent,
-        createdAt: format(item.createdAt, 'MMMM do, yyyy')
+        createdAt: format(getISTTime(item.createdAt), 'MMMM do, yyyy')
     }));
 
     return (

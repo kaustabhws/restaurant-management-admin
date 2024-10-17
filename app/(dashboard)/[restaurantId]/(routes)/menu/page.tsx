@@ -2,6 +2,7 @@ import { format } from 'date-fns'
 import prismadb from "@/lib/prismadb";
 import { MenuClient } from "./components/client";
 import { MenuColumn } from "./components/columns";
+import { getISTTime } from '@/lib/getISTTime';
 
 const MenusPage = async ({
     params
@@ -22,7 +23,7 @@ const MenusPage = async ({
         id: item.id,
         name: item.name,
         price: item.price,
-        createdAt: format(item.createdAt, 'MMMM do, yyyy')
+        createdAt: format(getISTTime(item.createdAt), 'MMMM do, yyyy')
     }))
 
     return (

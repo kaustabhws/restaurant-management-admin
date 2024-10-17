@@ -4,6 +4,7 @@ import prismadb from "@/lib/prismadb";
 
 import { OrderColumn } from "./components/columns";
 import { OrderClient } from "./components/client";
+import { getISTTime } from "@/lib/getISTTime";
 
 const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
   const orders = await prismadb.orders.findMany({
@@ -32,7 +33,7 @@ const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
     amount: item.amount,
     isPaid: item.isPaid,
     tableNo: item.tableNo ?? '',
-    createdAt: format(item.createdAt, "MMMM do, yyyy"),
+    createdAt: format(getISTTime(item.createdAt), 'MMMM do yyyy'),
   }));
 
   return (
