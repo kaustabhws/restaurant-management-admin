@@ -35,9 +35,15 @@ export default function NotificationContent({
   }
 
   const formatTimeAgo = (createdAt: Date) => {
-    const currentTime = new Date();
-    const notificationTime = new Date(createdAt);
-    const diffInMs = currentTime.getTime() - notificationTime.getTime();
+    const currentTime = new Date(); // local time
+    const notificationTime = new Date(createdAt); // UTC time from DB
+
+    // Convert notification time to local time
+    const localNotificationTime = new Date(
+      notificationTime.getTime() + currentTime.getTimezoneOffset() * 60000
+    );
+
+    const diffInMs = currentTime.getTime() - localNotificationTime.getTime();
 
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMinutes / 60);
@@ -45,16 +51,16 @@ export default function NotificationContent({
     const diffInWeeks = Math.floor(diffInDays / 7);
 
     if (diffInMinutes < 60) {
-      return `${diffInMinutes}m`;
+      return `${diffInMinutes}m ago`;
     } else if (diffInHours < 24) {
-      return `${diffInHours}h`;
+      return `${diffInHours}h ago`;
     } else if (diffInDays < 7) {
-      return `${diffInDays}d`;
+      return `${diffInDays}d ago`;
     } else if (diffInWeeks < 4) {
-      return `${diffInWeeks}w`;
+      return `${diffInWeeks}w ago`;
     } else {
       const diffInMonths = Math.floor(diffInDays / 30);
-      return `${diffInMonths}mo`;
+      return `${diffInMonths}mo ago`;
     }
   };
 

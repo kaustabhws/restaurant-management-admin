@@ -1,3 +1,4 @@
+import { getISTTime } from "@/lib/getISTTime";
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
@@ -5,6 +6,12 @@ import { NextResponse } from "next/server";
 type GraphData = {
   date: string;
   total: number;
+};
+
+// Helper to detect if current timezone is UTC
+const isUTC = () => {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return timeZone === "UTC";
 };
 
 export async function GET(
@@ -46,7 +53,13 @@ export async function GET(
 
     // Grouping the orders by day and summing the revenue
     for (const order of paidOrders) {
-      const localDate = new Date(order.createdAt);
+      let localDate = new Date(order.createdAt);
+
+      // If the system's timezone is UTC, convert the date to IST
+      if (isUTC()) {
+        localDate = new Date(getISTTime(order.createdAt)); // Convert to IST
+      }
+
       const day = localDate.getDate(); // Get the day of the month
 
       // Adding the revenue for this order to the respective day
@@ -65,8 +78,9 @@ export async function GET(
     const year = new Date().getFullYear();
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const formattedDate = new Date(year, month, day)
-        .toLocaleDateString("en-CA");
+      const formattedDate = new Date(year, month, day).toLocaleDateString(
+        "en-CA"
+      ); // "YYYY-MM-DD" format
 
       graphData.push({
         date: formattedDate, // "YYYY-MM-DD"
