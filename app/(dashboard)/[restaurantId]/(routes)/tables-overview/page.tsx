@@ -5,13 +5,13 @@ import { CellAction } from "./components/cell-action";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import TableWithSeats from "@/components/table-with-seats";
 
 const TablesOverviewPage = async ({
   params,
 }: {
   params: { restaurantId: string };
 }) => {
-
   const currentDate = new Date();
   const formattedDate = format(currentDate, "yyyy-MM-dd");
 
@@ -67,7 +67,7 @@ const TablesOverviewPage = async ({
           </Link>
         </div>
       </div>
-      <div className="flex gap-16 mt-6 flex-wrap max-[430px]:justify-center">
+      <div className="flex gap-10 mt-6 flex-wrap max-[430px]:justify-center">
         {formattedTables.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center mt-10">
             <p className="text-lg">No tables found</p>
@@ -81,16 +81,21 @@ const TablesOverviewPage = async ({
         )}
         {formattedTables.map((table: any) => (
           <div key={table.id} className="relative flex flex-col items-center">
-            <Image src={tablesvg} alt={table.name} height={120} />
+            <TableWithSeats seats={table.seats} />
             <div
-              className={`absolute top-[46px] w-6 h-6 rounded-full flex items-center justify-center
-            ${
-              table.status === "Available"
-                ? "bg-green-500"
-                : table.status === "Occupied"
-                ? "bg-red-500"
-                : "bg-yellow-500"
-            }`}
+              className={`absolute w-6 h-6 rounded-full flex items-center justify-center
+                ${
+                  table.status === "Available"
+                    ? "bg-green-500"
+                    : table.status === "Occupied"
+                    ? "bg-red-500"
+                    : "bg-yellow-500"
+                }`}
+              style={{
+                top: "43%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
             ></div>
             <p>{table.name}</p>
             <CellAction data={table} />
