@@ -16,6 +16,9 @@ export default async function SetupLayout({
     const restaurant = await prismadb.restaurants.findFirst({
         where: {
             userId
+        },
+        orderBy: {
+            createdAt: 'asc'
         }
     });
 
