@@ -115,7 +115,7 @@ export function MainNav({
       label: "Settings",
       items: [
         {
-          href: `/${params.restaurantId}/settings`,
+          href: `/${params.restaurantId}/settings/profile`,
           label: "Settings",
           icon: Settings,
         },

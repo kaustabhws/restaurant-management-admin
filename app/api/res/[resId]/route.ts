@@ -56,6 +56,78 @@ export async function DELETE(
       return new NextResponse("Restaurant id is required", { status: 400 });
     }
 
+    // Delete related data first to avoid foreign key constraint violations
+    await prismadb.tempOrderItems.deleteMany({
+      where: {
+        orders: {
+          resId: params.resId,
+        },
+      },
+    });
+
+    await prismadb.orderItems.deleteMany({
+      where: {
+        orders: {
+          resId: params.resId,
+        },
+      },
+    });
+
+    await prismadb.tempOrders.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    await prismadb.menu.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    await prismadb.table.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    await prismadb.orders.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    await prismadb.bill.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    await prismadb.customer.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    await prismadb.loyaltyTransaction.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    await prismadb.reservation.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    await prismadb.notification.deleteMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    // Finally, delete the restaurant itself
     const restaurant = await prismadb.restaurants.deleteMany({
       where: {
         id: params.resId,

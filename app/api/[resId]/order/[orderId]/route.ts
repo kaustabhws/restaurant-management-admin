@@ -75,6 +75,10 @@ export async function PATCH(
     // Apply discount
     // Handle discount application
     if (discount || removeDiscount) {
+      if (orderById?.isPaid) {
+        return new NextResponse("Order is already paid", { status: 400 });
+      }
+
       if (discount && orderById?.discount) {
         return new NextResponse("Discount already applied", { status: 400 });
       }
