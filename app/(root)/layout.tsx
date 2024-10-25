@@ -17,9 +17,6 @@ export default async function SetupLayout({
         where: {
             userId
         },
-        orderBy: {
-            createdAt: 'asc'
-        }
     });
 
     if(restaurant) {

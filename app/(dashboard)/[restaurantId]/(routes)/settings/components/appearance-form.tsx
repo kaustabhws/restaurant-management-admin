@@ -13,7 +13,7 @@ interface AppearanceFormProps {
   restaurantId: string;
 }
 
-export function AppearanceForm({ restaurantId }: AppearanceFormProps) {
+export default function AppearancePage({ restaurantId }: AppearanceFormProps) {
   const [loading, setLoading] = useState(false);
   const { theme, setTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState<string | undefined>(theme);
@@ -33,7 +33,7 @@ export function AppearanceForm({ restaurantId }: AppearanceFormProps) {
     setLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise((resolve) => setTimeout(resolve, 400));
       toast.success("Theme updated successfully");
       router.refresh();
     } catch (error) {
@@ -52,11 +52,11 @@ export function AppearanceForm({ restaurantId }: AppearanceFormProps) {
         />
       </div>
       <Separator />
-      <div className="flex items-center gap-4 flex-1 max-[464px]:flex-col">
+      <div className="flex items-center gap-4 flex-1 max-[640px]:flex-col">
         <div
           className={cn(
             "w-[250px] max-[464px]:w-full items-center rounded-md border-2 p-1 hover:bg-accent hover:text-accent-foreground cursor-pointer",
-            selectedTheme == "light" ? "border-primary" : "border-muted"
+            selectedTheme === "light" ? "border-primary" : "border-muted"
           )}
           onClick={() => handleThemeChange("light")}
         >
@@ -78,7 +78,7 @@ export function AppearanceForm({ restaurantId }: AppearanceFormProps) {
         <div
           className={cn(
             "w-[250px] max-[464px]:w-full items-center rounded-md border-2 bg-popover p-1 hover:bg-accent hover:text-accent-foreground cursor-pointer",
-            selectedTheme == "dark" ? "border-primary" : "border-muted"
+            selectedTheme === "dark" ? "border-primary" : "border-muted"
           )}
           onClick={() => handleThemeChange("dark")}
         >
@@ -94,6 +94,40 @@ export function AppearanceForm({ restaurantId }: AppearanceFormProps) {
             <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
               <div className="h-4 w-4 rounded-full bg-slate-400"></div>
               <div className="h-2 w-[100px] rounded-lg bg-slate-400"></div>
+            </div>
+          </div>
+        </div>
+        <div
+          className={cn(
+            "w-[250px] max-[464px]:w-full items-center rounded-md border-2 p-1 hover:bg-accent hover:text-accent-foreground cursor-pointer overflow-hidden",
+            selectedTheme === "system" ? "border-primary" : "border-muted"
+          )}
+          onClick={() => handleThemeChange("system")}
+        >
+          <div className="relative space-y-2 rounded-sm p-2">
+            <div
+              className="absolute inset-0 bg-[#ecedef]"
+              style={{
+                clipPath: "polygon(0 0, 100% 0, 0 100%)",
+              }}
+            ></div>
+            <div
+              className="absolute inset-0 bg-slate-950"
+              style={{
+                clipPath: "polygon(100% 0, 100% 100%, 0 100%)",
+              }}
+            ></div>
+            <div className="relative space-y-2 rounded-md bg-white dark:bg-slate-800 p-2 shadow-sm">
+              <div className="h-2 w-[80px] rounded-lg bg-[#ecedef] dark:bg-slate-400"></div>
+              <div className="h-2 w-[100px] rounded-lg bg-[#ecedef] dark:bg-slate-400"></div>
+            </div>
+            <div className="relative flex items-center space-x-2 rounded-md bg-white dark:bg-slate-800 p-2 shadow-sm">
+              <div className="h-4 w-4 rounded-full bg-[#ecedef] dark:bg-slate-400"></div>
+              <div className="h-2 w-[100px] rounded-lg bg-[#ecedef] dark:bg-slate-400"></div>
+            </div>
+            <div className="relative flex items-center space-x-2 rounded-md bg-white dark:bg-slate-800 p-2 shadow-sm">
+              <div className="h-4 w-4 rounded-full bg-[#ecedef] dark:bg-slate-400"></div>
+              <div className="h-2 w-[100px] rounded-lg bg-[#ecedef] dark:bg-slate-400"></div>
             </div>
           </div>
         </div>
