@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 
 interface TableWithSeatsProps {
   seats: number;
+  status: "Available" | "Reserved" | "Occupied";
   tableColor?: string;
   seatColor?: string;
   maxSize?: number;
@@ -12,10 +13,11 @@ interface TableWithSeatsProps {
 export default function TableWithSeats(
   {
     seats,
+    status,
     tableColor = "#8B4513",
     seatColor = "#6D4C41",
     maxSize = 300,
-  }: TableWithSeatsProps = { seats: 4 }
+  }: TableWithSeatsProps = { seats: 4, status: "Available" }
 ) {
   const [size, setSize] = useState(maxSize);
 
@@ -84,6 +86,34 @@ export default function TableWithSeats(
     });
   };
 
+  // Table colors and glow effect based on status
+  const getStatusStyle = () => {
+    switch (status) {
+      case "Available":
+        return {
+          tableColor: "#4CAF50",
+          glow: "0px 0px 10px rgba(76, 175, 80, 0.6)",
+        };
+      case "Reserved":
+        return {
+          tableColor: "#FF9800",
+          glow: "0px 0px 15px rgba(255, 152, 0, 0.6)",
+        };
+      case "Occupied":
+        return {
+          tableColor: "#F44336",
+          glow: "0px 0px 15px rgba(244, 67, 54, 0.8)",
+        };
+      default:
+        return {
+          tableColor,
+          glow: "none",
+        };
+    }
+  };
+
+  const { tableColor: dynamicTableColor, glow } = getStatusStyle();
+
   return (
     <div className="flex items-center justify-center p-4">
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -100,9 +130,10 @@ export default function TableWithSeats(
           cx={centerX}
           cy={centerY}
           r={tableRadius}
-          fill={tableColor}
+          fill={dynamicTableColor}
           stroke={seatColor}
           strokeWidth="4"
+          style={{ filter: `drop-shadow(${glow})` }}
         />
 
         {/* Table grain */}

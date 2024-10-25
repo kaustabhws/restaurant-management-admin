@@ -49,15 +49,15 @@ const TablesOverviewPage = async ({
       <div className="flex items-center justify-between max-[460px]:flex-col max-[460px]:items-start gap-5">
         <div className="flex space-x-2">
           <div className="flex flex-col items-center">
-            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"></div>
+            <div className="w-6 h-6 bg-[#4CAF50] rounded-full flex items-center justify-center"></div>
             <span className="text-xs">Available</span>
           </div>
           <div className="flex flex-col items-center">
-            <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"></div>
+            <div className="w-6 h-6 bg-[#F44336] rounded-full flex items-center justify-center"></div>
             <span className="text-xs">Occupied</span>
           </div>
           <div className="flex flex-col items-center">
-            <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center"></div>
+            <div className="w-6 h-6 bg-[#FF9800] rounded-full flex items-center justify-center"></div>
             <span className="text-xs">Reserved</span>
           </div>
         </div>
@@ -81,22 +81,7 @@ const TablesOverviewPage = async ({
         )}
         {formattedTables.map((table: any) => (
           <div key={table.id} className="relative flex flex-col items-center">
-            <TableWithSeats seats={table.seats} />
-            <div
-              className={`absolute w-6 h-6 rounded-full flex items-center justify-center
-                ${
-                  table.status === "Available"
-                    ? "bg-green-500"
-                    : table.status === "Occupied"
-                    ? "bg-red-500"
-                    : "bg-yellow-500"
-                }`}
-              style={{
-                top: "43%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            ></div>
+            <TableWithSeats seats={table.seats} status={table.status} />
             <p>{table.name}</p>
             <CellAction data={table} />
           </div>
