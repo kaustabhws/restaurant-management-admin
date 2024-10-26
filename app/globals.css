@@ -218,6 +218,16 @@ button[data-localization-key='userProfile.start.dangerSection.deleteAccountButto
   @apply text-foreground hover:bg-secondary;
 }
 
-.cl-userProfile-root , .cl-internal-10eooxm {
-  max-width: 100%;
+.cl-userProfile-root,
+.cl-internal-10eooxm {
+  max-width: auto;
+}
+
+@media (max-width: 1223px) {
+  .cl-userProfile-root,
+  .cl-internal-10eooxm {
+    flex: 1;
+    max-width: 100%;
+  }
+
 }
