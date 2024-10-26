@@ -19,6 +19,10 @@ export function SidebarNav({
       label: "Profile",
     },
     {
+      href: `/${params.restaurantId}/settings/account`,
+      label: "Account",
+    },
+    {
       href: `/${params.restaurantId}/settings/appearance`,
       label: "Appearance",
     },
