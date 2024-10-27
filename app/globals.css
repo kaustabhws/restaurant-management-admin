@@ -223,11 +223,37 @@ button[data-localization-key='userProfile.start.dangerSection.deleteAccountButto
   max-width: auto;
 }
 
+.cl-internal-1b63r8w,
+.cl-internal-rscu79,
+.cl-internal-xkj3jj {
+  @apply dark:text-white;
+}
+
+.cl-internal-f7yy9s {
+  @apply dark:border-gray-500;
+}
+
+.cl-navbarMobileMenuButtonIcon,
+.cl-navbarMobileMenuButton {
+  @apply dark:text-white;
+}
+
+.cl-internal-eczfji {
+  @apply dark:bg-zinc-900;
+}
+
 @media (max-width: 1223px) {
+
   .cl-userProfile-root,
   .cl-internal-10eooxm {
     flex: 1;
-    max-width: 100%;
+    width: auto;
   }
+}
 
+@media (max-width: 30em) {
+  .cl-internal-10eooxm {
+    max-width: calc(-0.75rem + 94vw);
+    margin: 0px;
+  }
 }
