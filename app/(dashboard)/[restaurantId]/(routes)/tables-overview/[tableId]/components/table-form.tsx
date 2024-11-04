@@ -13,7 +13,7 @@ import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Menu, Table } from "@prisma/client";
+import { Inventory, Menu, Prisma, Table } from "@prisma/client";
 import axios from "axios";
 import { Check, ChevronsUpDown, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -44,18 +44,24 @@ const formSchema = z.object({
   tableId: z.string().min(1),
 });
 
+type MenuWithIngredients = Prisma.MenuGetPayload<{
+  include: { ingredients: true };
+}>;
+
 type TableFormValues = z.infer<typeof formSchema>;
 
 interface TableFormProps {
   table: Table | null;
-  menu: Menu[] | null;
+  menu: MenuWithIngredients[] | null;
   temporder: any;
+  inventory: Inventory[] | null;
 }
 
 export const TableForm: React.FC<TableFormProps> = ({
   table,
   menu,
   temporder,
+  inventory,
 }) => {
   const params = useParams();
   const router = useRouter();
@@ -172,29 +178,54 @@ export const TableForm: React.FC<TableFormProps> = ({
                           <CommandInput placeholder="Search food..." />
                           <CommandEmpty>No menu item found.</CommandEmpty>
                           <CommandGroup>
-                            {menu?.map((menu, index) => (
-                              <CommandItem
-                                key={index}
-                                value={menu.name}
-                                onSelect={(currentValue) => {
-                                  setValue(
-                                    currentValue === value ? "" : currentValue
+                            {menu?.map((menuItem, index) => {
+                              const isInStock = menuItem.ingredients.every(
+                                (ingredient) => {
+                                  const inventoryItem = inventory?.find(
+                                    (inv) => inv.id === ingredient.inventoryId
                                   );
-                                  form.setValue("menuItem", menu.id);
-                                  setOpen(false);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    value === menu.name
-                                      ? "opacity-100"
-                                      : "opacity-0"
+                                  return (
+                                    inventoryItem &&
+                                    inventoryItem.availableQuantity >=
+                                      ingredient.quantityUsed
+                                  );
+                                }
+                              );
+
+                              return (
+                                <CommandItem
+                                  key={index}
+                                  value={menuItem.name}
+                                  onSelect={(currentValue) => {
+                                    if (isInStock) {
+                                      setValue(
+                                        currentValue === value
+                                          ? ""
+                                          : currentValue
+                                      );
+                                      form.setValue("menuItem", menuItem.id);
+                                      setOpen(false);
+                                    }
+                                  }}
+                                  disabled={!isInStock} // Disable if not in stock
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      value === menuItem.name
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  {menuItem.name}
+                                  {!isInStock && (
+                                    <span className="ml-2 text-red-500">
+                                      (Out of Stock)
+                                    </span>
                                   )}
-                                />
-                                {menu.name}
-                              </CommandItem>
-                            ))}
+                                </CommandItem>
+                              );
+                            })}
                           </CommandGroup>
                         </Command>
                       </PopoverContent>

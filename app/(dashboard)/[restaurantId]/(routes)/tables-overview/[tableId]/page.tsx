@@ -13,11 +13,20 @@ const MenuPage = async ({
     },
   });
 
-  if(!table) {
+  if (!table) {
     redirect(`/${params.restaurantId}/tables-overview`);
   }
 
   const menu = await prismadb.menu.findMany({
+    where: {
+      resId: params.restaurantId,
+    },
+    include: {
+      ingredients: true,
+    },
+  });
+
+  const inventory = await prismadb.inventory.findMany({
     where: {
       resId: params.restaurantId,
     },
@@ -42,7 +51,7 @@ const MenuPage = async ({
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-4 max-[425px]:px-3">
-        <TableForm table={table} menu={menu} temporder={tempOrder} />
+        <TableForm table={table} menu={menu} inventory={inventory} temporder={tempOrder} />
       </div>
     </div>
   );

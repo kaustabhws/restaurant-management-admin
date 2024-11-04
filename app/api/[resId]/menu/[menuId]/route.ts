@@ -4,50 +4,72 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { menuId: string, resId: string } }
+  { params }: { params: { menuId: string; resId: string } }
 ) {
   try {
     const { userId } = auth();
     const body = await req.json();
 
-    const { name, price } = body;
+    const { name, price, ingredients } = body;
 
+    // Validate authentication and input
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
     if (!name) {
       return new NextResponse("Name is required", { status: 400 });
     }
-
     if (!price) {
       return new NextResponse("Price is required", { status: 400 });
     }
-
-    if (!params.menuId) {
-      return new NextResponse("Menu item id is required", { status: 400 });
+    if (!params.menuId || !params.resId) {
+      return new NextResponse("Menu item ID and Restaurant ID are required", {
+        status: 400,
+      });
     }
 
-    const restaurantByUserId = await prismadb.restaurants.findFirst({
+    // Check if the user owns the restaurant
+    const restaurant = await prismadb.restaurants.findFirst({
       where: {
         id: params.resId,
         userId,
       },
     });
 
-    if (!restaurantByUserId) {
+    if (!restaurant) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const menu = await prismadb.menu.updateMany({
+    // Update the menu item details
+    const menu = await prismadb.menu.update({
       where: {
         id: params.menuId,
       },
       data: {
         name,
-        price
+        price,
       },
     });
+
+    // Delete existing ingredients for the menu item in MenuInventory
+    await prismadb.menuInventory.deleteMany({
+      where: {
+        menuId: params.menuId,
+      },
+    });
+
+    // Create new ingredients in MenuInventory
+    if (ingredients && Array.isArray(ingredients)) {
+      await prismadb.menuInventory.createMany({
+        data: ingredients.map(
+          (ingredient: { inventoryId: string; quantityUsed: number }) => ({
+            menuId: params.menuId,
+            inventoryId: ingredient.inventoryId,
+            quantityUsed: ingredient.quantityUsed,
+          })
+        ),
+      });
+    }
 
     return NextResponse.json(menu);
   } catch (error) {
@@ -58,7 +80,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { menuId: string, resId: string } }
+  { params }: { params: { menuId: string; resId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -81,6 +103,12 @@ export async function DELETE(
     if (!restaurantByUserId) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
+
+    await prismadb.menuInventory.deleteMany({
+      where: {
+        menuId: params.menuId,
+      },
+    });
 
     const menu = await prismadb.menu.deleteMany({
       where: {
@@ -104,6 +132,9 @@ export async function GET(
       where: {
         id: params.menuId,
       },
+      include: {
+        ingredients: true,
+      }
     });
 
     return NextResponse.json(menu);

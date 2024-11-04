@@ -3,22 +3,27 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 
-export type MenuColumn = {
+export type InventoryColumn = {
   id: string;
   name: string;
-  price: number;
+  quantity: string;
+  price: string;
   status: string;
   createdAt: string;
 };
 
-export const columns: ColumnDef<MenuColumn>[] = [
+export const columns: ColumnDef<InventoryColumn>[] = [
   {
     accessorKey: "name",
     header: "Name",
   },
   {
+    accessorKey: "quantity",
+    header: "Available Quantity",
+  },
+  {
     accessorKey: "price",
-    header: "Price",
+    header: "Price/Unit",
   },
   {
     accessorKey: "status",
@@ -36,12 +41,12 @@ export const columns: ColumnDef<MenuColumn>[] = [
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Date",
-  },
-  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => <CellAction data={row.original} />,
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Date",
   },
 ];

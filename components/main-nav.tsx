@@ -23,6 +23,7 @@ import {
   BadgeCheck,
   UserRoundCheck,
   CalendarCheck,
+  Layers,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -58,6 +59,11 @@ export function MainNav({
     {
       label: "Management",
       items: [
+        {
+          href: `/${params.restaurantId}/inventory`,
+          label: "Inventory",
+          icon: Layers,
+        },
         { href: `/${params.restaurantId}/menu`, label: "Menu", icon: Utensils },
         {
           href: `/${params.restaurantId}/tables`,
@@ -171,6 +177,8 @@ function getItemDescription(label: string): string {
   switch (label) {
     case "Overview":
       return "General overview of the restaurant's operations.";
+    case "Inventory":
+      return "Manage inventory items.";
     case "Menu":
       return "Manage menu items.";
     case "Tables":

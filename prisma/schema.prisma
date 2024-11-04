@@ -21,8 +21,28 @@ model Restaurants {
   loyalty       LoyaltyTransaction[] @relation("RestaurantToLoyaltyTransaction")
   reservations  Reservation[]        @relation("RestaurantToReservation")
   notifications Notification[]       @relation("RestaurantToNotification")
+  inventories   Inventory[]          @relation("RestaurantToInventory")
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
+}
+
+model Inventory {
+  id                String          @id @default(uuid())
+  name              String
+  availableQuantity Int
+  unit              String
+  minStockThreshold Int
+  price             Float
+  totalCost         Float
+  lastRestockedAt   DateTime?
+  resId             String
+  restaurant        Restaurants     @relation("RestaurantToInventory", fields: [resId], references: [id])
+  menuInventory     MenuInventory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([resId])
 }
 
 model Menu {
@@ -33,10 +53,25 @@ model Menu {
   restaurant     Restaurants      @relation("RestaurantToMenu", fields: [resId], references: [id])
   orderItems     OrderItems[]
   temporderItems TempOrderItems[]
+  ingredients    MenuInventory[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
   @@index([resId])
+}
+
+model MenuInventory {
+  id           String    @id @default(uuid())
+  menuId       String
+  inventoryId  String
+  quantityUsed Int
+  menu         Menu      @relation(fields: [menuId], references: [id])
+  inventory    Inventory @relation(fields: [inventoryId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([menuId, inventoryId])
+  @@index([inventoryId])
 }
 
 model Table {
@@ -79,7 +114,7 @@ model TempOrders {
 
 model TempOrderItems {
   id       String     @id @default(uuid())
-  orderId  String
+  orderId  String     @unique
   orders   TempOrders @relation(fields: [orderId], references: [id])
   itemId   String
   menuItem Menu       @relation(fields: [itemId], references: [id])

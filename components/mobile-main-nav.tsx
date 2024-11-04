@@ -21,6 +21,7 @@ import {
   BadgeCheck,
   UserRoundCheck,
   CalendarCheck,
+  Layers,
 } from "lucide-react";
 
 type NavItem = {
@@ -64,6 +65,11 @@ export function MobileMainNav({
       label: "Management",
       icon: Utensils,
       items: [
+        {
+          href: `/${params.restaurantId}/inventory`,
+          label: "Inventory",
+          icon: Layers,
+        },
         { href: `/${params.restaurantId}/menu`, label: "Menu", icon: Utensils },
         {
           href: `/${params.restaurantId}/tables`,

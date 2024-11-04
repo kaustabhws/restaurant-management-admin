@@ -21,7 +21,9 @@ export async function POST(
     }
 
     if (!tableId && !takeAwayId) {
-      return new NextResponse("Table/takeaway id are required", { status: 400 });
+      return new NextResponse("Table/takeaway id are required", {
+        status: 400,
+      });
     }
 
     if (!quantity) {
@@ -52,10 +54,19 @@ export async function POST(
     const itemPrice = item?.price ?? 0;
     const amount = parseFloat(itemPrice.toFixed(2));
 
+    const menu = await prismadb.menu.findUnique({
+      where: {
+        id: menuItem,
+      },
+      include: {
+        ingredients: true,
+      },
+    });
+
     const temporder = await prismadb.tempOrders.create({
       data: {
         resId: params.resId,
-        amount: amount*quantity,
+        amount: amount * quantity,
         tableId: tableId ? tableId : null,
         takeawayId: takeAwayId ? takeAwayId : null,
         isPaid: false,
@@ -73,6 +84,24 @@ export async function POST(
         },
       },
     });
+
+    // Decrement inventory quantities for each ingredient
+    if (menu && menu.ingredients.length > 0 && temporder) {
+      await Promise.all(
+        menu.ingredients.map(async (ingredient) => {
+          const totalRequiredQuantity = ingredient.quantityUsed * quantity;
+
+          await prismadb.inventory.update({
+            where: { id: ingredient.inventoryId },
+            data: {
+              availableQuantity: {
+                decrement: totalRequiredQuantity,
+              },
+            },
+          });
+        })
+      );
+    }
 
     return NextResponse.json(temporder);
   } catch (error) {

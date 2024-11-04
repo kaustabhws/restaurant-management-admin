@@ -14,27 +14,54 @@ import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Menu } from "@prisma/client";
+import { Inventory, Menu, Prisma } from "@prisma/client";
 import axios from "axios";
-import { Trash } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import * as z from "zod";
+import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const formSchema = z.object({
   name: z.string().min(1),
   price: z.coerce.number().min(1),
+  ingredients: z.array(
+    z.object({
+      inventoryId: z.string(),
+      quantityUsed: z.coerce.number().min(1),
+    })
+  ),
 });
+
+type MenuWithIngredients = Prisma.MenuGetPayload<{
+  include: { ingredients: true };
+}>;
 
 type MenuFormValues = z.infer<typeof formSchema>;
 
 interface MenuFormProps {
-  initialData: Menu | null;
+  initialData: MenuWithIngredients | null;
+  inventory: Inventory[];
 }
 
-export const MenuForm: React.FC<MenuFormProps> = ({ initialData }) => {
+export const MenuForm: React.FC<MenuFormProps> = ({
+  initialData,
+  inventory,
+}) => {
   const params = useParams();
   const router = useRouter();
 
@@ -48,10 +75,21 @@ export const MenuForm: React.FC<MenuFormProps> = ({ initialData }) => {
 
   const form = useForm<MenuFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name: "",
-      price: 0,
-    },
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          ingredients: initialData.ingredients || [],
+        }
+      : {
+          name: "",
+          price: 0,
+          ingredients: [],
+        },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "ingredients",
   });
 
   const onSubmit = async (data: MenuFormValues) => {
@@ -83,9 +121,7 @@ export const MenuForm: React.FC<MenuFormProps> = ({ initialData }) => {
       router.refresh();
       toast.success("Menu deleted");
     } catch (error) {
-      toast.error(
-        "Make sure you removed all categories using this Menu first"
-      );
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
       setOpen(false);
@@ -117,7 +153,7 @@ export const MenuForm: React.FC<MenuFormProps> = ({ initialData }) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="spave-y-8 w-full"
+          className="space-y-8 w-full"
         >
           <div className="grid grid-cols-3 gap-8 max-[740px]:grid-cols-2 max-[380px]:grid-cols-1">
             <FormField
@@ -156,7 +192,119 @@ export const MenuForm: React.FC<MenuFormProps> = ({ initialData }) => {
               )}
             />
           </div>
-          <Button disabled={loading} className="ml-auto mt-5" type="submit">
+
+          <div className="flex flex-col w-max max-[380px]:w-full">
+            <FormLabel>Ingredients</FormLabel>
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="flex items-center gap-2 max-[380px]:flex-col"
+              >
+                <div className="flex items-center space-x-2 mt-2 max-[380px]:flex-col max-[380px]:gap-3 w-full">
+                  <FormField
+                    control={form.control}
+                    name={`ingredients.${index}.inventoryId`}
+                    render={({ field }) => (
+                      <FormItem className="flex-grow w-full">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-full justify-between",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value
+                                  ? inventory.find(
+                                      (item) => item.id === field.value
+                                    )?.name
+                                  : "Select ingredient"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0 max-[380px]:w-full">
+                            <Command>
+                              <CommandInput placeholder="Search ingredient..." />
+                              <CommandEmpty>No ingredient found.</CommandEmpty>
+                              <CommandGroup>
+                                {inventory.map((item) => (
+                                  <CommandItem
+                                    value={item.name}
+                                    key={item.id}
+                                    onSelect={() => {
+                                      form.setValue(
+                                        `ingredients.${index}.inventoryId`,
+                                        item.id
+                                      );
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        item.id === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                    {item.name}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`ingredients.${index}.quantityUsed`}
+                    render={({ field }) => (
+                      <FormItem className="flex-grow w-full">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="number"
+                            placeholder="Quantity"
+                            disabled={loading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-2"
+                  size="icon"
+                  onClick={() => remove(index)}
+                  disabled={loading}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-2"
+              onClick={() => append({ inventoryId: "", quantityUsed: 1 })}
+              disabled={loading}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Ingredient
+            </Button>
+          </div>
+
+          <Button disabled={loading} className="ml-auto" type="submit">
             {action}
           </Button>
         </form>
