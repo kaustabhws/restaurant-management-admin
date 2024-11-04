@@ -63,6 +63,31 @@ export async function POST(
       },
     });
 
+    const inventory = await prismadb.inventory.findMany({
+      where: {
+        resId: params.resId,
+      },
+    });
+
+    // Check if the required quantity of each ingredient is available in inventory
+    if (menu && inventory) {
+      for (const ingredient of menu.ingredients) {
+        const requiredQuantity = ingredient.quantityUsed * quantity;
+        const inventoryItem = inventory.find(
+          (inv) => inv.id === ingredient.inventoryId
+        );
+
+        if (
+          !inventoryItem ||
+          inventoryItem.availableQuantity < requiredQuantity
+        ) {
+          return new NextResponse("Insufficient stock for ingredient", {
+            status: 400,
+          });
+        }
+      }
+    }
+
     const temporder = await prismadb.tempOrders.create({
       data: {
         resId: params.resId,

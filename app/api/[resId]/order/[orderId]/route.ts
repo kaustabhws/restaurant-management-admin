@@ -243,28 +243,29 @@ export async function DELETE(
       },
     });
 
-    await prismadb.customer.update({
-      where: {
-        id: orderById?.customer?.id,
-      },
-      data: {
-        loyaltyPoints: {
-          decrement: orderById?.amount ? countPoints(orderById.amount) : 0,
-        },
-        totalSpent: { decrement: orderById?.amount },
-      },
-    });
-
     if (orderById?.customer?.id) {
+      // Only attempt to update if customer ID is available
+      await prismadb.customer.update({
+        where: {
+          id: orderById.customer.id,
+        },
+        data: {
+          loyaltyPoints: {
+            decrement: orderById.amount ? countPoints(orderById.amount) : 0,
+          },
+          totalSpent: { decrement: orderById.amount },
+        },
+      });
+
       await prismadb.loyaltyTransaction.create({
         data: {
-          customerId: orderById?.customer?.id,
+          customerId: orderById.customer.id,
           resId: params.resId,
-          amount: countPoints(orderById?.amount!),
+          amount: countPoints(orderById.amount!),
           type: "Deleted",
           description: `Deleted order #${
-            orderById?.slNo
-          } - Deducted ${countPoints(orderById?.amount!)}`,
+            orderById.slNo
+          } - Deducted ${countPoints(orderById.amount!)}`,
         },
       });
     }

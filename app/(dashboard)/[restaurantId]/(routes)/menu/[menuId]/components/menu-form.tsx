@@ -92,6 +92,10 @@ export const MenuForm: React.FC<MenuFormProps> = ({
     name: "ingredients",
   });
 
+  const selectedIngredientIds = form
+    .watch("ingredients")
+    .map((ingredient) => ingredient.inventoryId);
+
   const onSubmit = async (data: MenuFormValues) => {
     try {
       setLoading(true);
@@ -235,11 +239,18 @@ export const MenuForm: React.FC<MenuFormProps> = ({
                                   <CommandItem
                                     value={item.name}
                                     key={item.id}
+                                    disabled={selectedIngredientIds.includes(
+                                      item.id
+                                    )}
                                     onSelect={() => {
-                                      form.setValue(
-                                        `ingredients.${index}.inventoryId`,
-                                        item.id
-                                      );
+                                      if (
+                                        !selectedIngredientIds.includes(item.id)
+                                      ) {
+                                        form.setValue(
+                                          `ingredients.${index}.inventoryId`,
+                                          item.id
+                                        );
+                                      }
                                     }}
                                   >
                                     <Check

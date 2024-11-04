@@ -207,7 +207,7 @@ export const TableForm: React.FC<TableFormProps> = ({
                                       setOpen(false);
                                     }
                                   }}
-                                  disabled={!isInStock} // Disable if not in stock
+                                  disabled={!isInStock}
                                 >
                                   <Check
                                     className={cn(
