@@ -36,7 +36,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     try {
       setLoading(true);
       await axios.delete(
-        `/api/${params.restaurantId}/menu/${data.id}`
+        `/api/${params.restaurantId}/inventory/${data.id}`
       );
       router.refresh();
       toast.success("Item deleted");
