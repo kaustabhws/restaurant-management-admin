@@ -1,22 +1,21 @@
 # Restaurant Management System
 
-This is a comprehensive restaurant management system built using [Next.js](https://nextjs.org/). The system is designed to streamline various aspects of restaurant operations, including menu management, table management, order processing, billing, and customer loyalty.
+This is a comprehensive restaurant management system built using [Next.js](https://nextjs.org/). The system is designed to streamline various aspects of restaurant operations, including menu management, table management, order processing, billing, inventory tracking, reservations, and customer loyalty.
 
 ## Features
 
 ### Core Features
-- [x] **Menu Management**: Admins can add, edit, and remove menu items.
+- [x] **Menu Management**: Admins can add, edit, and remove menu items, and track each item’s ingredients.
 - [x] **Table Management**: Admins can manage tables and assign orders to them.
 - [x] **Order Management**: Admins can manage orders, including temporary orders and final orders.
 - [x] **Billing System**: Generates bills for orders and tracks total sales and revenue.
-- [x] **Payment Methods**: Allows for different payment methods, including loyalty points redemption.
+- [x] **Payment Methods**: Supports multiple payment methods, including loyalty points redemption.
 - [x] **Loyalty Program**: Calculates and manages loyalty points based on customer spending.
 - [x] **Customer Management**: Manages customer details, including mobile number, email, loyalty points, and total amount spent.
+- [x] **Reservation System**: Allows customers to make reservations, with real-time table availability management.
+- [x] **Inventory Management**: Tracks ingredients for menu items and manages stock levels automatically as orders are placed, with low-stock notifications.
 
 ### Additional Features (Upcoming)
-- [ ] **Inventory Management**: Tracks ingredients and manages stock levels.
-- [ ] **Statistics Dashboard**: Provides an overview of sales, revenue, and other key metrics.
-- [ ] **Reporting**: Generates monthly reports for analysis.
 - [ ] **Real-Time Updates**: Order updates and table management in real-time.
 
 ## Installation
@@ -54,10 +53,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 After logging in, users can create a restaurant and manage it through the following sections:
 
-- **Menu Management**: Add and update items in the menu.
+- **Menu Management**: Add and update items in the menu, including assigning and tracking ingredients for each item.
 - **Table Management**: Manage tables by adding them with their respective number of seats. Each table's orders can be managed separately.
 - **Order Processing**: Add food items to tables as customers order. Submit orders when customers are ready to pay.
 - **Billing**: Generate bills when the order is finalized. Payments can be made via cash, card, UPI, split payments, or loyalty points (customer phone number or email required).
+- **Reservation Management**: Manage reservations and track real-time table availability to accommodate customer bookings.
+- **Inventory Management**: Track ingredient stock levels for each menu item, with automatic stock deduction upon order placement and low-stock notifications.
 - **Customer Management**: Access customer details, manage loyalty points, and view the total amount spent by customers.
 
 ## Technologies Used
