@@ -105,6 +105,11 @@ export function MainNav({
           label: "Statistics",
           icon: BarChart,
         },
+        {
+          href: `/${params.restaurantId}/sales-report`,
+          label: "Sales Report",
+          icon: BadgeCheck,
+        },
       ],
     },
     {
@@ -193,6 +198,8 @@ function getItemDescription(label: string): string {
       return "View detailed insights on performance.";
     case "Statistics":
       return "Sales, revenue, and other key metrics.";
+    case "Sales Report":
+      return "View detailed sales reports.";
     case "Customers":
       return "Manage customer information and loyalty programs.";
     case "Settings":

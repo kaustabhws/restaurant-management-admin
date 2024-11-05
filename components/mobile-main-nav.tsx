@@ -113,6 +113,11 @@ export function MobileMainNav({
           label: "Statistics",
           icon: BarChart,
         },
+        {
+          href: `/${params.restaurantId}/sales-report`,
+          label: "Sales Report",
+          icon: BadgeCheck,
+        },
       ],
     },
     {
