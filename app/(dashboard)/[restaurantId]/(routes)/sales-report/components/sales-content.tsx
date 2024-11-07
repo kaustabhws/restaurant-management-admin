@@ -41,27 +41,27 @@ const chartConfig = {
 
 interface SalesContentProps {
   loading: boolean;
-  salesData: Orders[];
   totalSales: number;
   averageDailySales: number;
   mostOrdered: { id: string; name: string; count: number };
   dateRange: DateRange;
+  chartData: { key: string; createdAt: string; amount: number }[];
 }
 
 const SalesContent: React.FC<SalesContentProps> = ({
   loading,
-  salesData,
   averageDailySales,
   totalSales,
   mostOrdered,
   dateRange,
+  chartData,
 }) => {
   const exportToCSV = () => {
-    if (!salesData || salesData.length === 0) return;
+    if (!chartData || chartData.length === 0) return;
 
     const header = ["Date", "Total Sales"];
 
-    const rows = salesData.map((day) => [
+    const rows = chartData.map((day) => [
       format(day.createdAt, "dd MMMM, yyyy"),
       `₹${day.amount.toFixed(2)}`,
     ]);
@@ -152,14 +152,14 @@ const SalesContent: React.FC<SalesContentProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {salesData ? (
+          {chartData ? (
             <ChartContainer
               config={chartConfig}
               className="aspect-auto h-[250px] w-full"
             >
               <BarChart
                 accessibilityLayer
-                data={salesData}
+                data={chartData}
                 margin={{
                   left: 12,
                   right: 12,
@@ -233,9 +233,9 @@ const SalesContent: React.FC<SalesContentProps> = ({
                     <Skeleton className="w-full h-6" />
                   </TableCell>
                 </TableRow>
-              ) : salesData ? (
-                salesData.map((day) => (
-                  <TableRow key={day.id}>
+              ) : chartData ? (
+                chartData.map((day, key) => (
+                  <TableRow key={day.key}>
                     <TableCell>
                       {format(day.createdAt, "dd MMMM, yyyy")}
                     </TableCell>

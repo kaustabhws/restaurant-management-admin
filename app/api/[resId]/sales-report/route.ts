@@ -47,6 +47,7 @@ export async function GET(
           gte: fromDate,
           lte: toDate,
         },
+        isPaid: true,
       },
       include: {
         orderItems: true,

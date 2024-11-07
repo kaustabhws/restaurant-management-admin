@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -32,7 +32,7 @@ const SalesReportPage = ({ params }: { params: { restaurantId: string } }) => {
     name: "",
     count: 0,
   });
-  
+
   const getReport = async () => {
     try {
       setLoading(true);
@@ -48,10 +48,35 @@ const SalesReportPage = ({ params }: { params: { restaurantId: string } }) => {
     }
   };
 
-  const totalSales = salesData
-    ? salesData.reduce((sum, day) => sum + day.amount, 0)
+  // Aggregate sales data by date
+  const consolidatedSalesData = useMemo(() => {
+    const grouped = salesData.reduce((acc, order) => {
+      const dateKey = format(new Date(order.createdAt), "yyyy-MM-dd");
+
+      if (!acc[dateKey]) {
+        acc[dateKey] = {
+          key: `${dateKey}-${order.id}`,
+          createdAt: dateKey,
+          amount: 0,
+        };
+      }
+
+      acc[dateKey].amount += order.amount;
+
+      return acc;
+    }, {} as Record<string, { key: string; createdAt: string; amount: number }>);
+
+    return Object.values(grouped);
+  }, [salesData]);
+
+  const totalSales = consolidatedSalesData.reduce(
+    (sum, day) => sum + day.amount,
+    0
+  );
+  const averageDailySales = consolidatedSalesData.length
+    ? totalSales / consolidatedSalesData.length
     : 0;
-  const averageDailySales = salesData ? totalSales / salesData.length : 0;
+
   useEffect(() => {
     getReport();
   }, []);
@@ -105,7 +130,7 @@ const SalesReportPage = ({ params }: { params: { restaurantId: string } }) => {
         <SalesContent
           loading={loading}
           averageDailySales={averageDailySales}
-          salesData={salesData}
+          chartData={consolidatedSalesData}
           totalSales={totalSales}
           mostOrdered={mostOrdered}
           dateRange={date ?? { from: new Date(), to: new Date() }}
