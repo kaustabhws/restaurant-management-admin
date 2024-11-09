@@ -36,7 +36,8 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { isPaid, payMode, discount, removeDiscount } = body;
+    const { isPaid, payMode, discount, removeDiscount, coupon, discountType } =
+      body;
 
     // null checks
     if (!userId) {
@@ -65,6 +66,10 @@ export async function PATCH(
       },
     });
 
+    if (!orderById) {
+      return new NextResponse("Order not found", { status: 400 });
+    }
+
     if (orderById?.payMode == "Loyalty Points") {
       return new NextResponse(
         "Order paid with loyalty points cannot be updated",
@@ -74,7 +79,7 @@ export async function PATCH(
 
     // Apply discount
     // Handle discount application
-    if (discount || removeDiscount) {
+    if (discount || (removeDiscount && discountType === "Percentage")) {
       if (orderById?.isPaid) {
         return new NextResponse("Order is already paid", { status: 400 });
       }
@@ -91,11 +96,83 @@ export async function PATCH(
         data: {
           discount: removeDiscount ? 0 : discount,
           amount: updatedAmount,
+          discountType: removeDiscount ? null : "Percentage",
         },
       });
 
       return NextResponse.json({
         message: removeDiscount ? "Discount removed" : "Discount applied",
+      });
+    }
+
+    // Apply coupon
+    // Handle coupon application
+    if (coupon || (removeDiscount && discountType === "Coupon")) {
+      if (orderById?.isPaid) {
+        return new NextResponse("Order is already paid", { status: 400 });
+      }
+
+      if (!removeDiscount && discount && orderById?.discount) {
+        return new NextResponse("Coupon already applied", { status: 400 });
+      }
+
+      const couponById = await prismadb.campaign.findUnique({
+        where: { code: coupon },
+      });
+
+      if (!couponById) {
+        return new NextResponse("Invalid coupon code", { status: 404 });
+      }
+
+      // Check if coupon is still valid
+      const currentDate = new Date();
+      if (
+        currentDate < couponById.startDate ||
+        currentDate > couponById.endDate
+      ) {
+        return new NextResponse("Coupon is not valid at this time", {
+          status: 400,
+        });
+      }
+
+      if (couponById.remainingUsage <= 0) {
+        return new NextResponse("Coupon usage limit reached", { status: 400 });
+      }
+
+      if (orderById.amount < couponById.minOrderAmount) {
+        return new NextResponse(
+          `Minimum order amount of ${couponById.minOrderAmount} required to apply this coupon`,
+          { status: 400 }
+        );
+      }
+
+      // Calculate discount based on coupon settings
+      const discountAmount = (orderById.amount * couponById.discount) / 100;
+      const finalDiscount = Math.min(discountAmount, couponById.maxDiscount);
+
+      const updatedAmount = removeDiscount
+        ? orderById?.amount! + finalDiscount
+        : orderById?.amount! - finalDiscount;
+      
+      // Update order with the calculated discount
+      await prismadb.orders.update({
+        where: { id: orderById.id },
+        data: {
+          discount: finalDiscount,
+          discountType: "Coupon",
+          amount: updatedAmount,
+        },
+      });
+
+      // Update remaining usage of the coupon
+      await prismadb.campaign.update({
+        where: { id: couponById.id },
+        data: { remainingUsage: couponById.remainingUsage - 1 },
+      });
+
+      return NextResponse.json({
+        message: "Discount applied",
+        discount: finalDiscount,
       });
     }
 

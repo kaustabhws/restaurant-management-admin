@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
 
 interface Restaurant {
   id: string;
@@ -51,6 +52,7 @@ interface Order {
   payMode: string;
   orderType: string;
   discount: number;
+  discountType: "Percentage" | "Coupon";
   amount: number;
   isPaid: boolean;
   bill: BillItem[];
@@ -81,6 +83,7 @@ const BillContent: React.FC<BillContentProps> = ({
     .reduce((acc, quantity) => acc + quantity, 0);
 
   const [discountPercentage, setDiscountPercentage] = useState<number>();
+  const [coupon, setCoupon] = useState<string>();
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -110,6 +113,7 @@ const BillContent: React.FC<BillContentProps> = ({
       setLoading(true);
       await axios.patch(`/api/${restaurant?.id}/order/${order?.id}`, {
         discount: discount,
+        discountType: "Percentage",
       });
       toast.success("Discount applied successfully");
       router.refresh();
@@ -121,6 +125,28 @@ const BillContent: React.FC<BillContentProps> = ({
         }
       }
       toast.error("Failed to apply discount");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyCoupon = async () => {
+    try {
+      setLoading(true);
+      await axios.patch(`/api/${restaurant?.id}/order/${order?.id}`, {
+        coupon,
+        discountType: "Coupon",
+      });
+      toast.success("Coupon applied successfully");
+      router.refresh();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data === "Coupon already applied") {
+          toast.error("Coupon already applied");
+          return;
+        }
+      }
+      toast.error("Failed to apply coupon");
     } finally {
       setLoading(false);
     }
@@ -156,28 +182,65 @@ const BillContent: React.FC<BillContentProps> = ({
           </Button>
         </div>
         <div className="flex items-center justify-center space-x-2">
-          {order?.discount! > 0 ? (
-            <Button variant="outline" onClick={removeDiscount}>
+          {order?.discount! > 0 && order?.discountType === "Percentage" ? (
+            // Show remove discount button if a discount is applied
+            <Button
+              variant="outline"
+              onClick={removeDiscount}
+            >
               Remove Discount
             </Button>
+          ) : order?.discount! > 0 && order?.discountType === "Coupon" ? (
+            <></>
           ) : (
             <>
-              <Input
-                type="number"
-                placeholder="5%"
-                className="w-24"
-                value={discountPercentage}
-                onChange={(e) => setDiscountPercentage(Number(e.target.value))}
-                min="0"
-                max="100"
-              />
-              <Button
-                disabled={loading}
-                variant="outline"
-                onClick={applyDiscount}
-              >
-                Apply Discount
-              </Button>
+              {/* Discount Input & Apply Button */}
+              <div className="flex-1">
+                <Label htmlFor="discount">Discount (%)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    id="discount"
+                    placeholder="5%"
+                    className="w-24"
+                    value={discountPercentage}
+                    onChange={(e) =>
+                      setDiscountPercentage(Number(e.target.value))
+                    }
+                    min="0"
+                    max="100"
+                  />
+                  <Button
+                    disabled={loading}
+                    variant="outline"
+                    onClick={applyDiscount}
+                  >
+                    Apply
+                  </Button>
+                </div>
+              </div>
+
+              {/* Coupon Input & Apply Button */}
+              <div className="flex-1">
+                <Label htmlFor="coupon">Coupon/Gift Card</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="text"
+                    id="coupon"
+                    placeholder="GIFT-77B373BV-28BU"
+                    className="w-24"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                  />
+                  <Button
+                    disabled={loading}
+                    variant="outline"
+                    onClick={applyCoupon}
+                  >
+                    Apply
+                  </Button>
+                </div>
+              </div>
             </>
           )}
         </div>
@@ -263,7 +326,7 @@ const BillContent: React.FC<BillContentProps> = ({
                   <TableFooter>
                     {(order?.discount ?? 0) > 0 && (
                       <TableRow>
-                        <TableCell colSpan={3}>Discount</TableCell>
+                        <TableCell colSpan={3}>Discount {order?.discountType === 'Coupon' && <p>(Coupon)</p>}</TableCell>
                         <TableCell className="text-right">
                           {order?.discount}
                         </TableCell>

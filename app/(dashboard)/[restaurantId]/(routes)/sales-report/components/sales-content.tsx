@@ -63,7 +63,7 @@ const SalesContent: React.FC<SalesContentProps> = ({
 
     const rows = chartData.map((day) => [
       format(day.createdAt, "dd MMMM, yyyy"),
-      `₹${day.amount.toFixed(2)}`,
+      `${day.amount.toFixed(2)}`,
     ]);
 
     const csvContent = [
