@@ -24,6 +24,7 @@ import {
   UserRoundCheck,
   CalendarCheck,
   Layers,
+  BadgePercent,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -80,6 +81,11 @@ export function MainNav({
           label: "Reservation",
           icon: CalendarCheck,
         },
+        {
+          href: `/${params.restaurantId}/campaigns`,
+          label: "Campaigns",
+          icon: BadgePercent,
+        }
       ],
     },
     {
@@ -192,6 +198,8 @@ function getItemDescription(label: string): string {
       return "View table statuses and availability.";
     case "Reservation":
       return "Manage reservations.";
+    case "Campaigns":
+      return "Manage promotion campaigns.";
     case "Order":
       return "Manage and track orders.";
     case "Insights":
