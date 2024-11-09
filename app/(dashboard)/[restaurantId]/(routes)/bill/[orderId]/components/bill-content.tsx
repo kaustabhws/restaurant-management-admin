@@ -52,7 +52,7 @@ interface Order {
   payMode: string;
   orderType: string;
   discount: number;
-  discountType: "Percentage" | "Coupon";
+  discountType: "Percentage" | "Coupon" | null;
   amount: number;
   isPaid: boolean;
   bill: BillItem[];
