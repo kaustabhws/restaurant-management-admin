@@ -16,9 +16,9 @@ const CampaignPage = async ({
   });
 
   const formattedMenu: CampaignColumn[] = campaigns.map((item) => {
-    const currentDate = startOfDay(new Date());
-    const startDate = startOfDay(item.startDate);
-    const endDate = startOfDay(item.endDate);
+    const currentDate = startOfDay(getISTTime(new Date()));
+    const startDate = startOfDay(getISTTime(item.startDate));
+    const endDate = startOfDay(getISTTime(item.endDate));
 
     const status =
       currentDate < startDate
@@ -27,14 +27,16 @@ const CampaignPage = async ({
         ? "Expired"
         : "Active";
 
+    console.log(currentDate, startDate, endDate)
+
     return {
       id: item.id,
       name: item.name,
       description: item.description,
       code: item.code,
       status,
-      startDate: format(startDate, "MMMM do, yyyy"),
-      endDate: format(endDate, "MMMM do, yyyy"),
+      startDate: format(getISTTime(startDate), "MMMM do, yyyy"),
+      endDate: format(getISTTime(endDate), "MMMM do, yyyy"),
       createdAt: format(
         startOfDay(getISTTime(item.createdAt)),
         "MMMM do, yyyy"
