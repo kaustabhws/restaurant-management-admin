@@ -34,7 +34,11 @@ export const columns: ColumnDef<CampaignColumn>[] = [
       return (
         <span
           className={`inline-flex items-center rounded-full border px-2.5 py-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 whitespace-nowrap text-xs font-semibold ${
-            row.original.status === "Active" ? "bg-green-500" : "bg-red-500"
+            row.original.status === "Active"
+              ? "bg-green-500"
+              : row.original.status === "Starts Soon"
+              ? "bg-muted"
+              : "bg-red-500"
           }`}
         >
           {row.original.status}

@@ -181,7 +181,7 @@ const BillContent: React.FC<BillContentProps> = ({
             Print
           </Button>
         </div>
-        <div className="flex items-center justify-center space-x-2">
+        <div className="flex items-center justify-center space-y-2 flex-col">
           {order?.discount! > 0 && order?.discountType === "Percentage" ? (
             // Show remove discount button if a discount is applied
             <Button
@@ -195,14 +195,14 @@ const BillContent: React.FC<BillContentProps> = ({
           ) : (
             <>
               {/* Discount Input & Apply Button */}
-              <div className="flex-1">
+              <div className='px-2 w-full'>
                 <Label htmlFor="discount">Discount (%)</Label>
                 <div className="flex gap-2">
                   <Input
                     type="number"
                     id="discount"
                     placeholder="5%"
-                    className="w-24"
+                    className=""
                     value={discountPercentage}
                     onChange={(e) =>
                       setDiscountPercentage(Number(e.target.value))
@@ -221,14 +221,14 @@ const BillContent: React.FC<BillContentProps> = ({
               </div>
 
               {/* Coupon Input & Apply Button */}
-              <div className="flex-1">
+              <div className="px-2 w-full">
                 <Label htmlFor="coupon">Coupon/Gift Card</Label>
                 <div className="flex gap-2">
                   <Input
                     type="text"
                     id="coupon"
                     placeholder="GIFT-77B373BV-28BU"
-                    className="w-24"
+                    className=""
                     value={coupon}
                     onChange={(e) => setCoupon(e.target.value)}
                   />
@@ -245,7 +245,7 @@ const BillContent: React.FC<BillContentProps> = ({
           )}
         </div>
       </div>
-      <Card ref={componentRef}>
+      <Card ref={componentRef} className='w-max mx-auto'>
         <CardHeader>
           <CardTitle className="text-center text-3xl">
             {restaurant?.name}

@@ -13,6 +13,9 @@ const CampaignPage = async ({
     where: {
       resId: params.restaurantId,
     },
+    orderBy: {
+      createdAt: 'desc'
+    }
   });
 
   const formattedMenu: CampaignColumn[] = campaigns.map((item) => {
@@ -22,12 +25,10 @@ const CampaignPage = async ({
 
     const status =
       currentDate < startDate
-        ? "Not Active"
+        ? "Starts Soon"
         : currentDate > endDate
         ? "Expired"
         : "Active";
-
-    console.log(currentDate, startDate, endDate)
 
     return {
       id: item.id,
