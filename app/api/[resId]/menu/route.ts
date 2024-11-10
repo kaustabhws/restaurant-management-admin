@@ -73,6 +73,9 @@ export async function GET(
       where: {
         resId: params.resId,
       },
+      include: {
+        ingredients: true,
+      }
     });
 
     return NextResponse.json(menus);
