@@ -1,6 +1,6 @@
 import prismadb from "@/lib/prismadb";
 import { CampaignColumn } from "./components/columns";
-import { format } from "date-fns";
+import { format, startOfDay } from "date-fns";
 import { getISTTime } from "@/lib/getISTTime";
 import { CampaignClient } from "./components/client";
 
@@ -15,16 +15,32 @@ const CampaignPage = async ({
     },
   });
 
-  const formattedMenu: CampaignColumn[] = campaigns.map((item) => ({
-    id: item.id,
-    name: item.name,
-    description: item.description,
-    code: item.code,
-    status: new Date() > item.endDate ? "Expired" : "Active",
-    startDate: format(getISTTime(item.startDate), "MMMM do, yyyy"),
-    endDate: format(getISTTime(item.endDate), "MMMM do, yyyy"),
-    createdAt: format(getISTTime(item.createdAt), "MMMM do, yyyy"),
-  }));
+  const formattedMenu: CampaignColumn[] = campaigns.map((item) => {
+    const currentDate = startOfDay(new Date());
+    const startDate = startOfDay(item.startDate);
+    const endDate = startOfDay(item.endDate);
+
+    const status =
+      currentDate < startDate
+        ? "Not Active"
+        : currentDate > endDate
+        ? "Expired"
+        : "Active";
+
+    return {
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      code: item.code,
+      status,
+      startDate: format(startDate, "MMMM do, yyyy"),
+      endDate: format(endDate, "MMMM do, yyyy"),
+      createdAt: format(
+        startOfDay(getISTTime(item.createdAt)),
+        "MMMM do, yyyy"
+      ),
+    };
+  });
 
   return (
     <div className="flex-col">
