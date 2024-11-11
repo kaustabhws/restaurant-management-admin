@@ -23,6 +23,7 @@ import {
   CalendarCheck,
   Layers,
   BadgePercent,
+  MessageCircleMore,
 } from "lucide-react";
 
 type NavItem = {
@@ -134,6 +135,11 @@ export function MobileMainNav({
           href: `/${params.restaurantId}/customers`,
           label: "Customers",
           icon: Users,
+        },
+        {
+          href: `/${params.restaurantId}/reviews`,
+          label: "Reviews",
+          icon: MessageCircleMore,
         },
       ],
     },

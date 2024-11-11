@@ -25,6 +25,7 @@ import {
   CalendarCheck,
   Layers,
   BadgePercent,
+  MessageCircleMore,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -126,6 +127,11 @@ export function MainNav({
           label: "Customers",
           icon: Users,
         },
+        {
+          href: `/${params.restaurantId}/reviews`,
+          label: "Reviews",
+          icon: MessageCircleMore,
+        },
       ],
     },
     {
@@ -210,6 +216,8 @@ function getItemDescription(label: string): string {
       return "View detailed sales reports.";
     case "Customers":
       return "Manage customer information and loyalty programs.";
+    case "Reviews":
+      return "View and manage customer reviews.";
     case "Settings":
       return "Configure system settings.";
     default:

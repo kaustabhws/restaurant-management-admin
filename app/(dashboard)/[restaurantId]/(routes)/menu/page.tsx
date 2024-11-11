@@ -11,6 +11,7 @@ const MenusPage = async ({ params }: { params: { restaurantId: string } }) => {
     },
     include: {
       ingredients: true,
+      reviews: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -35,9 +36,15 @@ const MenusPage = async ({ params }: { params: { restaurantId: string } }) => {
       );
     });
 
+    const validReviews = item.reviews.filter((review) => review.rating > 0);
+    const averageRating =
+      validReviews.reduce((sum, review) => sum + review.rating, 0) /
+      (validReviews.length || 1);
+
     return {
       id: item.id,
       name: item.name,
+      rating: averageRating ? averageRating.toString() : "N/A",
       price: item.price,
       createdAt: format(getISTTime(item.createdAt), "MMMM do, yyyy"),
       status: outOfStock ? "Out of Stock" : "In Stock",
