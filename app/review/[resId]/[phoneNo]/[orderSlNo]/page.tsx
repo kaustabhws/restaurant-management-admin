@@ -47,7 +47,7 @@ const ReviewPage = async ({
               Oops! Customer Not Found
             </CardTitle>
             <CardDescription className="text-center">
-              We couldn't find a customer with the provided phone number. Would
+              We couldn&apos;t find a customer with the provided phone number. Would
               you like to register?
             </CardDescription>
           </CardHeader>
@@ -98,7 +98,7 @@ const ReviewPage = async ({
               No Orders Found
             </CardTitle>
             <CardDescription className="text-center">
-              We couldn't find any orders for this customer. Please check back
+              We couldn&apos;t find any orders for this customer. Please check back
               later.
             </CardDescription>
           </CardHeader>
@@ -139,7 +139,7 @@ const ReviewPage = async ({
             Review Your Order
           </CardTitle>
           <CardDescription>
-            We'd love to hear your thoughts on the items you ordered!
+            We&apos;d love to hear your thoughts on the items you ordered!
           </CardDescription>
         </CardHeader>
         <CardContent>

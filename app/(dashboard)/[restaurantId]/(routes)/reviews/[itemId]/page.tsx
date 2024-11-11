@@ -19,8 +19,6 @@ const MenuItemReviewPage = async ({
     },
   });
 
-  console.log(itemReviews)
-
   // Check if itemReviews is null
   if (!itemReviews) {
     return <div>Menu item not found.</div>;
