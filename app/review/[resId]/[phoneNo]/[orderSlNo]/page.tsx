@@ -36,8 +36,19 @@ const ReviewPage = async ({
     where: {
       phone: phoneNo,
     },
+    include: {
+      orders: {
+        include: {
+          orderItems: {
+            include: {
+              menuItem: true,
+            },
+          },
+        },
+      },
+    },
   });
-
+  
   if (!customer) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background">
@@ -76,18 +87,7 @@ const ReviewPage = async ({
     );
   }
 
-  const order = await prismadb.orders.findFirst({
-    where: {
-      slNo: orderSlNo,
-    },
-    include: {
-      orderItems: {
-        include: {
-          menuItem: true,
-        },
-      },
-    },
-  });
+  const order = customer.orders.find(order => order.slNo === orderSlNo);
 
   if (!order) {
     return (
