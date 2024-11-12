@@ -56,19 +56,7 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
   const reviewUrl = `${origin}/review/${restaurant.id}/${customer.phone}/${order.slNo}`;
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Share your review",
-          text: "Please share your experience with us!",
-          url: reviewUrl,
-        });
-      } catch (error) {
-        console.error("Error sharing:", error);
-      }
-    } else {
-      setIsShareModalOpen(true);
-    }
+    setIsShareModalOpen(true);
   };
 
   const generateQRCode = useCallback(async () => {
@@ -91,7 +79,14 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
         `Please share your experience with us! ${reviewUrl}`
       )}`,
     },
-  ];
+    (navigator.userAgent.match(/Android/i) ||
+      navigator.userAgent.match(/iPhone/i)) && {
+      name: "SMS",
+      url: `sms:+91${customer.phone}/?body=${encodeURIComponent(
+        `Please share your experience with us! ${reviewUrl}`
+      )}`,
+    },
+  ].filter(Boolean);
 
   return (
     <div className="flex flex-col items-center space-y-4 p-4">
@@ -135,13 +130,13 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
           <div className="flex flex-col space-y-4 p-4">
             {shareProviders.map((provider) => (
               <a
-                key={provider.name}
-                href={provider.url}
+                key={provider?.name}
+                href={provider?.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-center hover:bg-primary/90 transition-colors"
               >
-                Share on {provider.name}
+                Share on {provider?.name}
               </a>
             ))}
           </div>
