@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CheckCheck, PrinterIcon, X } from "lucide-react";
+import { BadgePercent, CheckCheck, PrinterIcon, X } from "lucide-react";
 import { BillClient } from "./client";
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +29,8 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
+import ReviewShare from "@/components/review-share";
+import { Separator } from "@/components/ui/separator";
 
 interface Restaurant {
   id: string;
@@ -85,6 +87,7 @@ const BillContent: React.FC<BillContentProps> = ({
   const [discountPercentage, setDiscountPercentage] = useState<number>();
   const [coupon, setCoupon] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const [showDiscountFields, setShowDiscountFields] = useState(false);
 
   const router = useRouter();
 
@@ -170,82 +173,95 @@ const BillContent: React.FC<BillContentProps> = ({
   return (
     <div>
       <div className="my-3">
-        <div className="flex gap-3 justify-center">
+        {customer?.phone?.length === 10 && order && (
+          <>
+          <ReviewShare
+            customer={customer}
+            restaurant={restaurant!}
+            order={order}
+          />
+          <Separator />
+          </>
+        )}
+        <div className="flex gap-3 items-center justify-center flex-wrap mt-3">
           <BillClient
             resId={restaurant?.id}
             orderId={order?.id}
             paid={order?.isPaid}
           />
-          <Button onClick={handlePrint}>
+          <Button onClick={handlePrint} className="w-max">
             <PrinterIcon className="mr-2 h-4 w-4" />
             Print
           </Button>
+          {!showDiscountFields && (
+            <Button
+              onClick={() => setShowDiscountFields(true)}
+              className="w-max"
+            >
+              <BadgePercent className="mr-2 h-4 w-4" />
+              Apply Discount
+            </Button>
+          )}
         </div>
         <div className="flex items-center justify-center space-y-2 flex-col">
-          {order?.discount! > 0 && order?.discountType === "Percentage" ? (
-            // Show remove discount button if a discount is applied
-            <Button
-              variant="outline"
-              onClick={removeDiscount}
-            >
+          {order?.discount! > 0 ? (
+            <Button variant="outline" onClick={removeDiscount}>
               Remove Discount
             </Button>
-          ) : order?.discount! > 0 && order?.discountType === "Coupon" ? (
-            <></>
           ) : (
-            <>
-              {/* Discount Input & Apply Button */}
-              <div className='px-2 w-full'>
-                <Label htmlFor="discount">Discount (%)</Label>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    id="discount"
-                    placeholder="5%"
-                    className=""
-                    value={discountPercentage}
-                    onChange={(e) =>
-                      setDiscountPercentage(Number(e.target.value))
-                    }
-                    min="0"
-                    max="100"
-                  />
-                  <Button
-                    disabled={loading}
-                    variant="outline"
-                    onClick={applyDiscount}
-                  >
-                    Apply
-                  </Button>
+            showDiscountFields && (
+              <>
+                {/* Discount Input & Apply Button */}
+                <div className="px-2 w-full">
+                  <Label htmlFor="discount">Discount (%)</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      id="discount"
+                      placeholder="5%"
+                      value={discountPercentage}
+                      onChange={(e) =>
+                        setDiscountPercentage(Number(e.target.value))
+                      }
+                      min="0"
+                      max="100"
+                    />
+                    <Button
+                      disabled={loading}
+                      variant="outline"
+                      onClick={applyDiscount}
+                    >
+                      Apply
+                    </Button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Coupon Input & Apply Button */}
-              <div className="px-2 w-full">
-                <Label htmlFor="coupon">Coupon/Gift Card</Label>
-                <div className="flex gap-2">
-                  <Input
-                    type="text"
-                    id="coupon"
-                    placeholder="GIFT-77B373BV-28BU"
-                    className=""
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                  />
-                  <Button
-                    disabled={loading}
-                    variant="outline"
-                    onClick={applyCoupon}
-                  >
-                    Apply
-                  </Button>
+                {/* Coupon Input & Apply Button */}
+                <div className="px-2 w-full">
+                  <Label htmlFor="coupon">Coupon/Gift Card</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      id="coupon"
+                      placeholder="GIFT-77B373BV-28BU"
+                      value={coupon}
+                      onChange={(e) => setCoupon(e.target.value)}
+                    />
+                    <Button
+                      disabled={loading}
+                      variant="outline"
+                      onClick={applyCoupon}
+                    >
+                      Apply
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </>
+              </>
+            )
           )}
         </div>
       </div>
-      <Card ref={componentRef} className='w-max mx-auto'>
+      <Card ref={componentRef} className="w-max mx-auto">
         <CardHeader>
           <CardTitle className="text-center text-3xl">
             {restaurant?.name}
@@ -326,7 +342,10 @@ const BillContent: React.FC<BillContentProps> = ({
                   <TableFooter>
                     {(order?.discount ?? 0) > 0 && (
                       <TableRow>
-                        <TableCell colSpan={3}>Discount {order?.discountType === 'Coupon' && <p>(Coupon)</p>}</TableCell>
+                        <TableCell colSpan={3}>
+                          Discount{" "}
+                          {order?.discountType === "Coupon" && <p>(Coupon)</p>}
+                        </TableCell>
                         <TableCell className="text-right">
                           {order?.discount}
                         </TableCell>
@@ -350,7 +369,9 @@ const BillContent: React.FC<BillContentProps> = ({
       </Card>
       <div className="my-4">
         {customer && order && (
-          <LoyaltyPayment customer={customer} order={order} />
+          <>
+            <LoyaltyPayment customer={customer} order={order} />
+          </>
         )}
       </div>
     </div>

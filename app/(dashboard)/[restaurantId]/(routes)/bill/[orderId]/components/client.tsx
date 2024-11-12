@@ -49,7 +49,7 @@ export const BillClient: React.FC<BillClientProps> = ({
   };
 
   return (
-    <CardFooter className="flex justify-center">
+    <CardFooter className="flex justify-center p-0">
       {!paid ? (
         <MarkAsPaid
           loading={loading}
