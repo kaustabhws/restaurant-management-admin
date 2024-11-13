@@ -108,8 +108,8 @@ export function LowStockModal({
               Minimum Threshold: {currentItem.minStockThreshold}{" "}
               {currentItem.unit}
             </p>
-            <p>Price: ${currentItem.price.toFixed(2)}</p>
-            <p>Total Cost: ${currentItem.totalCost.toFixed(2)}</p>
+            <p>Price: ₹{currentItem.price.toFixed(2)}</p>
+            <p>Total Cost: ₹{currentItem.totalCost.toFixed(2)}</p>
             <p>
               Last Restocked:{" "}
               {currentItem.lastRestockedAt
