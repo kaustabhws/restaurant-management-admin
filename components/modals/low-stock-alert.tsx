@@ -78,6 +78,11 @@ export function LowStockModal({
     handleClose();
   };
 
+  if (items.length === 0) {
+    localStorage.setItem("lowStockAcknowledged", "true");
+    return null;
+  }
+
   return (
     <Dialog
       open={
@@ -108,7 +113,9 @@ export function LowStockModal({
               Minimum Threshold: {currentItem.minStockThreshold}{" "}
               {currentItem.unit}
             </p>
-            <p>Price: ₹{currentItem.price.toFixed(2)}/{currentItem.unit}</p>
+            <p>
+              Price: ₹{currentItem.price.toFixed(2)}/{currentItem.unit}
+            </p>
             <p>Total Cost: ₹{currentItem.totalCost.toFixed(2)}</p>
             <p>
               Last Restocked:{" "}

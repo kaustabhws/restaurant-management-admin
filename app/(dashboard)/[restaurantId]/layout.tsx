@@ -50,11 +50,7 @@ export default async function DashboardLayout({
     <>
       <Navbar resId={restaurant.id} lowStockItems={lowStockItems} />
       {children}
-      {lowStockItems.length > 0 && (
-        <LowStockModal
-          items={lowStockItems}
-        />
-      )}
+      <LowStockModal items={lowStockItems} />
     </>
   );
 }
