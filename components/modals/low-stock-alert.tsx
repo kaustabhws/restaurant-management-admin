@@ -79,7 +79,9 @@ export function LowStockModal({
   };
 
   if (items.length === 0) {
-    localStorage.setItem("lowStockAcknowledged", "true");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lowStockAcknowledged", "true");
+    }
     return null;
   }
 
@@ -89,6 +91,7 @@ export function LowStockModal({
         isControlled
           ? isOpen
           : internalIsOpen &&
+            typeof window !== "undefined" &&
             localStorage.getItem("lowStockAcknowledged") !== "false"
       }
       onOpenChange={handleClose}
