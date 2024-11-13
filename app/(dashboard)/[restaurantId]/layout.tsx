@@ -3,32 +3,13 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import type { Metadata, ResolvingMetadata } from "next";
+import { Modal } from "@/components/ui/modal";
+import { LowStockModal } from "@/components/modals/low-stock-alert";
 
 type Props = {
   params: { restaurantId: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
-
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const { userId } = auth();
-  if (!userId) {
-    redirect("/sign-in");
-  }
-
-  const restaurant = await prismadb.restaurants.findFirst({
-    where: {
-      id: params.restaurantId,
-      userId,
-    },
-  });
-
-  return {
-    title: `${restaurant?.name} | Dashboard`,
-  };
-}
 
 export default async function DashboardLayout({
   children,
@@ -54,10 +35,26 @@ export default async function DashboardLayout({
     redirect("/");
   }
 
+  const inventory = await prismadb.inventory.findMany({
+    where: {
+      resId: restaurant.id,
+    },
+  });
+
+  // Filter for low-stock items
+  const lowStockItems = inventory.filter(
+    (item) => item.availableQuantity < item.minStockThreshold
+  );
+
   return (
     <>
-      <Navbar resId={restaurant.id} />
+      <Navbar resId={restaurant.id} lowStockItems={lowStockItems} />
       {children}
+      {lowStockItems.length > 0 && (
+        <LowStockModal
+          items={lowStockItems}
+        />
+      )}
     </>
   );
 }

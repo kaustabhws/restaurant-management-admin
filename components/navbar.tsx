@@ -6,12 +6,16 @@ import prismadb from "@/lib/prismadb";
 import { ThemeToggle } from "./theme-toggle";
 import HamburgerMenu from "./hamburger";
 import Notification from "./notifications";
+import { Inventory } from "@prisma/client";
+import { TriangleAlert } from "lucide-react";
+import LowStockAlertButton from "./ui/low-alert-btn";
 
 interface NavbarProps {
   resId: string;
+  lowStockItems: Inventory[];
 }
 
-const Navbar: React.FC<NavbarProps> = async ({ resId }) => {
+const Navbar: React.FC<NavbarProps> = async ({ resId, lowStockItems }) => {
   const { userId } = auth();
 
   if (!userId) {
@@ -35,6 +39,9 @@ const Navbar: React.FC<NavbarProps> = async ({ resId }) => {
         </div>
         <MainNav className="min-[1100px]:mx-6 max-[1168px]:hidden max-[1100px]:mx-4" />
         <div className="ml-auto flex items-center space-x-4 max-[446px]:space-x-2">
+          {lowStockItems.length > 0 && (
+            <LowStockAlertButton lowStockItems={lowStockItems} />
+          )}
           <Notification resId={resId} />
           <ThemeToggle />
           <UserButton afterSignOutUrl="/" />

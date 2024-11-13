@@ -1,17 +1,20 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Share, QrCode } from "lucide-react";
+import { Share, QrCode, Clipboard } from "lucide-react";
 import QRCode from "qrcode";
 import { useOrigin } from "@/hooks/use-origin";
+import { Input } from "./ui/input";
+import toast from "react-hot-toast";
 
 interface Restaurant {
   id: string;
@@ -43,6 +46,11 @@ interface ReviewShareProps {
   order: Order;
 }
 
+type ShareProvider = {
+  name: string;
+  url: string;
+};
+
 const ReviewShare: React.FC<ReviewShareProps> = ({
   customer,
   restaurant,
@@ -51,6 +59,8 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [qrCodeDataURL, setQRCodeDataURL] = useState<string | null>(null);
+  const [inputUrl, setInputUrl] = useState<string>("");
+  const [shareProvider, setShareProvider] = useState<ShareProvider[]>([]);
   const origin = useOrigin();
 
   const reviewUrl = `${origin}/review/${restaurant.id}/${customer.phone}/${order.slNo}`;
@@ -66,27 +76,45 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
         margin: 2,
       });
       setQRCodeDataURL(dataURL);
+      setInputUrl(reviewUrl);
       setIsQRModalOpen(true);
     } catch (error) {
       console.error("Error generating QR code:", error);
     }
   }, [reviewUrl]);
 
-  const shareProviders = [
-    {
-      name: "WhatsApp",
-      url: `https://wa.me/${customer.phone}?text=${encodeURIComponent(
-        `Please share your experience with us! ${reviewUrl}`
-      )}`,
-    },
-    (navigator.userAgent.match(/Android/i) ||
-      navigator.userAgent.match(/iPhone/i)) && {
-      name: "SMS",
-      url: `sms:+91${customer.phone}/?body=${encodeURIComponent(
-        `Please share your experience with us! ${reviewUrl}`
-      )}`,
-    },
-  ].filter(Boolean);
+  useEffect(() => {
+    const baseProviders = [
+      {
+        name: "WhatsApp",
+        url: `https://wa.me/${customer.phone}?text=${encodeURIComponent(
+          `Please share your experience with us! ${reviewUrl}`
+        )}`,
+      },
+    ];
+
+    const isMobile = /Android|iPhone/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      baseProviders.push({
+        name: "SMS",
+        url: `sms:+91${customer.phone}/?body=${encodeURIComponent(
+          `Please share your experience with us! ${reviewUrl}`
+        )}`,
+      });
+    }
+
+    setShareProvider(baseProviders);
+  }, [customer.phone, reviewUrl]);
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(inputUrl);
+      toast.success("Copied to Clipboard");
+    } catch (err) {
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <div className="flex flex-col items-center space-y-4 p-4">
@@ -119,6 +147,12 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
               />
             )}
           </div>
+          <DialogFooter className='!flex !items-center !gap-1 !flex-row'>
+            <Input value={inputUrl} contentEditable={false} />
+            <Button size="icon" variant="ghost" onClick={copyLink}>
+              <Clipboard className="h-[1.2rem] w-[1.2rem]" />
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -128,7 +162,7 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
             <DialogTitle>Share Review Link</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col space-y-4 p-4">
-            {shareProviders.map((provider) => (
+            {shareProvider.map((provider) => (
               <a
                 key={provider?.name}
                 href={provider?.url}
