@@ -119,15 +119,12 @@ export function LowStockModal({
             <p>
               Price: ₹{currentItem.price.toFixed(2)}/{currentItem.unit}
             </p>
-            <p>Total Cost: ₹{currentItem.totalCost.toFixed(2)}</p>
             <p>
               Last Restocked:{" "}
               {currentItem.lastRestockedAt
                 ? format(new Date(currentItem.lastRestockedAt), "PPpp")
                 : "Never"}
             </p>
-            <p>Created At: {format(new Date(currentItem.createdAt), "PPpp")}</p>
-            <p>Updated At: {format(new Date(currentItem.updatedAt), "PPpp")}</p>
           </div>
         </div>
         <div className="flex items-center justify-between mt-4">
