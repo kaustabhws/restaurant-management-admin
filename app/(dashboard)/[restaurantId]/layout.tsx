@@ -43,7 +43,7 @@ export default async function DashboardLayout({
 
   // Filter for low-stock items
   const lowStockItems = inventory.filter(
-    (item) => item.availableQuantity < item.minStockThreshold
+    (item) => item.availableQuantity <= item.minStockThreshold
   );
 
   return (

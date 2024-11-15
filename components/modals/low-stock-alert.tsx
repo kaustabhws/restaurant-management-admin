@@ -37,13 +37,23 @@ export function LowStockModal({
   isOpen: propIsOpen,
   onClose: propOnClose,
 }: LowStockModalProps) {
-  const [internalIsOpen, setInternalIsOpen] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("lowStockAcknowledged") !== "false";
-    }
-    return true;
-  });
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const lowStockAcknowledged =
+        localStorage.getItem("lowStockAcknowledged") !== "false";
+      const acknowledgedItemsLength = parseInt(
+        localStorage.getItem("acknowledgedItemsLength") || "0",
+        10
+      );
+
+      setInternalIsOpen(
+        lowStockAcknowledged || items.length > acknowledgedItemsLength
+      );
+    }
+  }, [items.length]);
 
   const totalPages = items.length;
   const currentItem = items[currentPage - 1];
@@ -74,6 +84,7 @@ export function LowStockModal({
   const handleAcknowledgeAll = () => {
     if (!isControlled) {
       localStorage.setItem("lowStockAcknowledged", "false");
+      localStorage.setItem("acknowledgedItemsLength", items.length.toString());
     }
     handleClose();
   };
@@ -81,21 +92,13 @@ export function LowStockModal({
   if (items.length === 0) {
     if (typeof window !== "undefined") {
       localStorage.setItem("lowStockAcknowledged", "true");
+      localStorage.setItem("acknowledgedItemsLength", "0");
     }
     return null;
   }
 
   return (
-    <Dialog
-      open={
-        isControlled
-          ? isOpen
-          : internalIsOpen &&
-            typeof window !== "undefined" &&
-            localStorage.getItem("lowStockAcknowledged") !== "false"
-      }
-      onOpenChange={handleClose}
-    >
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Low Stock Alert</DialogTitle>
