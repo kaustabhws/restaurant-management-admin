@@ -9,7 +9,7 @@ export async function POST(
   try {
     const { userId } = auth();
     const body = await req.json();
-    const { name, price, ingredients } = body;
+    const { name, price, ingredients, images } = body;
 
     // Validation
     if (!userId) {
@@ -49,6 +49,13 @@ export async function POST(
               quantityUsed: ingredient.quantityUsed,
             })
           ),
+        },
+        images: {
+          createMany: {
+            data: [
+              ...images.map((image: { url: string }) => image),
+            ],
+          },
         },
       },
     });

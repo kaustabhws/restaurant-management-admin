@@ -10,7 +10,7 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { name, price, ingredients } = body;
+    const { name, price, ingredients, images } = body;
 
     // Validate authentication and input
     if (!userId) {
@@ -48,6 +48,22 @@ export async function PATCH(
       data: {
         name,
         price,
+        images: {
+          deleteMany: {},
+        },
+      },
+    });
+
+    await prismadb.menu.update({
+      where: {
+        id: params.menuId,
+      },
+      data: {
+        images: {
+          createMany: {
+            data: [...images.map((image: { url: string }) => image)],
+          },
+        },
       },
     });
 
@@ -134,7 +150,8 @@ export async function GET(
       },
       include: {
         ingredients: true,
-      }
+        images: true,
+      },
     });
 
     return NextResponse.json(menu);

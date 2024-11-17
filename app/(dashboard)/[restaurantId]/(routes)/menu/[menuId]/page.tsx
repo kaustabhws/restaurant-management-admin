@@ -8,6 +8,7 @@ const MenuPage = async ({ params }: { params: { menuId: string, restaurantId: st
     },
     include: {
       ingredients: true,
+      images: true,
     },
   });
 

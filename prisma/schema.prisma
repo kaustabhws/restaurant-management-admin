@@ -51,6 +51,7 @@ model Menu {
   id             String           @id @default(uuid())
   name           String
   price          Float
+  images         Image[]
   resId          String
   restaurant     Restaurants      @relation("RestaurantToMenu", fields: [resId], references: [id])
   orderItems     OrderItems[]
@@ -61,6 +62,17 @@ model Menu {
   updatedAt      DateTime         @updatedAt
 
   @@index([resId])
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  menuId    String
+  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([menuId])
 }
 
 model MenuInventory {

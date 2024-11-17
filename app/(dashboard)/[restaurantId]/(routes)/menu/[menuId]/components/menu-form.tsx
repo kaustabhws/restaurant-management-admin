@@ -35,10 +35,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import ImageUpload from "@/components/ui/image-upload";
 
 const formSchema = z.object({
   name: z.string().min(1),
   price: z.coerce.number().min(1),
+  images: z.object({ url: z.string() }).array(),
   ingredients: z.array(
     z.object({
       inventoryId: z.string(),
@@ -48,7 +50,7 @@ const formSchema = z.object({
 });
 
 type MenuWithIngredients = Prisma.MenuGetPayload<{
-  include: { ingredients: true };
+  include: { ingredients: true, images: true };
 }>;
 
 type MenuFormValues = z.infer<typeof formSchema>;
@@ -78,10 +80,12 @@ export const MenuForm: React.FC<MenuFormProps> = ({
     defaultValues: initialData
       ? {
           ...initialData,
+          images: initialData.images || [],
           ingredients: initialData.ingredients || [],
         }
       : {
           name: "",
+          images: [],
           price: 0,
           ingredients: [],
         },
@@ -159,6 +163,30 @@ export const MenuForm: React.FC<MenuFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
+          <FormField
+            control={form.control}
+            name="images"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Images</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    value={field.value.map((image) => image.url)}
+                    disabled={loading}
+                    onChange={(url) =>
+                      field.onChange([...field.value, { url }])
+                    }
+                    onRemove={(url) =>
+                      field.onChange([
+                        ...field.value.filter((current) => current.url !== url),
+                      ])
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="grid grid-cols-3 gap-8 max-[740px]:grid-cols-2 max-[380px]:grid-cols-1">
             <FormField
               control={form.control}
