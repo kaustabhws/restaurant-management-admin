@@ -43,7 +43,7 @@ const Notification: React.FC<NotificationProps> = async ({ resId }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative !ml-0">
           <Bell className="h-[1.2rem] w-[1.2rem]" />
           {unreadNotifications > 0 && (
             <Badge

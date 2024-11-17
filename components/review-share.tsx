@@ -8,13 +8,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Share, QrCode, Clipboard } from "lucide-react";
 import QRCode from "qrcode";
 import { useOrigin } from "@/hooks/use-origin";
 import { Input } from "./ui/input";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 interface Restaurant {
   id: string;
@@ -140,7 +140,9 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
           </DialogHeader>
           <div className="flex justify-center p-6">
             {qrCodeDataURL && (
-              <img
+              <Image
+                height={100}
+                width={100}
                 src={qrCodeDataURL}
                 alt="QR Code for review"
                 className="w-48 h-48"

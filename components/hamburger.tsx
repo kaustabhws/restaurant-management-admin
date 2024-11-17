@@ -30,7 +30,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ restaurant }) => {
         side="left"
         className="px-4 max-[330px]:px-1 overflow-y-auto"
       >
-        <div className='flex-1 mb-3'>
+        <div className='flex-1 mb-3 min-[500px]:hidden'>
           <StoreSwitcher items={restaurant} />
         </div>
         <MobileMainNav isOpen={isOpen} setIsOpen={setIsOpen} />

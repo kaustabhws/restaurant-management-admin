@@ -225,14 +225,14 @@ export const MenuForm: React.FC<MenuFormProps> = ({
             />
           </div>
 
-          <div className="flex flex-col w-max max-[380px]:w-full">
+          <div className="flex flex-col w-max max-[455px]:w-full">
             <FormLabel>Ingredients</FormLabel>
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="flex items-center gap-2 max-[380px]:flex-col"
+                className="flex items-center gap-2 max-[455px]:flex-col"
               >
-                <div className="flex items-center space-x-2 mt-2 max-[380px]:flex-col max-[380px]:gap-3 w-full">
+                <div className="flex items-center space-x-2 mt-2 max-[455px]:flex-col max-[455px]:gap-3 w-full">
                   <FormField
                     control={form.control}
                     name={`ingredients.${index}.inventoryId`}

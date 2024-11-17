@@ -34,7 +34,7 @@ const Navbar: React.FC<NavbarProps> = async ({ resId, lowStockItems }) => {
         <div className="min-[1168px]:hidden">
           <HamburgerMenu restaurant={restaurant} />
         </div>
-        <div className="flex max-[1168px]:flex-1 justify-center max-[900px]:justify-center max-[420px]:hidden">
+        <div className="flex max-[1168px]:flex-1 justify-center max-[900px]:justify-center max-[500px]:hidden">
           <StoreSwitcher items={restaurant} />
         </div>
         <MainNav className="min-[1100px]:mx-6 max-[1168px]:hidden max-[1100px]:mx-4" />
