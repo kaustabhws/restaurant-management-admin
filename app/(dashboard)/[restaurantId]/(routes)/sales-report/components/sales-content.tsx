@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -24,10 +24,14 @@ import {
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Orders } from "@prisma/client";
+import { Currency, Orders } from "@prisma/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DateRange } from "react-day-picker";
 import { saveAs } from "file-saver";
+import { IndianRupee } from "lucide-react";
+import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
+import prismadb from "@/lib/prismadb";
+import axios from "axios";
 
 const chartConfig = {
   total: {
@@ -40,6 +44,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 interface SalesContentProps {
+  restaurantId: string;
   loading: boolean;
   totalSales: number;
   averageDailySales: number;
@@ -49,6 +54,7 @@ interface SalesContentProps {
 }
 
 const SalesContent: React.FC<SalesContentProps> = ({
+  restaurantId,
   loading,
   averageDailySales,
   totalSales,
@@ -56,6 +62,8 @@ const SalesContent: React.FC<SalesContentProps> = ({
   dateRange,
   chartData,
 }) => {
+  const [currency, setCurrency] = useState<Currency>("rupee");
+
   const exportToCSV = () => {
     if (!chartData || chartData.length === 0) return;
 
@@ -78,6 +86,19 @@ const SalesContent: React.FC<SalesContentProps> = ({
     saveAs(blob, `Sales_Report_${format(new Date(), "yyyy-MM-dd")}.csv`);
   };
 
+  const getCurrency = async () => {
+    try {
+      const res = await axios.get(`/api/res?resId=${restaurantId}`);
+      setCurrency(res.data.currency);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getCurrency();
+  }, []);
+
   return (
     <div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
@@ -92,7 +113,12 @@ const SalesContent: React.FC<SalesContentProps> = ({
               ) : !totalSales ? (
                 <p>No data available</p>
               ) : (
-                <p>₹{totalSales.toFixed(2)}</p>
+                <p className="flex items-center">
+                  {getCurrencyIcon({
+                    currency: currency,
+                  })}
+                  {totalSales.toFixed(2)}
+                </p>
               )}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -113,7 +139,12 @@ const SalesContent: React.FC<SalesContentProps> = ({
               ) : !averageDailySales ? (
                 <p>No data available</p>
               ) : (
-                <p>₹{averageDailySales.toFixed(2)}</p>
+                <p className="flex items-center">
+                  {getCurrencyIcon({
+                    currency: currency,
+                  })}
+                  {averageDailySales.toFixed(2)}
+                </p>
               )}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -239,8 +270,12 @@ const SalesContent: React.FC<SalesContentProps> = ({
                     <TableCell>
                       {format(day.createdAt, "dd MMMM, yyyy")}
                     </TableCell>
-                    <TableCell className="text-right">
-                      ₹{day.amount.toFixed(2)}
+                    <TableCell className="text-right flex items-center justify-end">
+                      {getCurrencyIcon({
+                        currency: currency,
+                        size: 13,
+                      })}
+                      {day.amount.toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))

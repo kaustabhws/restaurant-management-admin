@@ -48,9 +48,9 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <Navbar resId={restaurant.id} lowStockItems={lowStockItems} />
+      <Navbar resId={restaurant.id} lowStockItems={lowStockItems} currency={restaurant.currency} />
       {children}
-      <LowStockModal items={lowStockItems} />
+      <LowStockModal items={lowStockItems} currency={restaurant.currency} />
     </>
   );
 }

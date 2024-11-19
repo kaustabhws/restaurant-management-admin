@@ -19,14 +19,20 @@ const MenuItemReviewPage = async ({
     },
   });
 
+  const currency = await prismadb.restaurants.findUnique({
+    where: {
+      id: params.restaurantId,
+    }
+  })
+
   // Check if itemReviews is null
-  if (!itemReviews) {
+  if (!itemReviews || !currency) {
     return <div>Menu item not found.</div>;
   }
 
   return (
     <div>
-      <ItemReviewCard itemReviews={itemReviews} />
+      <ItemReviewCard itemReviews={itemReviews} currency={currency} />
     </div>
   );
 };

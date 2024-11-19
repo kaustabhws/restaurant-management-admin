@@ -5,6 +5,7 @@ import {
   Star,
   Search,
   ChevronRight,
+  IndianRupee,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,9 +18,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Customer, Prisma } from "@prisma/client";
+import { Currency, Customer, Prisma } from "@prisma/client";
 import { format } from "date-fns";
 import Link from "next/link";
+import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
 
 type MenuWithIngredients = Prisma.MenuGetPayload<{
   include: { reviews: true };
@@ -28,9 +30,11 @@ type MenuWithIngredients = Prisma.MenuGetPayload<{
 export default function ReviewCard({
   data,
   customer,
+  currency,
 }: {
   data: MenuWithIngredients[];
   customer: Customer[];
+  currency: { currency: Currency };
 }) {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -64,7 +68,12 @@ export default function ReviewCard({
         {/* Display items with reviews in full width */}
         {filteredReviewedItems.length > 0 ? (
           filteredReviewedItems.map((item) => (
-            <MenuItem key={item.id} item={item} customer={customer} />
+            <MenuItem
+              key={item.id}
+              item={item}
+              customer={customer}
+              currency={currency}
+            />
           ))
         ) : (
           <p className="text-center text-gray-500">
@@ -95,9 +104,11 @@ export default function ReviewCard({
 function MenuItem({
   item,
   customer,
+  currency,
 }: {
   item: MenuWithIngredients;
   customer: Customer[];
+  currency: { currency: Currency };
 }) {
   const [expanded, setExpanded] = useState(false);
   const validReviews = item.reviews.filter((review) => review.rating > 0);
@@ -112,8 +123,12 @@ function MenuItem({
           <div>
             <CardTitle className="text-xl">{item.name}</CardTitle>
             <div className="flex items-center mt-1 space-x-2">
-              <span className="text-sm text-muted-foreground">
-                ₹{item.price.toFixed(2)}
+              <span className="text-sm text-muted-foreground flex items-center">
+                {getCurrencyIcon({
+                  currency: currency.currency,
+                  size: 14,
+                })}
+                {item.price.toFixed(2)}
               </span>
             </div>
           </div>
@@ -165,7 +180,7 @@ function MenuItem({
                       <span>{review.rating}</span>
                     </div>
                   </TableCell>
-                  <TableCell>{review.review ? review.review : 'N/A'}</TableCell>
+                  <TableCell>{review.review ? review.review : "N/A"}</TableCell>
                 </TableRow>
               );
             })}
@@ -173,10 +188,10 @@ function MenuItem({
         </Table>
         {item.reviews.length > 3 && (
           <Link href={`/${item.resId}/reviews/${item.id}`}>
-          <Button variant="ghost" className="text-sm ml-auto">
-            View All Reviews
-            <ChevronRight className="w-4 h-4 ml-2" />
-          </Button>
+            <Button variant="ghost" className="text-sm ml-auto">
+              View All Reviews
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
           </Link>
         )}
       </CardContent>

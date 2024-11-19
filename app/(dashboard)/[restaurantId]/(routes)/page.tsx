@@ -18,6 +18,8 @@ import { getStockCount } from "@/actions/get-stock-count";
 import { formatter } from "@/lib/utils";
 import { getDailyRevenue } from "@/actions/get-daily-revenue";
 import { getDailySales } from "@/actions/get-daily-sales";
+import prismadb from "@/lib/prismadb";
+import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
 const Overview = lazy(() => import("@/components/overview"));
 
 interface DashboardPageProps {
@@ -33,6 +35,16 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
   const stockCount = await getStockCount(params.restaurantId);
   const dailyRevenue = await getDailyRevenue(params.restaurantId);
   const dailySales = await getDailySales(params.restaurantId);
+
+  const currency = await prismadb.restaurants.findUnique({
+    where: {
+      id: params.restaurantId,
+    },
+  });
+
+  if (!currency) {
+    throw new Error("Currency not found");
+  }
 
   // Calculate revenue increase
   const calculateRevenueIncrease = () => {
@@ -77,8 +89,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
               <CalendarCheck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <div className="text-2xl font-bold">
-                {formatter.format(dailyRevenue.todayRevenue)}
+              <div className="text-2xl font-bold flex items-center">
+                {getCurrencyIcon({ currency: currency.currency })}
+                {dailyRevenue.todayRevenue}
               </div>
               <div>
                 {increasedRevenue ? (
@@ -165,11 +178,15 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
               <CardTitle className="text-sm font-medium">
                 Lifetime Revenue
               </CardTitle>
-              <IndianRupee className="h-4 w-4 text-muted-foreground" />
+              {getCurrencyIcon({
+                currency: currency.currency,
+                className: "h-4 w-4 text-muted-foreground",
+              })}
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {formatter.format(totalRevenue)}
+              <div className="text-2xl font-bold flex items-center">
+                {getCurrencyIcon({ currency: currency.currency })}
+                {totalRevenue}
               </div>
             </CardContent>
           </Card>

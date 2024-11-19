@@ -11,6 +11,7 @@ datasource db {
 model Restaurants {
   id            String               @id @default(uuid())
   name          String
+  currency      Currency             @default(rupee)
   userId        String
   menus         Menu[]               @relation("RestaurantToMenu")
   tables        Table[]              @relation("RestaurantToTable")
@@ -26,6 +27,16 @@ model Restaurants {
   reviews       Review[]             @relation("RestaurantToReview")
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
+}
+
+enum Currency {
+  dollar
+  rupee
+  euro
+  yen
+  pound
+  ruble
+  peso
 }
 
 model Inventory {

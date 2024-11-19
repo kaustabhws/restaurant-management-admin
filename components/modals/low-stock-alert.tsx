@@ -9,8 +9,10 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, IndianRupee } from "lucide-react";
 import { format } from "date-fns";
+import { Currency } from "@prisma/client";
+import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
 
 interface LowStockItem {
   id: string;
@@ -28,12 +30,14 @@ interface LowStockItem {
 
 interface LowStockModalProps {
   items: LowStockItem[];
+  currency: Currency;
   isOpen?: boolean;
   onClose?: () => void;
 }
 
 export function LowStockModal({
   items,
+  currency,
   isOpen: propIsOpen,
   onClose: propOnClose,
 }: LowStockModalProps) {
@@ -119,8 +123,14 @@ export function LowStockModal({
               Minimum Threshold: {currentItem.minStockThreshold}{" "}
               {currentItem.unit}
             </p>
-            <p>
-              Price: ₹{currentItem.price.toFixed(2)}/{currentItem.unit}
+            <p className="flex items-center">
+              Price:{" "}
+              {getCurrencyIcon({
+                currency: currency,
+                className: "ml-1",
+                size: 14,
+              })}
+              {currentItem.price.toFixed(2)}/{currentItem.unit}
             </p>
             <p>
               Last Restocked:{" "}

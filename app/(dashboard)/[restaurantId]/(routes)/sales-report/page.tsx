@@ -128,6 +128,7 @@ const SalesReportPage = ({ params }: { params: { restaurantId: string } }) => {
           <Button onClick={getReport}>Generate Report</Button>
         </div>
         <SalesContent
+          restaurantId={params.restaurantId}
           loading={loading}
           averageDailySales={averageDailySales}
           chartData={consolidatedSalesData}

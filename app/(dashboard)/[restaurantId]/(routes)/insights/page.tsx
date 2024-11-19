@@ -11,6 +11,9 @@ import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 const WeeklyOverview = lazy(() => import("./_components/weekly-overview"));
 import { IndianRupee, Table, TrendingUp } from "lucide-react";
+import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
+import prismadb from "@/lib/prismadb";
+import { redirect } from "next/navigation";
 
 interface InsightsPageProps {
   params: {
@@ -26,6 +29,16 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
     await getAverageOrderValue(params.restaurantId)
   ).toFixed(2);
   const mostPopularTable = await getMostPopularTable(params.restaurantId);
+
+  const currency = await prismadb.restaurants.findUnique({
+    where: {
+      id: params.restaurantId,
+    },
+  });
+
+  if (!currency) {
+    throw new Error("Currency not found");
+  }
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 max-[425px]:px-3 max-[430px]:px-2">
@@ -64,7 +77,10 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
             <CardTitle className="text-xl font-bold">
               Highest Revenue Generating Item
             </CardTitle>
-            <IndianRupee className="h-4 w-4 text-muted-foreground" />
+            {getCurrencyIcon({
+              currency: currency.currency,
+              className: "h-4 w-4 text-muted-foreground",
+            })}
           </CardHeader>
           <CardContent>
             <div className="text-lg font-medium flex flex-col mt-2">
@@ -86,14 +102,20 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
             <CardTitle className="text-xl font-bold">
               Highest Bill Amount
             </CardTitle>
-            <IndianRupee className="h-4 w-4 text-muted-foreground" />
+            {getCurrencyIcon({
+              currency: currency.currency,
+              className: "h-4 w-4 text-muted-foreground",
+            })}
           </CardHeader>
           <CardContent>
             <div className="text-lg font-medium flex flex-col mt-2">
               <p className="flex items-center">
                 {highestBillAmount ? (
                   <React.Fragment>
-                    <IndianRupee size={20} />
+                    {getCurrencyIcon({
+                      currency: currency.currency,
+                      size: 18,
+                    })}
                     {highestBillAmount?.amount}
                   </React.Fragment>
                 ) : (
@@ -108,7 +130,10 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
             <CardTitle className="text-xl font-bold">
               Average Order Value
             </CardTitle>
-            <IndianRupee className="h-4 w-4 text-muted-foreground" />
+            {getCurrencyIcon({
+              currency: currency.currency,
+              className: "h-4 w-4 text-muted-foreground",
+            })}
           </CardHeader>
           <CardContent>
             <div className="text-lg font-medium flex flex-col mt-2">
@@ -117,7 +142,10 @@ const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
                   <p className="text-red-600">No Data Available</p>
                 ) : (
                   <React.Fragment>
-                    <IndianRupee size={20} />
+                    {getCurrencyIcon({
+                      currency: currency.currency,
+                      size: 18,
+                    })}
                     {parseInt(avgOrderValue)}
                   </React.Fragment>
                 )}

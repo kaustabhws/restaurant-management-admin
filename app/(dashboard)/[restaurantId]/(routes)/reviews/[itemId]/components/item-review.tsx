@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, IndianRupee, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
+import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
+import { Currency } from "@prisma/client";
 
 type Customer = {
   id: string;
@@ -51,8 +53,10 @@ type MenuWithReviews = {
 
 export default function ItemReviewCard({
   itemReviews,
+  currency,
 }: {
   itemReviews: MenuWithReviews;
+  currency: { currency: Currency };
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 8;
@@ -84,8 +88,12 @@ export default function ItemReviewCard({
             <div>
               <CardTitle className="text-2xl">{itemReviews.name}</CardTitle>
               <div className="flex items-center mt-2 space-x-2">
-                <span className="text-sm text-muted-foreground">
-                  ₹{itemReviews.price.toFixed(2)}
+                <span className="text-sm text-muted-foreground flex items-center">
+                  {getCurrencyIcon({
+                    currency: currency.currency,
+                    size: 14,
+                  })}
+                  {itemReviews.price.toFixed(2)}
                 </span>
               </div>
             </div>

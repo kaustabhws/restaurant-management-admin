@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderHistoryColumn } from "./components/order-history-column";
 import { OrderClient } from "./components/order-history-client";
+import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
 
 const CustomerPage = async ({
   params,
@@ -31,7 +32,13 @@ const CustomerPage = async ({
     },
   });
 
-  if (!customer) {
+  const currency = await prismadb.restaurants.findUnique({
+    where: {
+      id: params.restaurantId,
+    }
+  })
+
+  if (!customer || !currency) {
     redirect(`/${params.restaurantId}/customers`);
   }
 
@@ -102,7 +109,7 @@ const CustomerPage = async ({
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-primary/10 rounded-full">
-                    <IndianRupee className="h-6 w-6 text-primary" />
+                    {getCurrencyIcon({ currency: currency.currency, className: "h-6 w-6 text-primary" })}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">

@@ -14,7 +14,7 @@ import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Restaurants } from "@prisma/client";
+import { Currency, Restaurants } from "@prisma/client";
 import axios from "axios";
 import { AlertTriangle, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -22,6 +22,23 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import * as z from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const currencyOptions = [
+  { name: "US Dollar", value: "dollar" },
+  { name: "Indian Rupee", value: "rupee" },
+  { name: "Euro", value: "euro" },
+  { name: "Japanese Yen", value: "yen" },
+  { name: "British Pound Sterling", value: "pound" },
+  { name: "Russian Ruble", value: "ruble" },
+  { name: "Philippine Peso", value: "peso" },
+];
 
 interface SettingsFormProps {
   initialData: Restaurants;
@@ -29,6 +46,7 @@ interface SettingsFormProps {
 
 const formSchema = z.object({
   name: z.string().min(1),
+  currency: z.nativeEnum(Currency),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
@@ -93,7 +111,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <div className="grid grid-cols-3 gap-8 max-[600px]:grid-cols-1 max-[870px]:grid-cols-2">
+          <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
               name="name"
@@ -108,6 +126,38 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                       className="w-[500px] max-[590px]:w-full"
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem className='w-[500px] max-[590px]:w-full'>
+                  <FormLabel>Currency</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a currency"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {currencyOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
