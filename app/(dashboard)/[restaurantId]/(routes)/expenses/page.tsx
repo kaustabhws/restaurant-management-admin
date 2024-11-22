@@ -65,6 +65,9 @@ const ExpensesPage = async ({
     include: {
       category: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    }
   });
 
   const formattedExpense: ExpenseColumn[] = expenseDetails.map((item) => ({
