@@ -24,6 +24,7 @@ import {
   Layers,
   BadgePercent,
   MessageCircleMore,
+  ChartNoAxesCombined,
 } from "lucide-react";
 
 type NavItem = {
@@ -61,6 +62,11 @@ export function MobileMainNav({
           label: "Overview",
           icon: LayoutDashboard,
         },
+        {
+          href: `/${params.restaurantId}/expenses`,
+          label: "Expenses",
+          icon: ChartNoAxesCombined,
+        },
       ],
     },
     {
@@ -92,7 +98,7 @@ export function MobileMainNav({
           href: `/${params.restaurantId}/campaigns`,
           label: "Campaigns",
           icon: BadgePercent,
-        }
+        },
       ],
     },
     {

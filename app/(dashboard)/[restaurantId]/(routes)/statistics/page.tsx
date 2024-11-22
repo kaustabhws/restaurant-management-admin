@@ -1,10 +1,10 @@
 import React, { lazy, Suspense } from "react";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { getTopSellingItems } from "@/actions/get-bestselling-item";
-import { getPopularDays } from "@/actions/get-popular-day";
-import { getOrderType } from "@/actions/get-order-type";
-import { getPreferredPayment } from "@/actions/get-preferred-payment";
+import { getTopSellingItems } from "@/actions/statistics/get-bestselling-item";
+import { getPopularDays } from "@/actions/statistics/get-popular-day";
+import { getOrderType } from "@/actions/statistics/get-order-type";
+import { getPreferredPayment } from "@/actions/statistics/get-preferred-payment";
 const PieChartComponent = lazy(() => import("@/components/pie-chart"));
 const DailySalesOverview = lazy(
   () => import("./_components/daily-sales-overview")

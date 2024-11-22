@@ -2,7 +2,6 @@ import React, { lazy, Suspense } from "react";
 import {
   CalendarCheck,
   CreditCard,
-  IndianRupee,
   MenuSquare,
   TrendingDown,
   TrendingUp,
@@ -11,13 +10,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
-import { getTotalRevenue } from "@/actions/get-total-revenue";
-import { getSalesCount } from "@/actions/get-sales-count";
-import { getGraphRevenue } from "@/actions/get-graph-revenue";
-import { getStockCount } from "@/actions/get-stock-count";
-import { formatter } from "@/lib/utils";
-import { getDailyRevenue } from "@/actions/get-daily-revenue";
-import { getDailySales } from "@/actions/get-daily-sales";
+import { getTotalRevenue } from "@/actions/dashboard/get-total-revenue";
+import { getSalesCount } from "@/actions/dashboard/get-sales-count";
+import { getGraphRevenue } from "@/actions/dashboard/get-graph-revenue";
+import { getStockCount } from "@/actions/dashboard/get-stock-count";
+import { getDailyRevenue } from "@/actions/dashboard/get-daily-revenue";
+import { getDailySales } from "@/actions/dashboard/get-daily-sales";
 import prismadb from "@/lib/prismadb";
 import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
 const Overview = lazy(() => import("@/components/overview"));

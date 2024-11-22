@@ -5,15 +5,14 @@ import {
   getHighestRevenueFood,
   getMostOrderedFood,
   getMostPopularTable,
-} from "@/actions/res-stats";
+} from "@/actions/insights/res-stats";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 const WeeklyOverview = lazy(() => import("./_components/weekly-overview"));
-import { IndianRupee, Table, TrendingUp } from "lucide-react";
+import { Table, TrendingUp } from "lucide-react";
 import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
 import prismadb from "@/lib/prismadb";
-import { redirect } from "next/navigation";
 
 interface InsightsPageProps {
   params: {

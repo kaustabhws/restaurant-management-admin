@@ -26,6 +26,7 @@ import {
   Layers,
   BadgePercent,
   MessageCircleMore,
+  ChartNoAxesCombined,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -55,6 +56,11 @@ export function MainNav({
           href: `/${params.restaurantId}`,
           label: "Overview",
           icon: LayoutDashboard,
+        },
+        {
+          href: `/${params.restaurantId}/expenses`,
+          label: "Expenses",
+          icon: ChartNoAxesCombined,
         },
       ],
     },
@@ -86,7 +92,7 @@ export function MainNav({
           href: `/${params.restaurantId}/campaigns`,
           label: "Campaigns",
           icon: BadgePercent,
-        }
+        },
       ],
     },
     {
@@ -194,6 +200,8 @@ function getItemDescription(label: string): string {
   switch (label) {
     case "Overview":
       return "General overview of the restaurant's operations.";
+    case "Expenses":
+      return "View and manage expenses.";
     case "Inventory":
       return "Manage inventory items.";
     case "Menu":
