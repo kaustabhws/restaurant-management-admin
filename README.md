@@ -14,6 +14,7 @@ This is a comprehensive restaurant management system built using [Next.js](https
 - [x] **Customer Management**: Manages customer details, including mobile number, email, loyalty points, and total amount spent.
 - [x] **Reservation System**: Allows customers to make reservations, with real-time table availability management.
 - [x] **Inventory Management**: Tracks ingredients for menu items and manages stock levels automatically as orders are placed, with low-stock notifications.
+- [x] **Expense Management**: Tracks different expenses with the amount, category and description to property track each month's expenses
 
 ### Additional Features (Upcoming)
 - [ ] **Real-Time Updates**: Order updates and table management in real-time.

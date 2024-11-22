@@ -3,6 +3,9 @@ import prismadb from "@/lib/prismadb";
 export const getHighestExpenseCategory = async (restaurantId: string) => {
   const highestExpenseCategory = await prismadb.expense.groupBy({
     by: ["categoryId"],
+    where: {
+      resId: restaurantId,
+    },
     _sum: {
       amount: true,
     },

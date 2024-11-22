@@ -12,6 +12,7 @@ export const getMonthlyExpenses = async (restaurantId: string) => {
       amount: true,
     },
     where: {
+      resId: restaurantId,
       createdAt: {
         gte: currentMonthStart,
       },
@@ -24,6 +25,7 @@ export const getMonthlyExpenses = async (restaurantId: string) => {
       amount: true,
     },
     where: {
+      resId: restaurantId,
       createdAt: {
         gte: previousMonthStart,
         lt: previousMonthEnd,
