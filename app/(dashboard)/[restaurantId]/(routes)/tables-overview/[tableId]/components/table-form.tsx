@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Inventory, Menu, Prisma, Table } from "@prisma/client";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Check, ChevronsUpDown, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -112,6 +112,12 @@ export const TableForm: React.FC<TableFormProps> = ({
       router.refresh();
       toast.success(toastMessage);
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data.includes("Insufficient stock")) {
+          toast.error(error.response?.data);
+          return;
+        }
+      }
       toast.error("Something went wrong");
     } finally {
       setLoading(false);

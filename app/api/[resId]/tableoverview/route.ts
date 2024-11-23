@@ -81,9 +81,12 @@ export async function POST(
           !inventoryItem ||
           inventoryItem.availableQuantity < requiredQuantity
         ) {
-          return new NextResponse("Insufficient stock for ingredient", {
-            status: 400,
-          });
+          return new NextResponse(
+            `Insufficient stock for ingredient ${inventoryItem?.name}`,
+            {
+              status: 400,
+            }
+          );
         }
       }
     }
@@ -130,7 +133,7 @@ export async function POST(
 
     return NextResponse.json(temporder);
   } catch (error) {
-    console.log("[TABLES_POST]", error);
+    console.log("[TEMPORDER_POST]", error);
     return new NextResponse("Internal Server error", { status: 500 });
   }
 }
