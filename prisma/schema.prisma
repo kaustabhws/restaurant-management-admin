@@ -49,7 +49,7 @@ model Inventory {
   minStockThreshold Int
   price             Float
   totalCost         Float
-  lastRestockedAt   DateTime?
+  lastRestockedAt   DateTime?       @updatedAt
   resId             String
   restaurant        Restaurants     @relation("RestaurantToInventory", fields: [resId], references: [id])
   menuInventory     MenuInventory[]

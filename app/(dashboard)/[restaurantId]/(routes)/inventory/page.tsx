@@ -22,12 +22,17 @@ const InventoryPage = async ({
     id: item.id,
     name: item.name,
     price: `${item.price}/${item.unit}`,
-    quantity: `${item.availableQuantity} ${item.unit}`,
+    availableQuantity: `${item.availableQuantity} ${item.unit}`,
+    minStockThreshold: item.minStockThreshold,
+    unit: item.unit,
     status:
       item.availableQuantity > item.minStockThreshold
         ? "In Stock"
         : "Low Stock",
     createdAt: format(getISTTime(item.createdAt), "MMMM do, yyyy"),
+    lastRestockedAt: item.lastRestockedAt
+      ? format(getISTTime(item.lastRestockedAt), "MMMM do, yyyy")
+      : "Never",
   }));
 
   return (

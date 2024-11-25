@@ -6,10 +6,13 @@ import { CellAction } from "./cell-action";
 export type InventoryColumn = {
   id: string;
   name: string;
-  quantity: string;
-  price: string;
-  status: string;
   createdAt: string;
+  status: string;
+  availableQuantity: string;
+  unit: string;
+  minStockThreshold: number;
+  price: string;
+  lastRestockedAt: string | null;
 };
 
 export const columns: ColumnDef<InventoryColumn>[] = [
@@ -18,7 +21,7 @@ export const columns: ColumnDef<InventoryColumn>[] = [
     header: "Name",
   },
   {
-    accessorKey: "quantity",
+    accessorKey: "availableQuantity",
     header: "Available Quantity",
   },
   {

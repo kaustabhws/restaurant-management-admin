@@ -9,6 +9,7 @@ import Notification from "./notifications";
 import { Currency, Inventory } from "@prisma/client";
 import { TriangleAlert } from "lucide-react";
 import LowStockAlertButton from "./ui/low-alert-btn";
+import { Button } from "./ui/button";
 
 interface NavbarProps {
   resId: string;
@@ -48,7 +49,11 @@ const Navbar: React.FC<NavbarProps> = async ({
             <LowStockAlertButton
               lowStockItems={lowStockItems}
               currency={currency}
-            />
+            >
+              <Button size="icon" variant="ghost">
+                <TriangleAlert color="red" className="h-[1.4rem] w-[1.4rem]" />
+              </Button>
+            </LowStockAlertButton>
           )}
           <Notification resId={resId} />
           <ThemeToggle />
