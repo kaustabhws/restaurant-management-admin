@@ -149,8 +149,8 @@ const ReviewShare: React.FC<ReviewShareProps> = ({
               />
             )}
           </div>
-          <DialogFooter className='!flex !items-center !gap-1 !flex-row'>
-            <Input value={inputUrl} contentEditable={false} />
+          <DialogFooter className="!flex !items-center !gap-1 !flex-row">
+            <Input value={inputUrl} contentEditable={false} autoFocus={false} />
             <Button size="icon" variant="ghost" onClick={copyLink}>
               <Clipboard className="h-[1.2rem] w-[1.2rem]" />
             </Button>
