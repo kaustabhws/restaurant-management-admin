@@ -16,6 +16,9 @@ const InventoryPage = async ({
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      restaurant: true,
+    },
   });
 
   const formattedInventory: InventoryColumn[] = inventory.map((item) => ({
@@ -25,6 +28,7 @@ const InventoryPage = async ({
     availableQuantity: `${item.availableQuantity} ${item.unit}`,
     minStockThreshold: item.minStockThreshold,
     unit: item.unit,
+    currency: item.restaurant.currency,
     status:
       item.availableQuantity > item.minStockThreshold
         ? "In Stock"

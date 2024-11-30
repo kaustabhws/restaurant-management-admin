@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
+import { Currency } from "@prisma/client";
 
 export type InventoryColumn = {
   id: string;
@@ -12,6 +13,7 @@ export type InventoryColumn = {
   unit: string;
   minStockThreshold: number;
   price: string;
+  currency: Currency;
   lastRestockedAt: string | null;
 };
 

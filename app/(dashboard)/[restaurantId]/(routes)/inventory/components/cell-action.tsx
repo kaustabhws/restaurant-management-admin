@@ -9,12 +9,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { InventoryColumn } from "./columns";
 import { Button } from "@/components/ui/button";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Copy, Edit, MoreHorizontal, Plus, Trash } from "lucide-react";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
+import { RestockModal } from "@/components/modals/restock-modal";
 
 interface CellActionProps {
   data: InventoryColumn;
@@ -26,6 +27,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
@@ -35,28 +37,46 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(
-        `/api/${params.restaurantId}/inventory/${data.id}`
-      );
+      await axios.delete(`/api/${params.restaurantId}/inventory/${data.id}`);
       router.refresh();
       toast.success("Item deleted");
     } catch (error) {
-      toast.error(
-        "Something went wrong, please try again later"
-      );
+      toast.error("Something went wrong, please try again later");
     } finally {
       setLoading(false);
       setOpen(false);
     }
   };
 
+  const handleRestock = async (data: { quantity: number; price: number }) => {
+    try {
+      setLoading(true);
+      await axios.post(`/api/${params.restaurantId}/inventory/restock`, data);
+      router.refresh();
+      toast.success("Item restocked");
+    } catch (error) {
+      toast.error("Something went wrong, please try again later");
+    } finally {
+      setLoading(false);
+      setIsModalOpen(false);
+    }
+  };
+
   return (
     <>
-      <AlertModal 
+      <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onDelete}
         loading={loading}
+      />
+      <RestockModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleRestock}
+        loading={loading}
+        inventoryItem={data}
+        currency={data.currency}
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -78,6 +98,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           >
             <Edit className="mr-2 h-4 w-4" />
             Update
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Restock
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash className="mr-2 h-4 w-4" />

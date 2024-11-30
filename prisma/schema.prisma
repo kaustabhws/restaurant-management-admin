@@ -9,26 +9,27 @@ datasource db {
 }
 
 model Restaurants {
-  id                String               @id @default(uuid())
-  name              String
-  currency          Currency             @default(rupee)
-  userId            String
-  menus             Menu[]               @relation("RestaurantToMenu")
-  tables            Table[]              @relation("RestaurantToTable")
-  orders            Orders[]             @relation("RestaurantToOrder")
-  temporders        TempOrders[]         @relation("RestaurantToTempOrder")
-  bills             Bill[]               @relation("RestaurantToBill")
-  customers         Customer[]           @relation("RestaurantToCustimer")
-  loyalty           LoyaltyTransaction[] @relation("RestaurantToLoyaltyTransaction")
-  reservations      Reservation[]        @relation("RestaurantToReservation")
-  notifications     Notification[]       @relation("RestaurantToNotification")
-  inventories       Inventory[]          @relation("RestaurantToInventory")
-  campaigns         Campaign[]           @relation("RestaurantToCampaign")
-  reviews           Review[]             @relation("RestaurantToReview")
-  expenses          Expense[]            @relation("RestaurantToExpense")
-  expenseCategories ExpenseCategory[]    @relation("RestaurantToExpenseCategory")
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  id                    String                 @id @default(uuid())
+  name                  String
+  currency              Currency               @default(rupee)
+  userId                String
+  menus                 Menu[]                 @relation("RestaurantToMenu")
+  tables                Table[]                @relation("RestaurantToTable")
+  orders                Orders[]               @relation("RestaurantToOrder")
+  temporders            TempOrders[]           @relation("RestaurantToTempOrder")
+  bills                 Bill[]                 @relation("RestaurantToBill")
+  customers             Customer[]             @relation("RestaurantToCustimer")
+  loyalty               LoyaltyTransaction[]   @relation("RestaurantToLoyaltyTransaction")
+  reservations          Reservation[]          @relation("RestaurantToReservation")
+  notifications         Notification[]         @relation("RestaurantToNotification")
+  inventories           Inventory[]            @relation("RestaurantToInventory")
+  campaigns             Campaign[]             @relation("RestaurantToCampaign")
+  reviews               Review[]               @relation("RestaurantToReview")
+  expenses              Expense[]              @relation("RestaurantToExpense")
+  expenseCategories     ExpenseCategory[]      @relation("RestaurantToExpenseCategory")
+  inventoryTransactions InventoryTransaction[] @relation("RestaurantToInventoryTransaction")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 }
 
 enum Currency {
@@ -49,14 +50,31 @@ model Inventory {
   minStockThreshold Int
   price             Float
   totalCost         Float
-  lastRestockedAt   DateTime?       @updatedAt
+  lastRestockedAt   DateTime?
   resId             String
   restaurant        Restaurants     @relation("RestaurantToInventory", fields: [resId], references: [id])
   menuInventory     MenuInventory[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  InventoryTransaction InventoryTransaction[]
 
+  @@index([resId])
+}
+
+model InventoryTransaction {
+  id          String      @id @default(uuid())
+  resId       String
+  restaurant  Restaurants @relation("RestaurantToInventoryTransaction", fields: [resId], references: [id])
+  inventoryId String
+  inventory   Inventory   @relation(fields: [inventoryId], references: [id])
+  quantity    Int
+  price       Float
+  isExpense   Boolean
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([inventoryId])
   @@index([resId])
 }
 
