@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { TransactionClient } from "./components/transaction-client";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { IndianRupee, StarIcon, UserIcon } from "lucide-react";
+import { Heart, IndianRupee, StarIcon, UserIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderHistoryColumn } from "./components/order-history-column";
@@ -27,7 +27,11 @@ const CustomerPage = async ({
           createdAt: "desc",
         },
       },
-      orders: true,
+      orders: {
+        include: {
+          orderItems: true,
+        },
+      },
       bills: true,
     },
   });
@@ -35,12 +39,45 @@ const CustomerPage = async ({
   const currency = await prismadb.restaurants.findUnique({
     where: {
       id: params.restaurantId,
-    }
-  })
+    },
+  });
 
   if (!customer || !currency) {
     redirect(`/${params.restaurantId}/customers`);
   }
+
+  // average order value
+  const averageSpent = customer.totalSpent / customer.orders.length;
+
+  const allOrderItems = customer.orders.flatMap((order) => order.orderItems);
+
+  // Create a map to track the quantity of each menu item
+  const itemQuantityMap: Record<string, { name: string; quantity: number }> =
+    {};
+
+  for (const item of allOrderItems) {
+    const menuItem = await prismadb.menu.findUnique({
+      where: { id: item.itemId },
+      select: { name: true },
+    });
+
+    if (menuItem) {
+      if (itemQuantityMap[item.itemId]) {
+        itemQuantityMap[item.itemId].quantity += item.quantity;
+      } else {
+        itemQuantityMap[item.itemId] = {
+          name: menuItem.name,
+          quantity: item.quantity,
+        };
+      }
+    }
+  }
+
+  // Find the item with the highest quantity
+  const favoriteDish = Object.values(itemQuantityMap).reduce(
+    (max, item) => (item.quantity > max.quantity ? item : max),
+    { name: "No favorite dish", quantity: 0 }
+  );
 
   const formattedTransactions: TransactionColumn[] =
     customer.LoyaltyTransaction.map((transaction) => {
@@ -109,7 +146,10 @@ const CustomerPage = async ({
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-primary/10 rounded-full">
-                    {getCurrencyIcon({ currency: currency.currency, className: "h-6 w-6 text-primary" })}
+                    {getCurrencyIcon({
+                      currency: currency.currency,
+                      className: "h-6 w-6 text-primary",
+                    })}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">
@@ -120,19 +160,43 @@ const CustomerPage = async ({
                     </p>
                   </div>
                 </div>
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    {getCurrencyIcon({
+                      currency: currency.currency,
+                      className: "h-6 w-6 text-primary",
+                    })}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Average Spend/Order
+                    </p>
+                    <p className="text-lg font-semibold">
+                      {averageSpent.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <Heart className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Favourite Dish
+                    </p>
+                    <p className="text-lg font-semibold">
+                      {favoriteDish.name} (x{favoriteDish.quantity})
+                    </p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
         <Separator />
         <Tabs defaultValue="orderHistory">
-          <TabsList
-            className="flex-row justify-start max-[350px]:flex-col max-[350px]:h-full max-[350px]:w-full"
-          >
-            <TabsTrigger
-              value="orderHistory"
-              className="max-[350px]:w-full"
-            >
+          <TabsList className="flex-row justify-start max-[350px]:flex-col max-[350px]:h-full max-[350px]:w-full">
+            <TabsTrigger value="orderHistory" className="max-[350px]:w-full">
               Order History
             </TabsTrigger>
             <TabsTrigger
