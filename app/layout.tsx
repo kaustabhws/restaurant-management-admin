@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ModalProvider } from "@/providers/modal-provider";
 import { ToasterProvider } from "@/providers/toast-providers";
 import { ThemeProvider } from "@/providers/theme-providers";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 
@@ -26,6 +27,7 @@ export default function RootLayout({
             <ToasterProvider />
             <ModalProvider />
             {children}
+            <SpeedInsights />
           </ThemeProvider>
         </body>
       </html>
