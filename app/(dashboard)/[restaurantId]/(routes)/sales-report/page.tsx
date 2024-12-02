@@ -50,6 +50,10 @@ const SalesReportPage = ({ params }: { params: { restaurantId: string } }) => {
 
   // Aggregate sales data by date
   const consolidatedSalesData = useMemo(() => {
+    if (!salesData || salesData.length === 0) {
+      return [];
+    }
+
     const grouped = salesData.reduce((acc, order) => {
       const dateKey = format(new Date(order.createdAt), "yyyy-MM-dd");
 
