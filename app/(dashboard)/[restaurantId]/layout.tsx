@@ -2,14 +2,7 @@ import Navbar from "@/components/navbar";
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import type { Metadata, ResolvingMetadata } from "next";
-import { Modal } from "@/components/ui/modal";
 import { LowStockModal } from "@/components/modals/low-stock-alert";
-
-type Props = {
-  params: { restaurantId: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
 
 export default async function DashboardLayout({
   children,

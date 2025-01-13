@@ -13,6 +13,7 @@ model Restaurants {
   name                  String
   currency              Currency               @default(rupee)
   userId                String
+  upiId                 String                 @default("")
   menus                 Menu[]                 @relation("RestaurantToMenu")
   tables                Table[]                @relation("RestaurantToTable")
   orders                Orders[]               @relation("RestaurantToOrder")

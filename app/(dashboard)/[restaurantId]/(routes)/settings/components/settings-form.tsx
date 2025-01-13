@@ -47,6 +47,7 @@ interface SettingsFormProps {
 const formSchema = z.object({
   name: z.string().min(1),
   currency: z.nativeEnum(Currency),
+  upiId: z.string(),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
@@ -158,6 +159,24 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="upiId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>UPI ID</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="xxxxxx@okaxis"
+                      {...field}
+                      className="w-[500px] max-[590px]:w-full"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

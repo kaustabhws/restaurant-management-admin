@@ -22,7 +22,7 @@ import { BillClient } from "./client";
 import { Button } from "@/components/ui/button";
 
 import { useReactToPrint } from "react-to-print";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import LoyaltyPayment from "@/components/loyalty-payment";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
@@ -31,10 +31,13 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import ReviewShare from "@/components/review-share";
 import { Separator } from "@/components/ui/separator";
+import QRCode from "qrcode";
+import Image from "next/image";
 
 interface Restaurant {
   id: string;
   name: string;
+  upiId: string | null;
 }
 
 interface BillItem {
@@ -88,6 +91,23 @@ const BillContent: React.FC<BillContentProps> = ({
   const [coupon, setCoupon] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [showDiscountFields, setShowDiscountFields] = useState(false);
+  const [qrCodeDataURL, setQRCodeDataURL] = useState<string | null>(null);
+
+  const upiPaymentUrl = `upi://pay?pn=${encodeURI(restaurant?.name!)}&pa=${
+    restaurant?.upiId
+  }&cu=INR&am=${order?.amount}&tn=Order%20#${order?.slNo}`;
+
+  const generateQRCode = useCallback(async () => {
+    try {
+      const dataURL = await QRCode.toDataURL(upiPaymentUrl, {
+        width: 200,
+        margin: 2,
+      });
+      setQRCodeDataURL(dataURL);
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+    }
+  }, [upiPaymentUrl]);
 
   const router = useRouter();
 
@@ -170,17 +190,21 @@ const BillContent: React.FC<BillContentProps> = ({
     }
   };
 
+  useEffect(() => {
+    generateQRCode();
+  }, []);
+
   return (
     <div>
       <div className="my-3">
         {customer?.phone?.length === 10 && order && (
           <>
-          <ReviewShare
-            customer={customer}
-            restaurant={restaurant!}
-            order={order}
-          />
-          <Separator />
+            <ReviewShare
+              customer={customer}
+              restaurant={restaurant!}
+              order={order}
+            />
+            <Separator />
           </>
         )}
         <div className="flex gap-3 items-center justify-center flex-wrap mt-3">
@@ -362,6 +386,18 @@ const BillContent: React.FC<BillContentProps> = ({
                     </TableRow>
                   </TableFooter>
                 </Table>
+                <div className="w-full text-center">
+                  {qrCodeDataURL && restaurant?.upiId && (
+                    <Image
+                      width={200}
+                      height={200}
+                      src={qrCodeDataURL}
+                      alt="QR Code for payment"
+                      layout="fixed"
+                      className="mx-auto"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </form>
