@@ -37,7 +37,9 @@ interface InventoryFormProps {
   initialData: Inventory | null;
 }
 
-export const InventoryForm: React.FC<InventoryFormProps> = ({ initialData }) => {
+export const InventoryForm: React.FC<InventoryFormProps> = ({
+  initialData,
+}) => {
   const params = useParams();
   const router = useRouter();
 
@@ -45,8 +47,12 @@ export const InventoryForm: React.FC<InventoryFormProps> = ({ initialData }) => 
   const [loading, setLoading] = useState(false);
 
   const title = initialData ? "Edit inventory item" : "Create inventory item";
-  const description = initialData ? "Edit a inventory item" : "Create a inventory item";
-  const toastMessage = initialData ? "Inventory item updated" : "Inventory item created";
+  const description = initialData
+    ? "Edit a inventory item"
+    : "Create a inventory item";
+  const toastMessage = initialData
+    ? "Inventory item updated"
+    : "Inventory item created";
   const action = initialData ? "Save changes" : "Create inventory item";
 
   const form = useForm<InventoryFormValues>({
@@ -84,14 +90,14 @@ export const InventoryForm: React.FC<InventoryFormProps> = ({ initialData }) => 
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/${params.restaurantId}/menu/${params.inventoryId}`);
-      router.push(`/${params.restaurantId}/menu`);
-      router.refresh();
-      toast.success("Menu deleted");
-    } catch (error) {
-      toast.error(
-        "Make sure you removed all categories using this Menu first"
+      await axios.delete(
+        `/api/${params.restaurantId}/inventory/${params.inventoryId}`
       );
+      router.push(`/${params.restaurantId}/inventory`);
+      router.refresh();
+      toast.success("Inventory item deleted");
+    } catch (error) {
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
       setOpen(false);

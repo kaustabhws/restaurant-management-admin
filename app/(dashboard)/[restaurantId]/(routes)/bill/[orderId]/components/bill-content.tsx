@@ -116,12 +116,13 @@ const BillContent: React.FC<BillContentProps> = ({
     content: () => componentRef.current,
     pageStyle: `
         @page {
-            size: 80mm 297mm;
+            size: auto;
+            margin: none !important;
         }
         @media print {
             header, footer {
                 display: none !important;
-            }
+            },
         }
     `,
   });
