@@ -299,13 +299,20 @@ const BillContent: React.FC<BillContentProps> = ({
             {restaurant?.name}
           </CardTitle>
           <div className="text-[10px] text-muted-foreground text-center">
-            <p>{restaurant?.street}</p>
-            <p>
-              {restaurant?.city}, {restaurant?.state}-{restaurant?.zipcode},{" "}
-              {restaurant?.country}
-            </p>
-            <p>Phone: {restaurant?.phone}</p>
-            <p>GSTIN: {restaurant?.gstNo}</p>
+            {restaurant?.street && <p>{restaurant.street}</p>}
+            {(restaurant?.city ||
+              restaurant?.state ||
+              restaurant?.zipcode ||
+              restaurant?.country) && (
+              <p>
+                {restaurant?.city && `${restaurant.city}, `}
+                {restaurant?.state && `${restaurant.state}-`}
+                {restaurant?.zipcode && `${restaurant.zipcode}, `}
+                {restaurant?.country && restaurant.country}
+              </p>
+            )}
+            {restaurant?.phone && <p>Phone: {restaurant.phone}</p>}
+            {restaurant?.gstNo && <p>GSTIN: {restaurant.gstNo}</p>}
           </div>
         </CardHeader>
         <CardHeader>
