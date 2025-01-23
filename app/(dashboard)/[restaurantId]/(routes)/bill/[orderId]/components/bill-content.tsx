@@ -38,6 +38,13 @@ interface Restaurant {
   id: string;
   name: string;
   upiId: string | null;
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  zipcode: string;
+  phone: string;
+  gstNo: string;
 }
 
 interface BillItem {
@@ -291,6 +298,15 @@ const BillContent: React.FC<BillContentProps> = ({
           <CardTitle className="text-center text-3xl">
             {restaurant?.name}
           </CardTitle>
+          <div className="text-[10px] text-muted-foreground text-center">
+            <p>{restaurant?.street}</p>
+            <p>
+              {restaurant?.city}, {restaurant?.state}-{restaurant?.zipcode},{" "}
+              {restaurant?.country}
+            </p>
+            <p>Phone: {restaurant?.phone}</p>
+            <p>GSTIN: {restaurant?.gstNo}</p>
+          </div>
         </CardHeader>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -340,10 +356,10 @@ const BillContent: React.FC<BillContentProps> = ({
                   <TableCaption>Invoice for order #{order?.slNo}</TableCaption>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[100px]">Item name</TableHead>
+                      <TableHead className="w-[100px]">Item</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Quantity</TableHead>
-                      <TableHead>Total Price</TableHead>
+                      <TableHead>Total</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

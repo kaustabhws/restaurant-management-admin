@@ -18,10 +18,13 @@ import { Currency, Restaurants } from "@prisma/client";
 import axios from "axios";
 import { AlertTriangle, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import * as z from "zod";
+import { Country, State } from "country-state-city";
+import { IState } from "country-state-city";
+
 import {
   Select,
   SelectContent,
@@ -48,6 +51,13 @@ const formSchema = z.object({
   name: z.string().min(1),
   currency: z.nativeEnum(Currency),
   upiId: z.string(),
+  street: z.string().min(1).optional(),
+  city: z.string().min(1).optional(),
+  zipcode: z.string().min(1).optional(),
+  state: z.string().min(1).optional(),
+  country: z.string().min(1).optional(),
+  phone: z.string().min(1).optional(),
+  gstNo: z.string().min(1).optional(),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
@@ -58,11 +68,28 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [allCountries] = useState(Country.getAllCountries());
+  const [states, setStates] = useState<IState[]>([]);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
+
+  const onCountryChange = (isoCode: string) => {
+    form.setValue("country", isoCode);
+    const statesData = State.getStatesOfCountry(isoCode);
+    setStates(statesData);
+    form.setValue("state", "");
+  };
+
+  useEffect(() => {
+    if (form.watch("country") || initialData.country) {
+      const countryCode = form.watch("country") || initialData.country;
+      const fetchedStates = State.getStatesOfCountry(countryCode);
+      setStates(fetchedStates);
+    }
+  }, [form.watch("country"), initialData.country]);
 
   const onSubmit = async (data: SettingsFormValues) => {
     try {
@@ -113,6 +140,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           className="space-y-8 w-full"
         >
           <div className="flex flex-col gap-2">
+            {/* Restaurant Name */}
             <FormField
               control={form.control}
               name="name"
@@ -131,11 +159,12 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+            {/* Currency */}
             <FormField
               control={form.control}
               name="currency"
               render={({ field }) => (
-                <FormItem className='w-[500px] max-[590px]:w-full'>
+                <FormItem className="w-[500px] max-[590px]:w-full">
                   <FormLabel>Currency</FormLabel>
                   <Select
                     disabled={loading}
@@ -163,6 +192,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+            {/* UPI ID */}
             <FormField
               control={form.control}
               name="upiId"
@@ -177,6 +207,174 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                       className="w-[500px] max-[590px]:w-full"
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Phone No */}
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone No</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="9999999999"
+                      {...field}
+                      className="w-[500px] max-[590px]:w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* GST No */}
+            <FormField
+              control={form.control}
+              name="gstNo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>GSTIN</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="9999999999"
+                      {...field}
+                      className="w-[500px] max-[590px]:w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Separator className="my-3" />
+            {/* Street */}
+            <FormField
+              control={form.control}
+              name="street"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Street</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="XYZ Street"
+                      {...field}
+                      className="w-[500px] max-[590px]:w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* City */}
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="XYZ city"
+                      {...field}
+                      className="w-[500px] max-[590px]:w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Zipcode */}
+            <FormField
+              control={form.control}
+              name="zipcode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Zipcode</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="xxxxxx"
+                      {...field}
+                      className="w-[500px] max-[590px]:w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Country */}
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem className="w-[500px] max-[590px]:w-full">
+                  <FormLabel>Country</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      onCountryChange(value);
+                    }}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a country"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {allCountries.map((country) => (
+                        <SelectItem
+                          key={country.isoCode}
+                          value={country.isoCode}
+                        >
+                          {country.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* State */}
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem className="w-[500px] max-[590px]:w-full">
+                  <FormLabel>State</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a state"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {states.map((state: any) => (
+                        <SelectItem key={state.isoCode} value={state.name}>
+                          {state.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
