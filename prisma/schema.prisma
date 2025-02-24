@@ -442,10 +442,12 @@ enum KDSStatus {
   Pending
   Preparing
   Ready
+  Rejected
 }
 
 enum KDSItemStatus {
   Pending
   Preparing
   Ready
+  Rejected
 }

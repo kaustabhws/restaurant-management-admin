@@ -51,6 +51,8 @@ export const KdsClient: React.FC<KdsClientProps> = ({ data, resId, ordersServed 
       setLoading(true);
       const acceptOrder = await axios.post(`/api/${resId}/kds`, {
         kdsId: orderId,
+        accept: true,
+        reject: false,
       });
 
       if (acceptOrder.status === 200) {
@@ -63,6 +65,26 @@ export const KdsClient: React.FC<KdsClientProps> = ({ data, resId, ordersServed 
       setLoading(false);
     }
   };
+
+  const onReject = async (orderId: string) => {
+    try {
+      setLoading(true);
+      const acceptOrder = await axios.post(`/api/${resId}/kds`, {
+        kdsId: orderId,
+        reject: true,
+        accept: false,
+      });
+
+      if (acceptOrder.status === 200) {
+        toast.success("Order accepted successfully");
+      }
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to accept order");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <>
@@ -115,7 +137,7 @@ export const KdsClient: React.FC<KdsClientProps> = ({ data, resId, ordersServed 
             orders={pendingOrders}
             onAccept={onAccept}
             onClose={() => console.log("first")}
-            onReject={() => console.log("d")}
+            onReject={onReject}
             loading={loading}
             setLoading={setLoading}
           />

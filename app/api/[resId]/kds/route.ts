@@ -8,7 +8,7 @@ export async function POST(
 ) {
   const { userId } = auth();
   const body = await req.json();
-  const { kdsId } = body;
+  const { kdsId, accept, reject } = body;
 
   try {
     if (!userId) {
@@ -22,27 +22,50 @@ export async function POST(
       return new NextResponse("KDS id is required", { status: 400 });
     }
 
-    const updateKdsOrder = await prismadb.kDSOrder.update({
-      where: {
-        resId: params.resId,
-        id: kdsId,
-      },
-      data: {
-        accepted: true,
-        items: {
-          updateMany: {
-            where: {
-              kdsOrderId: kdsId,
-            },
-            data: {
-              status: "Preparing",
+    if (accept && !reject) {
+      const updateKdsOrder = await prismadb.kDSOrder.update({
+        where: {
+          resId: params.resId,
+          id: kdsId,
+        },
+        data: {
+          accepted: true,
+          items: {
+            updateMany: {
+              where: {
+                kdsOrderId: kdsId,
+              },
+              data: {
+                status: "Preparing",
+              },
             },
           },
         },
-      },
-    });
-
-    return new NextResponse("Order accepted", { status: 200 });
+      });
+      return new NextResponse("Order accepted", { status: 200 });
+    } else if (reject && !accept) {
+      const updateKdsOrder = await prismadb.kDSOrder.update({
+        where: {
+          resId: params.resId,
+          id: kdsId,
+        },
+        data: {
+          accepted: false,
+          status: "Rejected",
+          items: {
+            updateMany: {
+              where: {
+                kdsOrderId: kdsId,
+              },
+              data: {
+                status: "Rejected",
+              },
+            },
+          },
+        },
+      });
+      return new NextResponse("Order rejected", { status: 200 });
+    }
   } catch (error) {
     console.log("[KDS_POST_ERROR]", error);
     return new NextResponse("Internal server error", { status: 500 });
@@ -108,7 +131,10 @@ export async function PATCH(
   }
 }
 
-export async function GET(req: Request, { params }: { params: { resId: string } }) {
+export async function GET(
+  req: Request,
+  { params }: { params: { resId: string } }
+) {
   const { searchParams } = new URL(req.url);
   try {
     const { userId } = auth();
