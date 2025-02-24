@@ -24,6 +24,7 @@ export async function POST(
 
     const updateKdsOrder = await prismadb.kDSOrder.update({
       where: {
+        resId: params.resId,
         id: kdsId,
       },
       data: {
@@ -107,7 +108,7 @@ export async function PATCH(
   }
 }
 
-export async function GET(req: Request) {
+export async function GET(req: Request, { params }: { params: { resId: string } }) {
   const { searchParams } = new URL(req.url);
   try {
     const { userId } = auth();
@@ -120,6 +121,7 @@ export async function GET(req: Request) {
     if (orderState == "pending") {
       const kdsOrders = await prismadb.kDSOrder.findMany({
         where: {
+          resId: params.resId,
           accepted: null,
           status: "Pending",
         },
@@ -132,6 +134,7 @@ export async function GET(req: Request) {
     } else if (orderState == "accepted") {
       const kdsOrders = await prismadb.kDSOrder.findMany({
         where: {
+          resId: params.resId,
           accepted: true,
           status: "Pending",
         },
@@ -144,6 +147,7 @@ export async function GET(req: Request) {
     } else if (orderState == "fulfilled") {
       const kdsOrders = await prismadb.kDSOrder.findMany({
         where: {
+          resId: params.resId,
           accepted: true,
           status: "Ready",
         },
