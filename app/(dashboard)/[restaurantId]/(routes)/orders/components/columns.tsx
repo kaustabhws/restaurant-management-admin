@@ -9,6 +9,7 @@ export type OrderColumn = {
   slNo: string;
   isPaid: boolean;
   tableNo: string;
+  status: string;
   amount: Number;
   orderType: string;
   menuItems: string;
@@ -54,6 +55,23 @@ export const columns: ColumnDef<OrderColumn>[] = [
         }`}
       >
         {row.original.isPaid ? "Paid" : "Not Paid"}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <span
+        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 whitespace-nowrap text-xs font-semibold ${
+          row.original.status === "Fulfilled"
+            ? "bg-green-600"
+            : row.original.status === "Ordered"
+            ? "bg-yellow-600"
+            : "bg-red-600"
+        }`}
+      >
+        {row.original.status}
       </span>
     ),
   },

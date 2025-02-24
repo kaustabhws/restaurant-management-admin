@@ -36,6 +36,7 @@ model Restaurants {
   expenses              Expense[]              @relation("RestaurantToExpense")
   expenseCategories     ExpenseCategory[]      @relation("RestaurantToExpenseCategory")
   inventoryTransactions InventoryTransaction[] @relation("RestaurantToInventoryTransaction")
+  KDSOrder              KDSOrder[]             @relation("RestaurantToKds")
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
 }
@@ -190,6 +191,7 @@ model Orders {
   bill         Bill[]
   discount     Float         @default(0)
   discountType DiscountType?
+  status       OrderStatus   @default(Ordered)
   amount       Float
   isPaid       Boolean
   customerId   String?
@@ -200,6 +202,12 @@ model Orders {
   @@index([resId])
   @@index([slNo])
   @@index([customerId])
+}
+
+enum OrderStatus {
+  Ordered
+  Fulfilled
+  Rejected
 }
 
 enum DiscountType {
@@ -397,4 +405,47 @@ model ExpenseCategory {
   updatedAt   DateTime    @updatedAt
 
   @@index([resId])
+}
+
+model KDSOrder {
+  id          String         @id @default(uuid())
+  orderId     String         @unique
+  accepted    Boolean?
+  status      KDSStatus      @default(Pending)
+  tableNo     String?
+  orderType   OrderType
+  items       KDSOrderItem[]
+  resId       String
+  Restaurants Restaurants    @relation("RestaurantToKds", fields: [resId], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([resId])
+}
+
+model KDSOrderItem {
+  id         String        @id @default(uuid())
+  orderId    String
+  menuItemId String
+  itemName   String
+  quantity   Int
+  status     KDSItemStatus @default(Pending)
+  kdsOrderId String
+  kdsOrder   KDSOrder      @relation(fields: [kdsOrderId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([kdsOrderId])
+}
+
+enum KDSStatus {
+  Pending
+  Preparing
+  Ready
+}
+
+enum KDSItemStatus {
+  Pending
+  Preparing
+  Ready
 }

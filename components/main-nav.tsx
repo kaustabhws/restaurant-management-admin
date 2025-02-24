@@ -27,6 +27,7 @@ import {
   BadgePercent,
   MessageCircleMore,
   ChartNoAxesCombined,
+  CookingPot,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -92,6 +93,11 @@ export function MainNav({
           href: `/${params.restaurantId}/campaigns`,
           label: "Campaigns",
           icon: BadgePercent,
+        },
+        {
+          href: `/${params.restaurantId}/kds`,
+          label: "Kitchen Display",
+          icon: CookingPot,
         },
       ],
     },
@@ -216,6 +222,8 @@ function getItemDescription(label: string): string {
       return "Manage reservations.";
     case "Campaigns":
       return "Manage promotion campaigns.";
+    case "Kitchen Display":
+      return "Manage kitchen display";
     case "Order":
       return "Manage and track orders.";
     case "Insights":

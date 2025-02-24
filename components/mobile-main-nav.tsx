@@ -25,6 +25,7 @@ import {
   BadgePercent,
   MessageCircleMore,
   ChartNoAxesCombined,
+  CookingPot,
 } from "lucide-react";
 
 type NavItem = {
@@ -98,6 +99,11 @@ export function MobileMainNav({
           href: `/${params.restaurantId}/campaigns`,
           label: "Campaigns",
           icon: BadgePercent,
+        },
+        {
+          href: `/${params.restaurantId}/kds`,
+          label: "Kitchen Display",
+          icon: CookingPot,
         },
       ],
     },

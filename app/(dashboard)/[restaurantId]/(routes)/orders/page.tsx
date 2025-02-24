@@ -32,6 +32,7 @@ const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
     orderType: item.orderType,
     amount: item.amount,
     isPaid: item.isPaid,
+    status: item.status,
     tableNo: item.tableNo ?? '',
     createdAt: format(getISTTime(item.createdAt), 'MMMM do yyyy'),
   }));

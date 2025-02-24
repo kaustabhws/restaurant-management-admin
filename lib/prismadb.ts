@@ -1,11 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import { withPulse } from "@prisma/extension-pulse/node";
 
-declare global {
-    var prisma: PrismaClient | undefined;
-}
+const prismaClientSingleton = () => {
+  return new PrismaClient().$extends(
+    withPulse({ apiKey: process.env.PULSE_API_KEY || "" })
+  );
+};
 
-const prismadb = globalThis.prisma || new PrismaClient();
+declare const globalThis: {
+  prismaGlobal: ReturnType<typeof prismaClientSingleton>;
+} & typeof global;
 
-if(process.env.NODE_ENV != 'production') globalThis.prisma = prismadb;
+const prismadb = globalThis.prismaGlobal ?? prismaClientSingleton();
 
 export default prismadb;
+
+if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prismadb;

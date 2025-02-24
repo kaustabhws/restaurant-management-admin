@@ -158,6 +158,24 @@ export async function POST(
       },
     });
 
+    // forward to kds
+    const kds = await prismadb.kDSOrder.create({
+      data: {
+        resId: params.resId,
+        orderId: order.slNo,
+        tableNo: tableName ? tableName.name : null,
+        orderType: orderType as OrderType,
+        items: {
+          create: resultData.menuItems.map((item: any) => ({
+            orderId: order.id,
+            itemName: item.name,
+            menuItemId: item.id,
+            quantity: item.quantity,
+          })),
+        },
+      },
+    });
+
     // If it's a dine-in order, clear the temp order and set the table to "Available"
     if (tableName) {
       await prismadb.tempOrderItems.deleteMany({
