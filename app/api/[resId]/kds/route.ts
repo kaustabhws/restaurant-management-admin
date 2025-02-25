@@ -8,7 +8,7 @@ export async function POST(
 ) {
   const { userId } = auth();
   const body = await req.json();
-  const { kdsId, accept, reject } = body;
+  const { kdsId, accept, reject, orderSlNo } = body;
 
   try {
     if (!userId) {
@@ -23,7 +23,7 @@ export async function POST(
     }
 
     if (accept && !reject) {
-      const updateKdsOrder = await prismadb.kDSOrder.update({
+      await prismadb.kDSOrder.update({
         where: {
           resId: params.resId,
           id: kdsId,
@@ -44,7 +44,7 @@ export async function POST(
       });
       return new NextResponse("Order accepted", { status: 200 });
     } else if (reject && !accept) {
-      const updateKdsOrder = await prismadb.kDSOrder.update({
+      await prismadb.kDSOrder.update({
         where: {
           resId: params.resId,
           id: kdsId,
@@ -64,6 +64,17 @@ export async function POST(
           },
         },
       });
+
+      await prismadb.orders.update({
+        where: {
+          resId: params.resId,
+          slNo: orderSlNo,
+        },
+        data: {
+          status: "Rejected",
+        }
+      })
+
       return new NextResponse("Order rejected", { status: 200 });
     }
   } catch (error) {

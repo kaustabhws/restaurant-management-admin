@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,29 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 
-// interface OrderItem {
-//   id: string;
-//   itemName: string;
-//   quantity: number;
-//   status: string;
-// }
-
-// interface Order {
-//   id: string;
-//   orderId: string;
-//   status: string;
-//   tableNo: number | null;
-//   orderType: "DINE_IN" | "TAKE_AWAY";
-//   createdAt: Date;
-//   items: OrderItem[];
-// }
-
 interface OrderModalProps {
   orders: any[] | any;
   isOpen: boolean;
   onClose: () => void;
   onAccept: (orderId: string) => void;
-  onReject: (orderId: string) => void;
+  onReject: (orderId: string, orderSlNo: string) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }
@@ -52,12 +35,20 @@ export default function OrderModal({
 
   const currentOrder = orders[currentPage];
 
+  // Play sound when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      const audio = new Audio("/notification.mp3");
+      audio.play().catch((err) => console.error("Audio play failed:", err));
+    }
+  }, [isOpen]);
+
   const handleAccept = () => {
     onAccept(currentOrder.id);
   };
 
   const handleReject = () => {
-    onReject(currentOrder.id);
+    onReject(currentOrder.id, currentOrder.orderId);
   };
 
   const handlePrevious = () => {

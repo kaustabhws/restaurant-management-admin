@@ -35,6 +35,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   };
 
   const submitPaid = async (isPaid: boolean, payMode: string) => {
+    if (data.status === "Rejected") {
+      toast.error("Cannot mark a rejected order as paid");
+      return;
+    }
+    
     try {
       setLoading(true);
       await axios.patch(`/api/${params.restaurantId}/order/${data.id}`, {

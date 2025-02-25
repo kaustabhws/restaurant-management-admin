@@ -8,10 +8,16 @@ interface GraphData {
 export const getGraphRevenue = async (
   restaurantId: string
 ): Promise<GraphData[]> => {
+  const currentYear = new Date().getFullYear();
+
   const paidOrders = await prismadb.orders.findMany({
     where: {
       resId: restaurantId,
       isPaid: true,
+      createdAt: {
+        gte: new Date(currentYear, 0, 1), // January 1st of the current year
+        lt: new Date(currentYear + 1, 0, 1), // January 1st of the next year
+      },
     },
   });
 

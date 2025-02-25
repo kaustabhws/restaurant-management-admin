@@ -33,6 +33,7 @@ import ReviewShare from "@/components/review-share";
 import { Separator } from "@/components/ui/separator";
 import QRCode from "qrcode";
 import Image from "next/image";
+import { OrderStatus } from "@prisma/client";
 
 interface Restaurant {
   id: string;
@@ -64,6 +65,7 @@ interface Order {
   payMode: string;
   orderType: string;
   discount: number;
+  status: OrderStatus;
   discountType: "Percentage" | "Coupon" | null;
   amount: number;
   isPaid: boolean;
@@ -220,6 +222,7 @@ const BillContent: React.FC<BillContentProps> = ({
             resId={restaurant?.id}
             orderId={order?.id}
             paid={order?.isPaid}
+            status={order?.status!}
           />
           <Button onClick={handlePrint} className="w-max">
             <PrinterIcon className="mr-2 h-4 w-4" />

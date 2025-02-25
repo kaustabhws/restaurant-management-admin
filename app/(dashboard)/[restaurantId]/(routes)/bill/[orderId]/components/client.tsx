@@ -3,6 +3,7 @@
 import MarkAsPaid from "@/components/mark-as-paid";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
+import { OrderStatus } from "@prisma/client";
 import axios from "axios";
 import { Ban } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -13,12 +14,14 @@ interface BillClientProps {
   resId: any;
   orderId: any;
   paid: any;
+  status: OrderStatus
 }
 
 export const BillClient: React.FC<BillClientProps> = ({
   resId,
   orderId,
   paid,
+  status
 }) => {
   const [paymentMode, setPaymentMode] = useState("Cash");
   const [loading, setLoading] = useState(false);
@@ -26,6 +29,12 @@ export const BillClient: React.FC<BillClientProps> = ({
   const router = useRouter();
 
   const submitPaid = async (isPaid: boolean, payMode: string) => {
+
+    if (status === "Rejected") {
+      toast.error("Cannot mark a rejected order as paid");
+      return;
+    }
+
     try {
       setLoading(true);
       await axios.patch(`/api/${resId}/order/${orderId}`, {
