@@ -21,6 +21,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+        <head>
+          <link rel="icon" href="/icon.ico" sizes="any" />
+        </head>
         <body className={poppins.className}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ToasterProvider />

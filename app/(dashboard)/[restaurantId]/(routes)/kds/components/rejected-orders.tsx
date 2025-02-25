@@ -28,7 +28,7 @@ const RejectedOrders: React.FC<RejectedOrdersProps> = ({ orders, resId }) => {
                     Table {order.tableNo ?? "N/A"}
                   </span>
                 </div>
-                <Badge variant="outline" className="bg-white text-green-700">
+                <Badge variant="outline" className="bg-white text-red-700">
                   {order.orderType.replace("_", " ")}
                 </Badge>
               </div>
