@@ -18,6 +18,8 @@ import { getDailyRevenue } from "@/actions/dashboard/get-daily-revenue";
 import { getDailySales } from "@/actions/dashboard/get-daily-sales";
 import prismadb from "@/lib/prismadb";
 import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 const Overview = lazy(() => import("@/components/overview"));
 
 interface DashboardPageProps {
@@ -76,7 +78,15 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6 max-[425px]:px-3 max-[430px]:px-2">
-        <Heading title="Dashboard" description="Overview of your restaurant" />
+        <div className="flex justify-between items-center">
+          <Heading
+            title="Dashboard"
+            description="Overview of your restaurant"
+          />
+          <Link href={`/${params.restaurantId}/kds`} target="_blank">
+            <Button variant="outline">Go To Kitchen</Button>
+          </Link>
+        </div>
         <Separator />
         <div className="grid gap-4 grid-cols-3 max-[657px]:grid-cols-1">
           <Card>

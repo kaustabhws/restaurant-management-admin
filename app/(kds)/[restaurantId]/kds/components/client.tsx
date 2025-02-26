@@ -14,6 +14,8 @@ import CurrentOrders from "./current-orders";
 import FulfilledOrders from "./fulfilled-orders";
 import RejectedOrders from "./rejected-orders";
 import OrderModal from "./order-popup";
+import { Button } from "@/components/ui/button";
+import { Expand } from "lucide-react";
 
 // API fetcher function for SWR
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -24,7 +26,11 @@ interface KdsClientProps {
   ordersServed: number;
 }
 
-export const KdsClient: React.FC<KdsClientProps> = ({ data, resId, ordersServed }) => {
+export const KdsClient: React.FC<KdsClientProps> = ({
+  data,
+  resId,
+  ordersServed,
+}) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -85,26 +91,47 @@ export const KdsClient: React.FC<KdsClientProps> = ({ data, resId, ordersServed 
     } finally {
       setLoading(false);
     }
+  };
+
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
   }
 
   return (
     <>
       <div className="flex items-center justify-between max-[650px]:flex-col max-[650px]:gap-5">
-        <Heading
-          title="Kitchen Display System"
-          description="Manage orders for your restaurant"
-        />
+        <div className="flex flex-col gap-2">
+          <Heading
+            title="Kitchen Display System"
+            description="Manage orders for your restaurant"
+          />
+          <Button
+            variant="outline"
+            className="p-2 w-max"
+            onClick={toggleFullScreen}
+          >
+            <Expand />
+          </Button>
+        </div>
         <div>
           <div className="flex space-x-4">
             <div className="p-4 bg-blue-100 rounded-lg shadow-md text-black">
               <h3 className="text-lg font-semibold">Preparing</h3>
               <p className="text-sm">Orders being prepared</p>
-              <span className="text-2xl font-bold">{acceptedOrders.length}</span>
+              <span className="text-2xl font-bold">
+                {acceptedOrders.length}
+              </span>
             </div>
             <div className="p-4 bg-green-100 rounded-lg shadow-md text-black">
               <h3 className="text-lg font-semibold">Ready</h3>
               <p className="text-sm">Orders ready to be served</p>
-              <span className="text-2xl font-bold">{fulfilledOrders.length}</span>
+              <span className="text-2xl font-bold">
+                {fulfilledOrders.length}
+              </span>
             </div>
             <div className="p-4 bg-yellow-100 rounded-lg shadow-md text-black">
               <h3 className="text-lg font-semibold">Served</h3>
