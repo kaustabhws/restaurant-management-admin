@@ -270,8 +270,6 @@ button[data-localization-key='userProfile.start.dangerSection.deleteAccountButto
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -279,4 +277,11 @@ button[data-localization-key='userProfile.start.dangerSection.deleteAccountButto
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@media (max-width: 830px) {
+  .auth-bg {
+    background: url('/login-hero.png') no-repeat;
+  }
+  
 }
