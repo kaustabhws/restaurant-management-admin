@@ -21,11 +21,13 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let result = "TA-";
     for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
     }
     return result;
   }
-  
+
   const takeAwayId = generateTakeawayId();
 
   const filterOptions = {
@@ -44,15 +46,22 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
           description="Manage orders for your store"
         />
         <Button
-          onClick={() => router.push(`/${params.restaurantId}/take-away/${takeAwayId}`)}
-          className='max-[425px]:px-2'
+          onClick={() =>
+            router.push(`/${params.restaurantId}/take-away/${takeAwayId}`)
+          }
+          className="max-[425px]:px-2"
         >
           <Plus className="mr-2 h-4 w-4" />
           New Take Away
         </Button>
       </div>
       <Separator />
-      <DataTable searchKey="slNo" columns={columns} data={data} filterOptions={filterOptions} />
+      <DataTable
+        searchKey="slNo"
+        columns={columns}
+        data={data}
+        filterOptions={filterOptions}
+      />
     </>
   );
 };

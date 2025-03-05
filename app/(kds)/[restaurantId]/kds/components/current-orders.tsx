@@ -44,6 +44,21 @@ const CurrentOrders: React.FC<CurrentOrdersProps> = ({ orders, resId }) => {
     }
   };
 
+  const orderReject = async (itemId: string) => {
+    try {
+      const resp = await axios.patch(`/api/${resId}/kds/${itemId}`, {
+        status: "Rejected",
+      });
+
+      if (resp.status === 200) {
+        toast.success("Order rejected successfully");
+        router.refresh();
+      }
+    } catch (error) {
+      toast.error("Failed to reject order");
+    }
+  };
+
   return (
     <div className="mt-8 flex flex-wrap gap-4">
       {orders.length > 0 ? (
@@ -77,15 +92,29 @@ const CurrentOrders: React.FC<CurrentOrdersProps> = ({ orders, resId }) => {
             <CardContent className="p-4">
               <ul className="space-y-2">
                 {order.items.map((item: any) => (
-                  <li key={item.id} className="text-sm">
-                    <span className="font-semibold">{item.quantity}x</span>{" "}
-                    {item.itemName}
-                    {item.status && (
-                      <p className="text-xs italic text-gray-600">
-                        {item.status}
-                      </p>
+                  <div className="flex items-center justify-between">
+                    <li key={item.id} className="text-sm">
+                      <span className="font-semibold">{item.quantity}x</span>{" "}
+                      {item.itemName}
+                      {item.status && (
+                        <p
+                          className={`text-xs italic text-gray-600 ${
+                            item.status === "Rejected" ? "text-red-500" : ""
+                          }`}
+                        >
+                          {item.status}
+                        </p>
+                      )}
+                    </li>
+                    {item.status !== "Rejected" && (
+                      <Badge
+                        className="hover:cursor-pointer hover:bg-red-500"
+                        onClick={() => orderReject(item.id)}
+                      >
+                        Reject
+                      </Badge>
                     )}
-                  </li>
+                  </div>
                 ))}
               </ul>
             </CardContent>

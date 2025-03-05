@@ -10,6 +10,10 @@ const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
   const orders = await prismadb.orders.findMany({
     where: {
       resId: params.restaurantId,
+      // createdAt: {
+      //   gte: new Date(new Date().setHours(0, 0, 0, 0)),
+      //   lte: new Date(new Date().setHours(23, 59, 59, 999)),
+      // }
     },
     include: {
       orderItems: {
@@ -35,6 +39,7 @@ const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
     status: item.status,
     tableNo: item.tableNo ?? '',
     createdAt: format(getISTTime(item.createdAt), 'MMMM do yyyy'),
+    date: item.createdAt.toISOString(),
   }));
 
   return (

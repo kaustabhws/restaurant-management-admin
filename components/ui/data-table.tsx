@@ -63,7 +63,7 @@ export function DataTable<TData, TValue>({
   filterOptions,
   enableRowSelection = false,
   buttonSelected,
-  column,
+  column = true,
   disableCheckboxValue,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -86,7 +86,10 @@ export function DataTable<TData, TValue>({
   });
 
   const handleRowSelection = (rowId: string, row: TData) => {
-    if (disableCheckboxValue && row[disableCheckboxValue.key] === disableCheckboxValue.value) {
+    if (
+      disableCheckboxValue &&
+      row[disableCheckboxValue.key] === disableCheckboxValue.value
+    ) {
       return;
     }
     setSelectedRows((prev) => ({
@@ -96,10 +99,13 @@ export function DataTable<TData, TValue>({
   };
 
   const handleSelectAll = () => {
-    const allSelectableRows = table.getRowModel().rows.filter(
-      (row) =>
-        !disableCheckboxValue || row.original[disableCheckboxValue.key] !== disableCheckboxValue.value
-    );
+    const allSelectableRows = table
+      .getRowModel()
+      .rows.filter(
+        (row) =>
+          !disableCheckboxValue ||
+          row.original[disableCheckboxValue.key] !== disableCheckboxValue.value
+      );
 
     const allSelected = allSelectableRows.every((row) => selectedRows[row.id]);
 
@@ -120,39 +126,43 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="flex items-center justify-between py-4 gap-2">
-        <Input
-          placeholder="Search"
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        {filterOptions && (
-          <Select
-            value={filterValue}
-            onValueChange={(value) => {
-              setFilterValue(value);
-              if (filterOptions) {
-                table
-                  .getColumn(filterOptions.key)
-                  ?.setFilterValue(value === "all" ? undefined : value);
-              }
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              {filterOptions.options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+        <div className="flex items-center gap-2 w-full">
+          <Input
+            placeholder="Search"
+            value={
+              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn(searchKey)?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+          {filterOptions && (
+            <Select
+              value={filterValue}
+              onValueChange={(value) => {
+                setFilterValue(value);
+                if (filterOptions) {
+                  table
+                    .getColumn(filterOptions.key)
+                    ?.setFilterValue(value === "all" ? undefined : value);
+                }
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {filterOptions.options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           {buttonSelected && (
             <Button
@@ -243,7 +253,9 @@ export function DataTable<TData, TValue>({
                       <TableCell>
                         <Checkbox
                           checked={selectedRows[row.id] || false}
-                          onCheckedChange={() => handleRowSelection(row.id, row.original)}
+                          onCheckedChange={() =>
+                            handleRowSelection(row.id, row.original)
+                          }
                           disabled={isDisabled}
                         />
                       </TableCell>
@@ -271,6 +283,26 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

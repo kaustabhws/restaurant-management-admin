@@ -114,6 +114,7 @@ export async function PATCH(
           updateMany: {
             where: {
               kdsOrderId: kdsId,
+              status: "Preparing",
             },
             data: {
               status: "Ready",

@@ -51,7 +51,7 @@ const RejectedOrders: React.FC<RejectedOrdersProps> = ({ orders, resId }) => {
                     <span className="font-semibold">{item.quantity}x</span>{" "}
                     {item.itemName}
                     {item.status && (
-                      <p className="text-xs italic text-gray-600">
+                      <p className={`text-xs italic text-gray-600 ${item.status === 'Rejected' ? 'text-red-500' : ''}`}>
                         {item.status}
                       </p>
                     )}

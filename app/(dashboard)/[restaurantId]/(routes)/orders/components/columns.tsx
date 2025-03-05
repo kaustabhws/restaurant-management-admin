@@ -14,6 +14,7 @@ export type OrderColumn = {
   orderType: string;
   menuItems: string;
   createdAt: string;
+  date: string
 };
 
 export const columns: ColumnDef<OrderColumn>[] = [
