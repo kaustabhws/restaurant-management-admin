@@ -54,6 +54,7 @@ interface DataTableProps<TData, TValue> {
     key: keyof TData;
     value: any;
   };
+  dateFilter?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -65,14 +66,66 @@ export function DataTable<TData, TValue>({
   buttonSelected,
   column = true,
   disableCheckboxValue,
+  dateFilter,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [filterValue, setFilterValue] = useState<string>("all");
   const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
 
+  const [dateFilterValue, setDateFilterValue] = useState<string>("today");
+
+  // Filter data based on date selection
+  const filteredData = React.useMemo(() => {
+    if (!dateFilter || dateFilterValue === "all") {
+      return data;
+    }
+
+    return data.filter((item: any) => {
+      const itemDate = new Date(item.date);
+      const today = new Date();
+
+      // Reset hours, minutes, seconds for accurate day comparison
+      const todayDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+      const itemDay = new Date(
+        itemDate.getFullYear(),
+        itemDate.getMonth(),
+        itemDate.getDate()
+      );
+
+      if (dateFilterValue === "today") {
+        // Check if the date is today
+        return itemDay.getTime() === todayDate.getTime();
+      } else if (dateFilterValue === "thisWeek") {
+        // Get the first day of the current week (Sunday)
+        const firstDayOfWeek = new Date(todayDate);
+        const day = todayDate.getDay();
+        firstDayOfWeek.setDate(todayDate.getDate() - day);
+
+        // Get the last day of the current week (Saturday)
+        const lastDayOfWeek = new Date(firstDayOfWeek);
+        lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+        // Check if the date is within the current week
+        return itemDay >= firstDayOfWeek && itemDay <= lastDayOfWeek;
+      } else if (dateFilterValue === "thisMonth") {
+        // Check if the date is in the current month
+        return (
+          itemDate.getMonth() === today.getMonth() &&
+          itemDate.getFullYear() === today.getFullYear()
+        );
+      }
+
+      return true;
+    });
+  }, [data, dateFilter, dateFilterValue]);
+
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -126,7 +179,7 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="flex items-center justify-between py-4 gap-2">
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center gap-2 w-full max-[588px]:flex-col">
           <Input
             placeholder="Search"
             value={
@@ -137,31 +190,51 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
-          {filterOptions && (
-            <Select
-              value={filterValue}
-              onValueChange={(value) => {
-                setFilterValue(value);
-                if (filterOptions) {
-                  table
-                    .getColumn(filterOptions.key)
-                    ?.setFilterValue(value === "all" ? undefined : value);
-                }
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {filterOptions.options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+          <div className="flex items-center gap-2 max-[588px]:w-full">
+            {filterOptions && (
+              <Select
+                value={filterValue}
+                onValueChange={(value) => {
+                  setFilterValue(value);
+                  if (filterOptions) {
+                    table
+                      .getColumn(filterOptions.key)
+                      ?.setFilterValue(value === "all" ? undefined : value);
+                  }
+                }}
+              >
+                <SelectTrigger className='min-[600px]:w-[180px]'>
+                  <SelectValue placeholder="Filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {filterOptions.options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {dateFilter && (
+              <Select
+                value={dateFilterValue}
+                onValueChange={(value) => {
+                  setDateFilterValue(value);
+                }}
+              >
+                <SelectTrigger className='min-[600px]:w-[180px]'>
+                  <SelectValue placeholder="Date Filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Dates</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="thisWeek">This Week</SelectItem>
+                  <SelectItem value="thisMonth">This Month</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {buttonSelected && (
@@ -177,34 +250,36 @@ export function DataTable<TData, TValue>({
               {buttonSelected.label}
             </Button>
           )}
-          {column && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  Columns
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <div className='sm:block hidden'>
+            {column && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="ml-auto">
+                    Columns
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {table
+                    .getAllColumns()
+                    .filter((column) => column.getCanHide())
+                    .map((column) => {
+                      return (
+                        <DropdownMenuCheckboxItem
+                          key={column.id}
+                          className="capitalize"
+                          checked={column.getIsVisible()}
+                          onCheckedChange={(value) =>
+                            column.toggleVisibility(!!value)
+                          }
+                        >
+                          {column.id}
+                        </DropdownMenuCheckboxItem>
+                      );
+                    })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
       </div>
       <div className="rounded-md border">

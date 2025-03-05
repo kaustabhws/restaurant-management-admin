@@ -61,6 +61,7 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
         columns={columns}
         data={data}
         filterOptions={filterOptions}
+        dateFilter
       />
     </>
   );
