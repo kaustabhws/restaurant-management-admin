@@ -168,15 +168,21 @@ model TempOrders {
 }
 
 model TempOrderItems {
-  id       String     @id @default(uuid())
-  orderId  String     @unique
-  orders   TempOrders @relation(fields: [orderId], references: [id])
+  id       String            @id @default(uuid())
+  orderId  String            @unique
+  orders   TempOrders        @relation(fields: [orderId], references: [id])
   itemId   String
-  menuItem Menu       @relation(fields: [itemId], references: [id])
-  quantity Int        @default(0)
+  menuItem Menu              @relation(fields: [itemId], references: [id])
+  quantity Int               @default(0)
+  status   ItemKitchenStatus @default(Pending)
 
   @@index([orderId])
   @@index([itemId])
+}
+
+enum ItemKitchenStatus {
+  Pending
+  Sent
 }
 
 model Orders {
@@ -409,7 +415,6 @@ model ExpenseCategory {
 
 model KDSOrder {
   id          String         @id @default(uuid())
-  orderId     String         @unique
   accepted    Boolean?
   status      KDSStatus      @default(Pending)
   tableNo     String?
@@ -425,7 +430,6 @@ model KDSOrder {
 
 model KDSOrderItem {
   id         String        @id @default(uuid())
-  orderId    String
   menuItemId String
   itemName   String
   quantity   Int

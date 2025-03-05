@@ -153,7 +153,7 @@ export async function PATCH(
       const updatedAmount = removeDiscount
         ? orderById?.amount! + finalDiscount
         : orderById?.amount! - finalDiscount;
-      
+
       // Update order with the calculated discount
       await prismadb.orders.update({
         where: { id: orderById.id },
@@ -190,6 +190,30 @@ export async function PATCH(
         payMode,
       },
     });
+
+    if (order.isPaid) {
+      // mark order as fulfilled in case of kds error
+      await prismadb.orders.update({
+        where: {
+          id: params.orderId,
+          resId: params.resId,
+        },
+        data: {
+          status: "Fulfilled",
+        },
+      });
+    } else {
+      // mark order as pending in case of kds error
+      await prismadb.orders.update({
+        where: {
+          id: params.orderId,
+          resId: params.resId,
+        },
+        data: {
+          status: "Ordered",
+        },
+      });
+    }
 
     // Create a notification if the order is paid
     if (isPaid) {

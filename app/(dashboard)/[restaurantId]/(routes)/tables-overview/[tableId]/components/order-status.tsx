@@ -8,6 +8,7 @@ export type OrderColumn = {
   amount: number;
   orderItems: string;
   createdAt: string;
+  status: string;
 };
 
 export const columns: ColumnDef<OrderColumn>[] = [
@@ -27,5 +28,9 @@ export const columns: ColumnDef<OrderColumn>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => <CellAction data={row.original} />
-  }
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
 ];

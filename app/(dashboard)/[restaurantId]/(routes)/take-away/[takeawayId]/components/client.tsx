@@ -12,6 +12,7 @@ import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import CustomerDetailsSubmit from "@/components/customer-details";
 import { useState } from "react";
+import { format } from "date-fns";
 
 interface OrderClientProps {
   data: OrderColumn[];
@@ -54,10 +55,10 @@ export const OrderClient: React.FC<OrderClientProps> = ({
         0
       ),
     },
-    customer : {
+    customer: {
       contact,
-      contactMethod
-    }
+      contactMethod,
+    },
   };
 
   const submitOrder = async () => {
@@ -84,6 +85,42 @@ export const OrderClient: React.FC<OrderClientProps> = ({
     }
   };
 
+  const formattedData: OrderColumn[] = temporder.map((order: any) => ({
+    id: order.id,
+    orderItems: order.orderItems
+      .map((item: { menuItem: { name: any } }) => item.menuItem.name)
+      .join(", "),
+    quantity: order.orderItems.map((item: { quantity: any }) => item.quantity),
+    isPaid: order.isPaid,
+    amount: order.amount,
+    status: order.orderItems
+      .map((item: { status: any }) => item.status)
+      .join(", "),
+    createdAt: format(order.createdAt, "MMMM do, yyyy"),
+  }));
+
+  const sendToKitchen = async (selectedRows: any) => {
+    const data = {
+      selectedRows,
+      tableId: temporder.some((order: any) => order.id)
+        ? temporder[0].tableId
+        : undefined,
+    };
+    try {
+      const response = await axios.post(
+        `/api/${params.restaurantId}/kds/create`,
+        data
+      );
+
+      if (response.status === 200) {
+        toast.success("Order sent to kitchen");
+        router.refresh();
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <>
       <div className="flex items-center justify-between max-[400px]:flex-col max-[400px]:gap-3 max-[400px]:items-start">
@@ -101,7 +138,20 @@ export const OrderClient: React.FC<OrderClientProps> = ({
         />
       </div>
       <Separator />
-      <DataTable searchKey="orderItems" columns={columns} data={data} />
+      <DataTable
+        searchKey="orderItems"
+        columns={columns}
+        data={formattedData}
+        enableRowSelection
+        column={false}
+        buttonSelected={{
+          label: "Send to kitchen",
+          onClick: (selectedRows) => {
+            sendToKitchen(selectedRows);
+          },
+        }}
+        disableCheckboxValue={{ key: "status", value: "Sent" }}
+      />
     </>
   );
 };

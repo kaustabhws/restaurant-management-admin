@@ -42,7 +42,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       toast.success("Food deleted");
     } catch (error) {
       toast.error(
-        "Make sure you removed all categories using this billboard first"
+        "Something went wrong"
       );
     } finally {
       setLoading(false);

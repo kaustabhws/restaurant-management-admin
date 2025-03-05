@@ -123,18 +123,6 @@ export async function PATCH(
       },
     });
 
-    if (updateKdsOrder) {
-      await prismadb.orders.update({
-        where: {
-          resId: params.resId,
-          slNo: orderSlNo,
-        },
-        data: {
-          status: "Fulfilled",
-        },
-      });
-    }
-
     return new NextResponse("Order marked as done", { status: 200 });
   } catch (error) {
     console.log("[KDS_PATCH_ERROR]", error);

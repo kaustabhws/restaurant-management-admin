@@ -84,12 +84,6 @@ export default function OrderModal({
               {currentOrder.status}
             </Badge>
           </div>
-          <div className="grid grid-cols-2 items-center gap-4">
-            <span className="text-sm text-muted-foreground">Order ID:</span>
-            <span className="text-sm font-medium justify-self-end">
-              #{currentOrder.orderId}
-            </span>
-          </div>
           {currentOrder.tableNo && (
             <div className="grid grid-cols-2 items-center gap-4">
               <span className="text-sm text-muted-foreground">Table No:</span>

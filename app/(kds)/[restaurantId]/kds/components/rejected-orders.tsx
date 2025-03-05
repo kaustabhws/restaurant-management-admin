@@ -33,7 +33,6 @@ const RejectedOrders: React.FC<RejectedOrdersProps> = ({ orders, resId }) => {
                 </Badge>
               </div>
               <div className="mt-1">
-                <p className="text-sm">Order #{order.orderId}</p>
                 <p className="flex items-center text-xs">
                   <Clock size={14} className="mr-1" />
                   {new Date(order.createdAt).toLocaleTimeString([], {
