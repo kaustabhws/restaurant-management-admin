@@ -92,7 +92,7 @@ const CurrentOrders: React.FC<CurrentOrdersProps> = ({ orders, resId }) => {
             <CardContent className="p-4">
               <ul className="space-y-2">
                 {order.items.map((item: any) => (
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between" key={item.id}>
                     <li key={item.id} className="text-sm">
                       <span className="font-semibold">{item.quantity}x</span>{" "}
                       {item.itemName}
