@@ -298,18 +298,18 @@ enum TransactionType {
 }
 
 model Reservation {
-  id         String      @id @default(uuid())
+  id         String            @id @default(uuid())
   resId      String
-  restaurant Restaurants @relation("RestaurantToReservation", fields: [resId], references: [id])
+  restaurant Restaurants       @relation("RestaurantToReservation", fields: [resId], references: [id])
   tableId    String
-  table      Table       @relation(fields: [tableId], references: [id])
+  table      Table             @relation(fields: [tableId], references: [id])
   name       String
   phone      String
   visitors   Int
-  status     String      @default("Upcoming")
+  status     ReservationStatus @default(Upcoming)
   date       DateTime
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
 
   @@index([resId])
   @@index([tableId])

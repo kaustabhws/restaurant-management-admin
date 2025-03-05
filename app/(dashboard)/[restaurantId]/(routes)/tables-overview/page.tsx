@@ -23,7 +23,11 @@ const TablesOverviewPage = async ({
       createdAt: "asc",
     },
     include: {
-      reservation: true,
+      reservation: {
+        where: {
+          status: "Upcoming",
+        }
+      },
     },
   });
 

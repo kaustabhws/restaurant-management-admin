@@ -17,7 +17,11 @@ const TablePage = async ({ params }: { params: { restaurantId: string } }) => {
       createdAt: "asc",
     },
     include: {
-      reservation: true
+      reservation: {
+        where: {
+          status: 'Upcoming',
+        }
+      }
     },
   });
 
