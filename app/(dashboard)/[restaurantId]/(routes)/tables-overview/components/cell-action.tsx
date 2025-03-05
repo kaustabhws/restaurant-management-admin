@@ -8,31 +8,54 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Copy, Edit, MoreHorizontal, SendHorizonal } from "lucide-react";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
+import TablePopupModal from "./table-popup";
 import { useState } from "react";
-import axios from "axios";
-import { AlertModal } from "@/components/modals/alert-modal";
 
 interface CellActionProps {
   data: any;
+  tables: any;
+  resId: string;
 }
 
-export const CellAction: React.FC<CellActionProps> = ({ data }) => {
+export const CellAction: React.FC<CellActionProps> = ({ data, tables, resId }) => {
   const router = useRouter();
   const params = useParams();
-
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
     toast.success("Table ID copied to the clipboard");
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSelectTable = (tableId: string) => {
+    setSelectedTableId(tableId);
+    console.log("Selected table ID:", tableId);
+    // You can perform additional actions with the selected table ID here
+  };
+
   return (
     <>
+      <TablePopupModal
+        tables={tables}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSelectTable={handleSelectTable}
+        currentTableId={data.id}
+        resId={resId}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -53,6 +76,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           >
             <Edit className="mr-2 h-4 w-4" />
             Manage
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleOpenModal}>
+            <SendHorizonal className="mr-2 h-4 w-4" />
+            Transfer to another table
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

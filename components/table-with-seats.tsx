@@ -115,7 +115,7 @@ export default function TableWithSeats(
   const { tableColor: dynamicTableColor, glow } = getStatusStyle();
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4 hover:-translate-y-3 transform transition-transform">
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {/* Table shadow */}
         <circle

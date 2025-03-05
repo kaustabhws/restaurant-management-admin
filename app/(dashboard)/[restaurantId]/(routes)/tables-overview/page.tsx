@@ -81,9 +81,11 @@ const TablesOverviewPage = async ({
         )}
         {formattedTables.map((table: any) => (
           <div key={table.id} className="relative flex flex-col items-center">
-            <TableWithSeats seats={table.seats} status={table.status} />
+            <Link href={`/${params.restaurantId}/tables-overview/${table.id}`}>
+              <TableWithSeats seats={table.seats} status={table.status} />
+            </Link>
             <p>{table.name}</p>
-            <CellAction data={table} />
+            <CellAction data={table} tables={tables} resId={params.restaurantId} />
           </div>
         ))}
       </div>
