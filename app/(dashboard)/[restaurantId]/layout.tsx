@@ -3,6 +3,7 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { LowStockModal } from "@/components/modals/low-stock-alert";
+import { BusinessHoursModal } from "@/components/modals/business-hours-modal"; 
 
 export default async function DashboardLayout({
   children,
@@ -44,6 +45,9 @@ export default async function DashboardLayout({
       <Navbar resId={restaurant.id} lowStockItems={lowStockItems} currency={restaurant.currency} />
       {children}
       <LowStockModal items={lowStockItems} currency={restaurant.currency} />
+      {
+        !restaurant.openingTime && !restaurant.closingTime && <BusinessHoursModal resId={restaurant.id} />
+      }
     </>
   );
 }

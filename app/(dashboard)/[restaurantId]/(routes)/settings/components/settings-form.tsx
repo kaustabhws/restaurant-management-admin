@@ -18,7 +18,7 @@ import { Currency, Restaurants } from "@prisma/client";
 import axios from "axios";
 import { AlertTriangle, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import * as z from "zod";
@@ -32,6 +32,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Period } from "@/utils/time-picker-utils";
+import { TimePeriodSelect } from "@/components/time-period-select";
+import { TimePickerInput } from "@/components/time-picker-input";
 
 const currencyOptions = [
   { name: "US Dollar", value: "dollar" },
@@ -58,9 +61,21 @@ const formSchema = z.object({
   country: z.string().min(1).optional(),
   phone: z.string().min(1).optional(),
   gstNo: z.string().min(1).optional(),
+  openingTime: z.date({ required_error: "Opening time is required." }),
+  closingTime: z.date({ required_error: "Closing time is required." }),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
+
+const parseTime = (timeStr: string | null) => {
+  if (!timeStr) return null; // Handle empty values
+
+  const [hours, minutes, seconds] = timeStr.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours || 0, minutes || 0, seconds || 0, 0); // Ensure valid time values
+
+  return date;
+};
 
 export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
   const params = useParams();
@@ -73,7 +88,11 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: {
+      ...initialData,
+      openingTime: parseTime(initialData?.openingTime) ?? new Date(),
+      closingTime: parseTime(initialData?.closingTime) ?? new Date(),
+    },
   });
 
   const onCountryChange = (isoCode: string) => {
@@ -82,6 +101,31 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
     setStates(statesData);
     form.setValue("state", "");
   };
+
+  const formatTime = (date: Date) =>
+    date.toLocaleTimeString("en-GB", { hour12: false });
+
+  const [openingPeriod, setOpeningPeriod] = useState<Period>(() => {
+    if (!initialData?.openingTime) return "AM"; // Default if no data
+    const hours = parseInt(initialData.openingTime.split(":")[0], 10);
+    return hours >= 12 ? "PM" : "AM";
+  });
+
+  const [closingPeriod, setClosingPeriod] = useState<Period>(() => {
+    if (!initialData?.closingTime) return "PM"; // Default if no data
+    const hours = parseInt(initialData.closingTime.split(":")[0], 10);
+    return hours >= 12 ? "PM" : "AM";
+  });
+
+  const openingMinuteRef = useRef<HTMLInputElement>(null);
+  const openingHourRef = useRef<HTMLInputElement>(null);
+  const openingSecondRef = useRef<HTMLInputElement>(null);
+  const openingPeriodRef = useRef<HTMLButtonElement>(null);
+
+  const closingMinuteRef = useRef<HTMLInputElement>(null);
+  const closingHourRef = useRef<HTMLInputElement>(null);
+  const closingSecondRef = useRef<HTMLInputElement>(null);
+  const closingPeriodRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (form.watch("country") || initialData.country) {
@@ -94,7 +138,11 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
   const onSubmit = async (data: SettingsFormValues) => {
     try {
       setLoading(true);
-      await axios.patch(`/api/res/${params.restaurantId}`, data);
+      await axios.patch(`/api/res/${params.restaurantId}`, {
+        ...data,
+        openingTime: formatTime(data.openingTime),
+        closingTime: formatTime(data.closingTime),
+      });
       router.refresh();
       toast.success("Restaurant updated");
     } catch (error) {
@@ -188,6 +236,97 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Opening Time */}
+            <FormField
+              control={form.control}
+              name="openingTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Opening Time</FormLabel>
+                  <div className="flex items-end gap-2">
+                    <TimePickerInput
+                      picker="12hours"
+                      period={openingPeriod}
+                      date={field.value}
+                      setDate={field.onChange}
+                      ref={openingHourRef}
+                      onRightFocus={() => openingMinuteRef.current?.focus()}
+                    />
+                    <TimePickerInput
+                      picker="minutes"
+                      date={field.value}
+                      setDate={field.onChange}
+                      ref={openingMinuteRef}
+                      onLeftFocus={() => openingHourRef.current?.focus()}
+                      onRightFocus={() => openingSecondRef.current?.focus()}
+                    />
+                    <TimePickerInput
+                      picker="seconds"
+                      date={field.value}
+                      setDate={field.onChange}
+                      ref={openingSecondRef}
+                      onLeftFocus={() => openingMinuteRef.current?.focus()}
+                      onRightFocus={() => openingPeriodRef.current?.focus()}
+                    />
+                    <TimePeriodSelect
+                      period={openingPeriod}
+                      setPeriod={setOpeningPeriod}
+                      date={field.value}
+                      setDate={field.onChange}
+                      ref={openingPeriodRef}
+                      onLeftFocus={() => openingSecondRef.current?.focus()}
+                    />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Closing Time */}
+            <FormField
+              control={form.control}
+              name="closingTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Closing Time</FormLabel>
+                  <div className="flex items-end gap-2">
+                    <TimePickerInput
+                      picker="12hours"
+                      period={closingPeriod}
+                      date={field.value}
+                      setDate={field.onChange}
+                      ref={closingHourRef}
+                      onRightFocus={() => closingMinuteRef.current?.focus()}
+                    />
+                    <TimePickerInput
+                      picker="minutes"
+                      date={field.value}
+                      setDate={field.onChange}
+                      ref={closingMinuteRef}
+                      onLeftFocus={() => closingHourRef.current?.focus()}
+                      onRightFocus={() => closingSecondRef.current?.focus()}
+                    />
+                    <TimePickerInput
+                      picker="seconds"
+                      date={field.value}
+                      setDate={field.onChange}
+                      ref={closingSecondRef}
+                      onLeftFocus={() => closingMinuteRef.current?.focus()}
+                      onRightFocus={() => closingPeriodRef.current?.focus()}
+                    />
+                    <TimePeriodSelect
+                      period={closingPeriod}
+                      setPeriod={setClosingPeriod}
+                      date={field.value}
+                      setDate={field.onChange}
+                      ref={closingPeriodRef}
+                      onLeftFocus={() => closingSecondRef.current?.focus()}
+                    />
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

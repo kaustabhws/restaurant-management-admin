@@ -21,14 +21,12 @@ export async function PATCH(
       country,
       phone,
       gstNo,
+      openingTime,
+      closingTime,
     } = body;
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    if (!name) {
-      return new NextResponse("Name is required", { status: 400 });
     }
 
     if (!params.resId) {
@@ -51,6 +49,8 @@ export async function PATCH(
         country,
         phone,
         gstNo,
+        openingTime,
+        closingTime,
       },
     });
 

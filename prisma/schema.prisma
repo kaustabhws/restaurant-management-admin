@@ -21,6 +21,8 @@ model Restaurants {
   state                 String                 @default("")
   country               String                 @default("")
   phone                 String                 @default("")
+  openingTime           String                 @default("")
+  closingTime           String                 @default("")
   menus                 Menu[]                 @relation("RestaurantToMenu")
   tables                Table[]                @relation("RestaurantToTable")
   orders                Orders[]               @relation("RestaurantToOrder")
