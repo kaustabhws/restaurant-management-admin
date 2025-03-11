@@ -107,6 +107,7 @@ export const OrderClient: React.FC<OrderClientProps> = ({
         : undefined,
     };
     try {
+      setLoading(true);
       const response = await axios.post(
         `/api/${params.restaurantId}/kds/create`,
         data
@@ -118,6 +119,8 @@ export const OrderClient: React.FC<OrderClientProps> = ({
       }
     } catch (error) {
       toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -139,6 +142,7 @@ export const OrderClient: React.FC<OrderClientProps> = ({
       </div>
       <Separator />
       <DataTable
+        loading={loading}
         searchKey="orderItems"
         columns={columns}
         data={formattedData}

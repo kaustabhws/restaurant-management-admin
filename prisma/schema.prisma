@@ -63,7 +63,7 @@ model Inventory {
   totalCost         Float
   lastRestockedAt   DateTime?
   resId             String
-  restaurant        Restaurants     @relation("RestaurantToInventory", fields: [resId], references: [id])
+  restaurant        Restaurants     @relation("RestaurantToInventory", fields: [resId], references: [id], onDelete: Cascade)
   menuInventory     MenuInventory[]
 
   createdAt            DateTime               @default(now())
@@ -76,7 +76,7 @@ model Inventory {
 model InventoryTransaction {
   id          String      @id @default(uuid())
   resId       String
-  restaurant  Restaurants @relation("RestaurantToInventoryTransaction", fields: [resId], references: [id])
+  restaurant  Restaurants @relation("RestaurantToInventoryTransaction", fields: [resId], references: [id], onDelete: Cascade)
   inventoryId String
   inventory   Inventory   @relation(fields: [inventoryId], references: [id])
   quantity    Int
@@ -95,7 +95,7 @@ model Menu {
   price          Float
   images         Image[]
   resId          String
-  restaurant     Restaurants      @relation("RestaurantToMenu", fields: [resId], references: [id])
+  restaurant     Restaurants      @relation("RestaurantToMenu", fields: [resId], references: [id], onDelete: Cascade)
   orderItems     OrderItems[]
   temporderItems TempOrderItems[]
   ingredients    MenuInventory[]
@@ -137,7 +137,7 @@ model Table {
   seats       Int
   status      TableStatus   @default(Available)
   resId       String
-  restaurant  Restaurants   @relation("RestaurantToTable", fields: [resId], references: [id])
+  restaurant  Restaurants   @relation("RestaurantToTable", fields: [resId], references: [id], onDelete: Cascade)
   temporders  TempOrders[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -156,7 +156,7 @@ model TempOrders {
   id         String           @id @default(uuid())
   takeawayId String?
   resId      String
-  restaurant Restaurants      @relation("RestaurantToTempOrder", fields: [resId], references: [id])
+  restaurant Restaurants      @relation("RestaurantToTempOrder", fields: [resId], references: [id], onDelete: Cascade)
   tableId    String?
   table      Table?           @relation(fields: [tableId], references: [id])
   orderItems TempOrderItems[]
@@ -194,7 +194,7 @@ model Orders {
   tableNo      String?
   orderType    OrderType
   payMode      String        @default("")
-  restaurant   Restaurants   @relation("RestaurantToOrder", fields: [resId], references: [id])
+  restaurant   Restaurants   @relation("RestaurantToOrder", fields: [resId], references: [id], onDelete: Cascade)
   orderItems   OrderItems[]
   bill         Bill[]
   discount     Float         @default(0)
@@ -238,7 +238,7 @@ model OrderItems {
 model Bill {
   id         String      @id @default(uuid())
   resId      String
-  restaurant Restaurants @relation("RestaurantToBill", fields: [resId], references: [id])
+  restaurant Restaurants @relation("RestaurantToBill", fields: [resId], references: [id], onDelete: Cascade)
   orderId    String
   orders     Orders      @relation(fields: [orderId], references: [id])
   itemName   String
@@ -269,7 +269,7 @@ model Customer {
   LoyaltyTransaction LoyaltyTransaction[]
   reviews            Review[]
   resId              String
-  restaurant         Restaurants          @relation("RestaurantToCustimer", fields: [resId], references: [id])
+  restaurant         Restaurants          @relation("RestaurantToCustimer", fields: [resId], references: [id], onDelete: Cascade)
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
@@ -279,7 +279,7 @@ model Customer {
 model LoyaltyTransaction {
   id          String          @id @default(uuid())
   resId       String
-  restaurant  Restaurants     @relation("RestaurantToLoyaltyTransaction", fields: [resId], references: [id])
+  restaurant  Restaurants     @relation("RestaurantToLoyaltyTransaction", fields: [resId], references: [id], onDelete: Cascade)
   amount      Float
   type        TransactionType
   description String
@@ -302,7 +302,7 @@ enum TransactionType {
 model Reservation {
   id         String            @id @default(uuid())
   resId      String
-  restaurant Restaurants       @relation("RestaurantToReservation", fields: [resId], references: [id])
+  restaurant Restaurants       @relation("RestaurantToReservation", fields: [resId], references: [id], onDelete: Cascade)
   tableId    String
   table      Table             @relation(fields: [tableId], references: [id])
   name       String
@@ -326,7 +326,7 @@ enum ReservationStatus {
 model Notification {
   id          String             @id @default(uuid())
   resId       String
-  restaurant  Restaurants        @relation("RestaurantToNotification", fields: [resId], references: [id])
+  restaurant  Restaurants        @relation("RestaurantToNotification", fields: [resId], references: [id], onDelete: Cascade)
   message     String
   type        NotificationType
   status      NotificationStatus
@@ -361,7 +361,7 @@ model Campaign {
   maxUsage       Int
   remainingUsage Int
   resId          String
-  restaurant     Restaurants @relation("RestaurantToCampaign", fields: [resId], references: [id])
+  restaurant     Restaurants @relation("RestaurantToCampaign", fields: [resId], references: [id], onDelete: Cascade)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -371,7 +371,7 @@ model Campaign {
 model Review {
   id         String      @id @default(uuid())
   resId      String
-  restaurant Restaurants @relation("RestaurantToReview", fields: [resId], references: [id])
+  restaurant Restaurants @relation("RestaurantToReview", fields: [resId], references: [id], onDelete: Cascade)
   customerId String
   customer   Customer    @relation(fields: [customerId], references: [id])
   itemId     String
@@ -394,7 +394,7 @@ model Expense {
   description String
   amount      Float
   resId       String
-  restaurant  Restaurants     @relation("RestaurantToExpense", fields: [resId], references: [id])
+  restaurant  Restaurants     @relation("RestaurantToExpense", fields: [resId], references: [id], onDelete: Cascade)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
@@ -408,7 +408,7 @@ model ExpenseCategory {
   description String?
   expenses    Expense[]
   resId       String
-  restaurant  Restaurants @relation("RestaurantToExpenseCategory", fields: [resId], references: [id])
+  restaurant  Restaurants @relation("RestaurantToExpenseCategory", fields: [resId], references: [id], onDelete: Cascade)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -423,7 +423,7 @@ model KDSOrder {
   orderType   OrderType
   items       KDSOrderItem[]
   resId       String
-  Restaurants Restaurants    @relation("RestaurantToKds", fields: [resId], references: [id])
+  Restaurants Restaurants    @relation("RestaurantToKds", fields: [resId], references: [id], onDelete: Cascade)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 

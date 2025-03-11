@@ -40,7 +40,7 @@ const CustomerDetailsSubmit: React.FC<CustomerDetailsSubmitProps> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button">
+        <Button type="button" disabled={loading}>
           Submit order
           <Send className="ml-2 h-4 w-4" />
         </Button>

@@ -55,6 +55,7 @@ interface DataTableProps<TData, TValue> {
     value: any;
   };
   dateFilter?: boolean;
+  loading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -67,6 +68,7 @@ export function DataTable<TData, TValue>({
   column = true,
   disableCheckboxValue,
   dateFilter,
+  loading,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -203,7 +205,7 @@ export function DataTable<TData, TValue>({
                   }
                 }}
               >
-                <SelectTrigger className='min-[600px]:w-[180px]'>
+                <SelectTrigger className="min-[600px]:w-[180px]">
                   <SelectValue placeholder="Filter" />
                 </SelectTrigger>
                 <SelectContent>
@@ -223,7 +225,7 @@ export function DataTable<TData, TValue>({
                   setDateFilterValue(value);
                 }}
               >
-                <SelectTrigger className='min-[600px]:w-[180px]'>
+                <SelectTrigger className="min-[600px]:w-[180px]">
                   <SelectValue placeholder="Date Filter" />
                 </SelectTrigger>
                 <SelectContent>
@@ -243,14 +245,16 @@ export function DataTable<TData, TValue>({
               variant="default"
               size="sm"
               onClick={() => buttonSelected.onClick(getSelectedRowsData())}
-              disabled={Object.values(selectedRows).every(
-                (isSelected) => !isSelected
-              )}
+              disabled={
+                Object.values(selectedRows).every(
+                  (isSelected) => !isSelected
+                ) || loading
+              }
             >
               {buttonSelected.label}
             </Button>
           )}
-          <div className='sm:block hidden'>
+          <div className="sm:block hidden">
             {column && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
