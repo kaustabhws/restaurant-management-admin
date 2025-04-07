@@ -1,10 +1,15 @@
 import prismadb from "@/lib/prismadb";
 
 export const getLowestExpenseCategory = async (restaurantId: string) => {
+  const now = new Date();
+  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const lowestExpenseCategory = await prismadb.expense.groupBy({
     by: ["categoryId"],
     where: {
       resId: restaurantId,
+      createdAt: {
+        gte: currentMonthStart,
+      },
     },
     _sum: {
       amount: true,
