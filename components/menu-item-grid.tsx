@@ -117,7 +117,7 @@ export function MenuItemGrid({ menu, inventory, form, loading }: MenuItemGridPro
               <CardContent className="p-3">
                 <div className="flex justify-between items-start">
                   <h3 className="font-medium text-sm">{item.name}</h3>
-                  <span className="font-bold text-sm">${item.price.toFixed(2)}</span>
+                  <span className="font-bold text-sm">₹{item.price.toFixed(2)}</span>
                 </div>
               </CardContent>
               <CardFooter className="p-3 pt-0">
