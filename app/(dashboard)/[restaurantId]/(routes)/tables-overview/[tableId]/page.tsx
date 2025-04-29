@@ -37,6 +37,7 @@ const MenuPage = async ({
     },
     include: {
       ingredients: true,
+      images: true,
     },
   });
 

@@ -64,7 +64,7 @@ export const RestockModal: React.FC<RestockModalProps> = ({
       quantity: 0,
       price: 0,
       inventoryItemId: inventoryItem.id,
-      isExpense: false,
+      isExpense: true,
     },
   });
 

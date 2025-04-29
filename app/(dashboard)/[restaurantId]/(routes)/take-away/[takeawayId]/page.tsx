@@ -29,6 +29,7 @@ const TakeAwayPage: React.FC<TakeAwayPageProps> = async ({ params }) => {
     },
     include: {
       ingredients: true,
+      images: true,
     },
   });
 
