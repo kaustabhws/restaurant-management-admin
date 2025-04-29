@@ -38,6 +38,7 @@ model Restaurants {
   expenses              Expense[]              @relation("RestaurantToExpense")
   expenseCategories     ExpenseCategory[]      @relation("RestaurantToExpenseCategory")
   inventoryTransactions InventoryTransaction[] @relation("RestaurantToInventoryTransaction")
+  users                 User[]                 @relation("RestaurantToUser")
   KDSOrder              KDSOrder[]             @relation("RestaurantToKds")
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
@@ -51,6 +52,101 @@ enum Currency {
   pound
   ruble
   peso
+}
+
+model User {
+  id         String      @id @default(uuid())
+  clerkId    String?     @unique
+  email      String      @unique
+  name       String
+  phone      String?     @unique
+  resId      String
+  restaurant Restaurants @relation("RestaurantToUser", fields: [resId], references: [id], onDelete: Cascade)
+  roleId     String
+  role       Role        @relation(fields: [roleId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([resId])
+  @@index([roleId])
+  @@index([clerkId])
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  permissions Permission[]
+  users       User[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Permission {
+  id          String         @id @default(uuid())
+  name        PermissionName @unique
+  description String?
+  roles       Role[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+enum PermissionName {
+  // Menu permissions
+  ViewMenu
+  CreateMenu
+  UpdateMenu
+  DeleteMenu
+
+  // Campaign permissions
+  ViewCampaigns
+  CreateCampaigns
+  UpdateCampaigns
+  DeleteCampaigns
+
+  // Order permissions
+  ViewOrders
+  CreateOrders
+  UpdateOrderStatus
+  DeleteOrders
+
+  // Inventory permissions
+  ViewInventory
+  AddInventory
+  UpdateInventory
+
+  // Staff/User permissions
+  ViewUsers
+  CreateUsers
+  EditUsers
+  DeleteUsers
+
+  // Customer permissions
+  ViewCustomers
+  EditCustomers
+  ManageLoyalty
+
+  // Table permissions
+  ViewTables
+  CreateTables
+  UpdateTables
+  ManageReservations
+
+  // Financial permissions
+  ViewFinancials
+  ViewExpenses
+  ManageExpenses
+
+  // Campaign permissions
+  ManageCampaigns
+
+  // KDS permissions
+  ViewKDS
+  UpdateKDS
+
+  // Review permissions
+  ViewReviews
+  ManageReviews
 }
 
 model Inventory {

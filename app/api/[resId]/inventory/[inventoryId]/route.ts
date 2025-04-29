@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
@@ -16,6 +17,12 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const hasAccess = await hasPermission(userId, "UpdateInventory");
+
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+
     if (!name || !price || !availableQuantity || !unit || !minStockThreshold) {
       return new NextResponse("Invalid data provided", { status: 400 });
     }
@@ -26,8 +33,20 @@ export async function PATCH(
 
     const restaurantByUserId = await prismadb.restaurants.findFirst({
       where: {
-        id: params.resId,
-        userId,
+        OR: [
+          { id: params.resId, userId },
+          {
+            id: params.resId,
+            users: {
+              some: {
+                clerkId: userId,
+                role: {
+                  permissions: { some: { name: "UpdateInventory" } },
+                },
+              },
+            },
+          },
+        ],
       },
     });
 
@@ -67,14 +86,32 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const hasAccess = await hasPermission(userId, "UpdateInventory");
+
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+
     if (!params.inventoryId) {
       return new NextResponse("Inventory item id is required", { status: 400 });
     }
 
     const restaurantByUserId = await prismadb.restaurants.findFirst({
       where: {
-        id: params.resId,
-        userId,
+        OR: [
+          { id: params.resId, userId },
+          {
+            id: params.resId,
+            users: {
+              some: {
+                clerkId: userId,
+                role: {
+                  permissions: { some: { name: "UpdateInventory" } },
+                },
+              },
+            },
+          },
+        ],
       },
     });
 

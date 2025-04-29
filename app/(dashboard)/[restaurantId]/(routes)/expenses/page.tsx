@@ -18,12 +18,26 @@ import { ExpenseColumn } from "./components/columns";
 import { format } from "date-fns";
 import { getISTTime } from "@/lib/getISTTime";
 import { ExpenseClient } from "./components/client";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const ExpensesPage = async ({
   params,
 }: {
   params: { restaurantId: string };
 }) => {
+
+  const { userId } = auth()
+
+  const hasAccess = await hasPermission(userId!, "ViewExpenses")
+
+  if(!hasAccess) {
+    return (
+      <AccessDenied url={`/${params.restaurantId}`} />
+    )
+  }
+
   const expenses = await getMonthlyExpenses(params.restaurantId);
   const highestExpenseCategory = await getHighestExpenseCategory(
     params.restaurantId

@@ -147,6 +147,12 @@ export const ReservationForm: React.FC<ReservationFormProps> = ({
       router.refresh();
       toast.success(toastMessage);
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error("Something went wrong");
     } finally {
       setLoading(false);

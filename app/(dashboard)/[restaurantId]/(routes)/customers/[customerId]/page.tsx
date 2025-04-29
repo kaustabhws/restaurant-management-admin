@@ -10,12 +10,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderHistoryColumn } from "./components/order-history-column";
 import { OrderClient } from "./components/order-history-client";
 import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const CustomerPage = async ({
   params,
 }: {
   params: { customerId: string; restaurantId: string };
 }) => {
+  const { userId } = auth();
+
+  const hasAccess = await hasPermission(userId!, "EditCustomers");
+
+  if (!hasAccess) {
+    return <AccessDenied url={`/${params.restaurantId}`} />;
+  }
+
   const customer = await prismadb.customer.findUnique({
     where: {
       id: params.customerId,

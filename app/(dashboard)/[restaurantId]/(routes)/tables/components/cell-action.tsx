@@ -41,6 +41,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       router.refresh();
       toast.success("Item deleted");
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error(
         "Make sure you removed all categories using this item first"
       );

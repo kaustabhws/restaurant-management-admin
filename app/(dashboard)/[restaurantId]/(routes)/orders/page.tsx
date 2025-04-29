@@ -5,15 +5,25 @@ import prismadb from "@/lib/prismadb";
 import { OrderColumn } from "./components/columns";
 import { OrderClient } from "./components/client";
 import { getISTTime } from "@/lib/getISTTime";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
+
+  const { userId } = auth();
+
+  const hasAccess = await hasPermission(userId!, "ViewOrders");
+
+  if (!hasAccess) {
+    return (
+      <AccessDenied url={`/${params.restaurantId}`} />
+    );
+  }
+
   const orders = await prismadb.orders.findMany({
     where: {
       resId: params.restaurantId,
-      // createdAt: {
-      //   gte: new Date(new Date().setHours(0, 0, 0, 0)),
-      //   lte: new Date(new Date().setHours(23, 59, 59, 999)),
-      // }
     },
     include: {
       orderItems: {
@@ -37,8 +47,8 @@ const OrdersPage = async ({ params }: { params: { restaurantId: string } }) => {
     amount: item.amount,
     isPaid: item.isPaid,
     status: item.status,
-    tableNo: item.tableNo ?? '',
-    createdAt: format(getISTTime(item.createdAt), 'MMMM do yyyy'),
+    tableNo: item.tableNo ?? "",
+    createdAt: format(getISTTime(item.createdAt), "MMMM do yyyy"),
     date: item.createdAt.toISOString(),
   }));
 

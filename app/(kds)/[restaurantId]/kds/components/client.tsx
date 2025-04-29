@@ -66,6 +66,12 @@ export const KdsClient: React.FC<KdsClientProps> = ({
       }
       router.refresh();
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error("Failed to accept order");
     } finally {
       setLoading(false);
@@ -87,6 +93,18 @@ export const KdsClient: React.FC<KdsClientProps> = ({
       }
       router.refresh();
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error("Failed to reject order");
     } finally {
       setLoading(false);

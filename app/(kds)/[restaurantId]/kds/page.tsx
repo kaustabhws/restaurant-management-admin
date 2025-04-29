@@ -1,7 +1,18 @@
 import prismadb from "@/lib/prismadb";
 import { KdsClient } from "./components/client";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const KdsPage = async ({ params }: { params: { restaurantId: string } }) => {
+  const { userId } = auth();
+
+  const hasAccess = await hasPermission(userId!, "ViewKDS");
+
+  if (!hasAccess) {
+    return <AccessDenied url={`/${params.restaurantId}`} />;
+  }
+
   const kds = await prismadb.kDSOrder.findMany({
     where: {
       resId: params.restaurantId,

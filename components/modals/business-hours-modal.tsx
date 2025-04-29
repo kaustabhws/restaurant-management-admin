@@ -34,7 +34,7 @@ const FormSchema = z.object({
 });
 
 export function BusinessHoursModal({ resId }: { resId: string }) {
-  const router = useRouter()
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -54,8 +54,14 @@ export function BusinessHoursModal({ resId }: { resId: string }) {
         closingTime: formatTime(data.closingTime),
       });
       toast.success("Business hours updated successfully");
-      router.refresh()
+      router.refresh();
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions");
+          return;
+        }
+      }
       toast.error("Something went wrong");
     }
   }
@@ -76,7 +82,10 @@ export function BusinessHoursModal({ resId }: { resId: string }) {
   const closingPeriodRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <Dialog open={open} onOpenChange={() => toast.error("Set business hours to close")}>
+    <Dialog
+      open={open}
+      onOpenChange={() => toast.error("Set business hours to close")}
+    >
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Schedule Business Hours</DialogTitle>

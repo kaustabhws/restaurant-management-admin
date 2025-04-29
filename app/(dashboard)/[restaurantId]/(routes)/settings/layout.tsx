@@ -1,12 +1,29 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarNav } from "./components/sidebar-nav";
 import { Heading } from "@/components/ui/heading";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
+  params: {
+    restaurantId: string;
+  }
 }
 
-export default function SettingsLayout({ children }: SettingsLayoutProps) {
+const SettingsLayout = async ({ children, params }: SettingsLayoutProps) => {
+
+  const { userId } = auth();
+
+  const hasAccess = await hasPermission(userId!, "FullAccess")
+
+  if(!hasAccess) {
+    return (
+      <AccessDenied url={params.restaurantId} />
+    )
+  }
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 max-[425px]:px-3">
       <Heading title="Settings" description="Manage your account settings" />
@@ -15,8 +32,10 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
         <aside className="lg:w-1/5">
           <SidebarNav />
         </aside>
-        <div className="flex-1 lg:max-w-2xl">{children}</div>
+        <div className="flex-1">{children}</div>
       </div>
     </div>
   );
 }
+
+export default SettingsLayout;

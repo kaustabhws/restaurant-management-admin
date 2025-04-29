@@ -91,6 +91,12 @@ export const TableForm: React.FC<TableFormProps> = ({
       router.refresh();
       toast.success(toastMessage);
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       if (axios.isAxiosError(error)) {
         if (error.response?.data === "Insufficient stock for ingredient") {
           toast.error("Insufficient ingredients in stock");

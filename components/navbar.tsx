@@ -34,14 +34,26 @@ const Navbar: React.FC<NavbarProps> = async ({
     },
   });
 
+  const resByUser = await prismadb.restaurants.findMany({
+    where: {
+      users: {
+        some: {
+          clerkId: userId,
+        },
+      },
+    },
+  });
+
+  const res = restaurant.length > 0 ? restaurant : resByUser;
+
   return (
     <div className="border-b">
       <div className="flex h-16 items-center px-3 max-[426px]:px-1">
         <div className="min-[1168px]:hidden">
-          <HamburgerMenu restaurant={restaurant} />
+          <HamburgerMenu restaurant={res} />
         </div>
         <div className="flex max-[1168px]:flex-1 justify-center max-[900px]:justify-center max-[500px]:hidden">
-          <StoreSwitcher items={restaurant} />
+          <StoreSwitcher disabled={resByUser.length > 0 && true} items={res} />
         </div>
         <MainNav className="min-[1100px]:mx-6 max-[1168px]:hidden max-[1100px]:mx-4" />
         <div className="ml-auto flex items-center space-x-4 max-[446px]:space-x-2">

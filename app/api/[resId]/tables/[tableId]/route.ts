@@ -1,10 +1,11 @@
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { tableId: string, resId: string } }
+  { params }: { params: { tableId: string; resId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -16,16 +17,22 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const hasAccess = await hasPermission(userId, "UpdateTables");
+
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+
     if (!name) {
       return new NextResponse("Name is required", { status: 400 });
     }
 
-    if(!seats) {
-        return new NextResponse("Seats is required", { status: 400 });
+    if (!seats) {
+      return new NextResponse("Seats is required", { status: 400 });
     }
 
-    if(!status) {
-        return new NextResponse("Status is required", { status: 400 });
+    if (!status) {
+      return new NextResponse("Status is required", { status: 400 });
     }
 
     if (!params.tableId) {
@@ -34,8 +41,20 @@ export async function PATCH(
 
     const restaurantByUserId = await prismadb.restaurants.findFirst({
       where: {
-        id: params.resId,
-        userId,
+        OR: [
+          { id: params.resId, userId },
+          {
+            id: params.resId,
+            users: {
+              some: {
+                clerkId: userId,
+                role: {
+                  permissions: { some: { name: "UpdateTables" } },
+                },
+              },
+            },
+          },
+        ],
       },
     });
 
@@ -50,7 +69,7 @@ export async function PATCH(
       data: {
         name,
         seats,
-        status
+        status,
       },
     });
 
@@ -63,7 +82,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { tableId: string, resId: string } }
+  { params }: { params: { tableId: string; resId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -72,14 +91,32 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const hasAccess = await hasPermission(userId, "UpdateTables");
+
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+
     if (!params.tableId) {
       return new NextResponse("Menu item id is required", { status: 400 });
     }
 
     const restaurantByUserId = await prismadb.restaurants.findFirst({
       where: {
-        id: params.resId,
-        userId,
+        OR: [
+          { id: params.resId, userId },
+          {
+            id: params.resId,
+            users: {
+              some: {
+                clerkId: userId,
+                role: {
+                  permissions: { some: { name: "UpdateTables" } },
+                },
+              },
+            },
+          },
+        ],
       },
     });
 

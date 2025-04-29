@@ -3,12 +3,25 @@ import { CampaignColumn } from "./components/columns";
 import { format, startOfDay } from "date-fns";
 import { getISTTime } from "@/lib/getISTTime";
 import { CampaignClient } from "./components/client";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const CampaignPage = async ({
   params,
 }: {
   params: { restaurantId: string };
 }) => {
+  const { userId } = auth()
+
+  const hasAccess = await hasPermission(userId!, "ViewCampaigns")
+
+  if(!hasAccess) {
+    return (
+      <AccessDenied url={`/${params.restaurantId}`} />
+    )
+  }
+
   const campaigns = await prismadb.campaign.findMany({
     where: {
       resId: params.restaurantId,

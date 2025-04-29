@@ -1,11 +1,24 @@
 import prismadb from "@/lib/prismadb";
 import { CampaignForm } from "./components/campaign-form";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const MenuPage = async ({
   params,
 }: {
   params: { campaignId: string; restaurantId: string };
 }) => {
+  const { userId } = auth();
+
+  const hasAccess =
+    (await hasPermission(userId!, "UpdateCampaigns")) ||
+    (await hasPermission(userId!, "CreateCampaigns"));
+
+  if (!hasAccess) {
+    return <AccessDenied url={`/${params.restaurantId}`} />;
+  }
+
   const campaign = await prismadb.campaign.findUnique({
     where: {
       id: params.campaignId,

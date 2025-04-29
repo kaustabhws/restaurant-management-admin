@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
 import { auth } from "@clerk/nextjs";
 import { OrderType } from "@prisma/client";
 import { NextResponse } from "next/server";
@@ -52,10 +53,17 @@ export async function POST(
 
     const { resultData, customer } = body;
 
+    
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
     }
 
+    const hasAccess = await hasPermission(userId!, "CreateOrders");
+
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+    
     if (!resultData) {
       return new NextResponse("Order data is required", { status: 400 });
     }

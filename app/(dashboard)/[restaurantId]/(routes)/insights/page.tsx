@@ -13,6 +13,9 @@ const WeeklyOverview = lazy(() => import("./_components/weekly-overview"));
 import { Table, TrendingUp } from "lucide-react";
 import { getCurrencyIcon } from "@/lib/getCurrenctIcon";
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
+import { auth } from "@clerk/nextjs";
+import AccessDenied from "@/components/access-denied";
 
 interface InsightsPageProps {
   params: {
@@ -21,6 +24,17 @@ interface InsightsPageProps {
 }
 
 const InsightsPage: React.FC<InsightsPageProps> = async ({ params }) => {
+
+  const { userId } = auth()
+
+  const hasAccess = await hasPermission(userId!, "ViewFinancials")
+
+  if(!hasAccess) {
+    return (
+      <AccessDenied url={`/${params.restaurantId}`} />
+    )
+  }
+
   const mostOrderedFood = await getMostOrderedFood(params.restaurantId);
   const highestRevenueFood = await getHighestRevenueFood(params.restaurantId);
   const highestBillAmount = await getHighestBillAmount(params.restaurantId);

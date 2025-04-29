@@ -115,6 +115,12 @@ export const MenuForm: React.FC<MenuFormProps> = ({
       router.refresh();
       toast.success(toastMessage);
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
@@ -129,6 +135,12 @@ export const MenuForm: React.FC<MenuFormProps> = ({
       router.refresh();
       toast.success("Menu deleted");
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error("Something went wrong");
     } finally {
       setLoading(false);

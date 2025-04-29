@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
@@ -6,14 +7,20 @@ export async function POST(
   req: Request,
   { params }: { params: { resId: string } }
 ) {
-  const { userId } = auth();
-  const body = await req.json();
-  const { kdsId, accept, reject, orderSlNo } = body;
-
   try {
+    const { userId } = auth();
+    const body = await req.json();
+    const { kdsId, accept, reject, orderSlNo } = body;
+
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
     }
+
+    const hasAccess = await hasPermission(userId, "UpdateKDS");
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+
     if (!params.resId) {
       return new NextResponse("Restaurant id is required", { status: 400 });
     }
@@ -72,8 +79,8 @@ export async function POST(
         },
         data: {
           status: "Rejected",
-        }
-      })
+        },
+      });
 
       return new NextResponse("Order rejected", { status: 200 });
     }
@@ -87,14 +94,20 @@ export async function PATCH(
   req: Request,
   { params }: { params: { resId: string } }
 ) {
-  const { userId } = auth();
-  const body = await req.json();
-  const { markAsDone, kdsId, orderSlNo } = body;
-
   try {
+    const { userId } = auth();
+    const body = await req.json();
+    const { markAsDone, kdsId, orderSlNo } = body;
+
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
     }
+
+    const hasAccess = await hasPermission(userId, "UpdateKDS")
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+    
     if (!params.resId) {
       return new NextResponse("Restaurant id is required", { status: 400 });
     }

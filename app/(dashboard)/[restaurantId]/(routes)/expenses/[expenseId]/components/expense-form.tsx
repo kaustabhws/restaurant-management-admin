@@ -99,6 +99,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       router.refresh();
       toast.success(toastMessage);
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
@@ -115,6 +121,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       router.refresh();
       toast.success("Expense deleted");
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error("Error deleting expense");
     } finally {
       setLoading(false);

@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
@@ -26,6 +27,12 @@ export async function PATCH(
       return new NextResponse("Unauthenticated", { status: 401 });
     }
 
+    const hasAccess = await hasPermission(userId, "UpdateCampaigns");
+
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+
     if (!name || !description || !code || !startDate || !endDate || !discount) {
       return new NextResponse("Invalid data provided", { status: 400 });
     }
@@ -36,8 +43,20 @@ export async function PATCH(
 
     const restaurantByUserId = await prismadb.restaurants.findFirst({
       where: {
-        id: params.resId,
-        userId,
+        OR: [
+          { id: params.resId, userId },
+          {
+            id: params.resId,
+            users: {
+              some: {
+                clerkId: userId,
+                role: {
+                  permissions: { some: { name: "UpdateCampaigns" } },
+                },
+              },
+            },
+          },
+        ],
       },
     });
 

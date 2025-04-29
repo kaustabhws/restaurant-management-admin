@@ -29,6 +29,7 @@ interface StoreSwitcherProps extends PopoverTriggerProps {
 export default function StoreSwitcher({
   className,
   items = [],
+  disabled,
 }: StoreSwitcherProps) {
   const restaurantModal = useRestaurantModal();
   const params = useParams();
@@ -52,7 +53,7 @@ export default function StoreSwitcher({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild disabled={disabled}>
         <Button
           variant="outline"
           size="sm"

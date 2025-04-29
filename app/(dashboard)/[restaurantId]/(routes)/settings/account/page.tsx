@@ -8,7 +8,7 @@ interface AccountPageProps {
 
 export default function AccountPage({ params }: AccountPageProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:max-w-2xl">
       <AccountForm />
     </div>
   );

@@ -87,6 +87,12 @@ export const OrderClient: React.FC<OrderClientProps> = ({
       toast.success("Food order submitted");
       router.refresh();
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions");
+          return;
+        }
+      }
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
@@ -111,6 +117,12 @@ export const OrderClient: React.FC<OrderClientProps> = ({
         router.refresh();
       }
     } catch (error) {
+      if(axios.isAxiosError(error)) {
+        if(error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions")
+          return
+        }
+      }
       toast.error("Something went wrong");
     }
   };
@@ -144,7 +156,7 @@ export const OrderClient: React.FC<OrderClientProps> = ({
             sendToKitchen(selectedRows);
           },
         }}
-        disableCheckboxValue ={{ key: "status", value: "Sent" }}
+        disableCheckboxValue={{ key: "status", value: "Sent" }}
       />
     </>
   );

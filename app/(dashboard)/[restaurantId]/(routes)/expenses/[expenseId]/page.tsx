@@ -1,11 +1,25 @@
 import prismadb from "@/lib/prismadb";
 import { ExpenseForm } from "./components/expense-form";
+import { hasPermission } from "@/utils/has-permissions";
+import { auth } from "@clerk/nextjs";
+import AccessDenied from "@/components/access-denied";
 
 const ExpenseItemPage = async ({
   params,
 }: {
   params: { expenseId: string; restaurantId: string };
 }) => {
+
+  const { userId } = auth()
+
+  const hasAccess = await hasPermission(userId!, "ManageExpenses")
+
+  if(!hasAccess) {
+    return (
+      <AccessDenied url={`/${params.restaurantId}`} />
+    )
+  }
+
   const expenseItem = await prismadb.expense.findUnique({
     where: {
       id: params.expenseId,

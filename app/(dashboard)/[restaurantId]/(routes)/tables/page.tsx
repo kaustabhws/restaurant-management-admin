@@ -3,8 +3,19 @@ import prismadb from "@/lib/prismadb";
 import { TableClient } from "./components/client";
 import { TableColumn } from "./components/columns";
 import { getISTTime } from "@/lib/getISTTime";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const TablePage = async ({ params }: { params: { restaurantId: string } }) => {
+  const { userId } = auth();
+
+  const hasAccess = await hasPermission(userId!, "ViewTables");
+
+  if (!hasAccess) {
+    return <AccessDenied url={`/${params.restaurantId}`} />;
+  }
+
   // Get current date for comparison
   const currentDate = new Date();
   const formattedDate = format(currentDate, "yyyy-MM-dd"); // Keep in YYYY-MM-DD format for comparison
@@ -19,9 +30,9 @@ const TablePage = async ({ params }: { params: { restaurantId: string } }) => {
     include: {
       reservation: {
         where: {
-          status: 'Upcoming',
-        }
-      }
+          status: "Upcoming",
+        },
+      },
     },
   });
 

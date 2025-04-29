@@ -39,7 +39,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       toast.error("Cannot mark a rejected order as paid");
       return;
     }
-    
+
     try {
       setLoading(true);
       await axios.patch(`/api/${params.restaurantId}/order/${data.id}`, {
@@ -49,6 +49,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       router.refresh();
       toast.success(`Marked as ${isPaid ? "paid" : "unpaid"}`);
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions");
+          return;
+        }
+      }
       if (
         (error as any).response.data ==
         "Order paid with loyalty points cannot be updated"
@@ -69,6 +75,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       toast.success("Order deleted");
       router.refresh();
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data === "Insufficient Permissions") {
+          toast.error("Insufficient permissions");
+          return;
+        }
+      }
       toast.error("Something went wrong");
     } finally {
       setLoading(false);

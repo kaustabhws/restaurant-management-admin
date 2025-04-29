@@ -26,6 +26,10 @@ export function SidebarNav({
       href: `/${params.restaurantId}/settings/appearance`,
       label: "Appearance",
     },
+    {
+      href: `/${params.restaurantId}/settings/access-control`,
+      label: "Access Control",
+    },
   ];
 
   return (

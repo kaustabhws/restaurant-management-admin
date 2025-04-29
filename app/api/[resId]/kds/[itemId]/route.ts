@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
@@ -7,7 +8,7 @@ export async function PATCH(
   { params }: { params: { resId: string; itemId: string } }
 ) {
   try {
-    const userId = auth();
+    const { userId } = auth();
     const body = await req.json();
     const { status } = body;
 
@@ -15,9 +16,15 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const hasAccess = await hasPermission(userId, "UpdateKDS");
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+
     if (!status) {
       return new NextResponse("Bad Request", { status: 400 });
     }
+
 
     // Update the status of the item
     if (status === "Rejected") {

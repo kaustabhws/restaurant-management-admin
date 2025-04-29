@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
@@ -14,6 +15,11 @@ export async function PATCH(
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const hasAccess = await hasPermission(userId, "ManageReservations");
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
     }
 
     if (!name || !phone || !status || !visitors || !date || !tableId) {

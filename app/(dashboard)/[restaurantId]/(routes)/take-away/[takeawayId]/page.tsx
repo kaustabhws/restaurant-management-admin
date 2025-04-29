@@ -1,5 +1,8 @@
 import prismadb from "@/lib/prismadb";
 import { TableForm } from "./components/table-form";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 interface TakeAwayPageProps {
   params: {
@@ -9,6 +12,17 @@ interface TakeAwayPageProps {
 }
 
 const TakeAwayPage: React.FC<TakeAwayPageProps> = async ({ params }) => {
+
+  const { userId } = auth()
+
+  const hasAccess = await hasPermission(userId!, "CreateOrders")
+
+  if(!hasAccess) {
+    return (
+      <AccessDenied url={params.restaurantId} />
+    )
+  }
+
   const menu = await prismadb.menu.findMany({
     where: {
       resId: params.restaurantId,

@@ -3,12 +3,26 @@ import { InventoryColumn } from "./components/columns";
 import { format } from "date-fns";
 import { getISTTime } from "@/lib/getISTTime";
 import { InventoryClient } from "./components/client";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const InventoryPage = async ({
   params,
 }: {
   params: { restaurantId: string };
 }) => {
+
+  const { userId } = auth()
+
+  const hasAccess = await hasPermission(userId!, "ViewInventory")
+
+  if(!hasAccess) {
+    return (
+      <AccessDenied url={`/${params.restaurantId}`} />
+    )
+  }
+
   const inventory = await prismadb.inventory.findMany({
     where: {
       resId: params.restaurantId,

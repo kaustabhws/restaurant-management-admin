@@ -3,8 +3,22 @@ import prismadb from "@/lib/prismadb";
 import { MenuClient } from "./components/client";
 import { MenuColumn } from "./components/columns";
 import { getISTTime } from "@/lib/getISTTime";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import Link from "next/link";
+import AccessDenied from "@/components/access-denied";
 
 const MenusPage = async ({ params }: { params: { restaurantId: string } }) => {
+  const { userId } = auth();
+
+  const hasAccess = await hasPermission(userId!, "ViewMenu");
+
+  if (!hasAccess) {
+    return (
+      <AccessDenied url={`/${params.restaurantId}`} />
+    );
+  }
+
   const menus = await prismadb.menu.findMany({
     where: {
       resId: params.restaurantId,

@@ -1,12 +1,26 @@
 import prismadb from "@/lib/prismadb";
 import { TableForm } from "./components/table-form";
 import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs";
+import { hasPermission } from "@/utils/has-permissions";
+import AccessDenied from "@/components/access-denied";
 
 const MenuPage = async ({
   params,
 }: {
   params: { tableId: string; restaurantId: string };
 }) => {
+
+  const { userId } = auth()
+  
+  const hasAccess = await hasPermission(userId!, "CreateOrders");
+
+  if(!hasAccess) {
+    return (
+      <AccessDenied url={`/${params.restaurantId}`} />
+    )
+  }
+
   const table = await prismadb.table.findUnique({
     where: {
       id: params.tableId,

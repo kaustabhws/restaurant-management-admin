@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prismadb";
+import { hasPermission } from "@/utils/has-permissions";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
@@ -15,6 +16,12 @@ export async function POST(
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
     }
+
+    const hasAccess = await hasPermission(userId, "CreateMenu");
+    if (!hasAccess) {
+      return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
+    
     if (!name) {
       return new NextResponse("Name is required", { status: 400 });
     }
@@ -28,8 +35,20 @@ export async function POST(
     // Check if the user owns the restaurant
     const restaurant = await prismadb.restaurants.findFirst({
       where: {
-        id: params.resId,
-        userId,
+        OR: [
+          { id: params.resId, userId },
+          {
+            id: params.resId,
+            users: {
+              some: {
+                clerkId: userId,
+                role: {
+                  permissions: { some: { name: "CreateMenu" } },
+                },
+              },
+            },
+          },
+        ],
       },
     });
 
@@ -52,9 +71,7 @@ export async function POST(
         },
         images: {
           createMany: {
-            data: [
-              ...images.map((image: { url: string }) => image),
-            ],
+            data: [...images.map((image: { url: string }) => image)],
           },
         },
       },
@@ -82,7 +99,7 @@ export async function GET(
       },
       include: {
         ingredients: true,
-      }
+      },
     });
 
     return NextResponse.json(menus);

@@ -3,7 +3,8 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { LowStockModal } from "@/components/modals/low-stock-alert";
-import { BusinessHoursModal } from "@/components/modals/business-hours-modal"; 
+import { BusinessHoursModal } from "@/components/modals/business-hours-modal";
+import { Inventory } from "@prisma/client";
 
 export default async function DashboardLayout({
   children,
@@ -20,8 +21,20 @@ export default async function DashboardLayout({
 
   const restaurant = await prismadb.restaurants.findFirst({
     where: {
-      id: params.restaurantId,
-      userId,
+      OR: [
+        {
+          id: params.restaurantId,
+          userId,
+        },
+        {
+          users: {
+            some: {
+              clerkId: userId,
+              resId: params.restaurantId,
+            },
+          },
+        },
+      ],
     },
   });
 
@@ -37,17 +50,21 @@ export default async function DashboardLayout({
 
   // Filter for low-stock items
   const lowStockItems = inventory.filter(
-    (item) => item.availableQuantity <= item.minStockThreshold
+    (item: Inventory) => item.availableQuantity <= item.minStockThreshold
   );
 
   return (
     <>
-      <Navbar resId={restaurant.id} lowStockItems={lowStockItems} currency={restaurant.currency} />
+      <Navbar
+        resId={restaurant.id}
+        lowStockItems={lowStockItems}
+        currency={restaurant.currency}
+      />
       {children}
       <LowStockModal items={lowStockItems} currency={restaurant.currency} />
-      {
-        !restaurant.openingTime && !restaurant.closingTime && <BusinessHoursModal resId={restaurant.id} />
-      }
+      {!restaurant.openingTime && !restaurant.closingTime && (
+        <BusinessHoursModal resId={restaurant.id} />
+      )}
     </>
   );
 }
