@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator"; // Import Separator component
+import { getISTTime } from "@/lib/getISTTime";
 
 interface ReservationCardProps {
   data: {
@@ -89,7 +90,7 @@ export function ReservationCard({ data }: ReservationCardProps) {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="text-xl font-bold text-primary">
-                  {format(reservation.date, "MMMM do, yyyy 'at' h:mm a")}
+                  {format(getISTTime(reservation.date), "MMMM do, yyyy 'at' h:mm a")}
                 </p>
                 <p className="text-muted-foreground">{reservation.name}</p>
               </div>
