@@ -116,13 +116,13 @@ export default function OrderModal({
             <Button onClick={handleAccept} variant="default" disabled={loading}>
               Accept
             </Button>
-            <Button
+            {/* <Button
               onClick={handleReject}
               variant="destructive"
               disabled={loading}
             >
               Reject
-            </Button>
+            </Button> */}
           </div>
           <div className="flex items-center space-x-2">
             <Button
